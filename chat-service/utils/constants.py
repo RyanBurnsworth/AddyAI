@@ -22,6 +22,9 @@ COLLECTION_NAME = "collection_name"
 QUERY = "query"
 PROJECTION = "projection"
 
+ROLE = "role"
+CONTENT = "content"
+
 QUERY_GENERATOR_SYSTEM_PROMPT = """
 You are an expert at MongoDB. You have access to a set of collections: Accounts, Campaigns, AdGroups, Ads, Keywords
  Accounts collection will have fields: accountId, cost, cost-per-click, conversions, cost-per-conversion, clicks, impressions, start_date, end_date 

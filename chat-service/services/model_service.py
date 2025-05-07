@@ -1,5 +1,5 @@
 from openai import OpenAI
-from utils.constants import GPT_MODEL, SYSTEM, USER, O4_MINI
+from utils.constants import GPT_MODEL, SYSTEM, USER, O4_MINI, ROLE, CONTENT
 
 class ModelService:
     client = OpenAI()
@@ -11,7 +11,9 @@ class ModelService:
 
     """
         Send a user request to the GPT 4.1 LLM
-        @param request  The user request
+
+        @param system_prompt    the prompt for the system to run off of
+        @param user_prompt     the prompt from the user's input
         @returns response from the the GPT 4.1 LLM
     """
     def get_llm_response(self, system_prompt, user_prompt) -> str:
@@ -20,12 +22,12 @@ class ModelService:
                 model=GPT_MODEL,
                 input=[
                     {
-                        "role": SYSTEM,
-                        "content": system_prompt
+                        ROLE: SYSTEM,
+                        CONTENT: system_prompt
                     },
                     {
-                        "role": USER,
-                        "content": user_prompt
+                        ROLE: USER,
+                        CONTENT: user_prompt
                     }
                 ]
             )
@@ -37,7 +39,8 @@ class ModelService:
     """
         Send a user request that may require reasoning to the o4-mini LLM
 
-        @param request  The user request
+        @param system_prompt    the prompt for the system to run off of
+        @param user_prompt     the prompt from the user's input
         @returns response from o4-mini
     """
     def get_reasoning_response(self, system_prompt, user_prompt) -> str:
@@ -48,12 +51,12 @@ class ModelService:
                 previous_response_id=self._previous_response_id,
                 input=[
                     {
-                        "role": SYSTEM,
-                        "content": system_prompt
+                        ROLE: SYSTEM,
+                        CONTENT: system_prompt
                     },
                     {
-                        "role": USER,
-                        "content": user_prompt
+                        ROLE: USER,
+                        CONTENT: user_prompt
                     }
                 ]
             )

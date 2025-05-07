@@ -3,6 +3,7 @@ from datetime import datetime
 from bson import ObjectId
 
 
+# transform dates in queries from strings to datetime format
 def transform_query_dates(query_input: dict):
     if not query_input or not query_input.get("query", {}).get("start_date") or not query_input.get("query", {}).get("end_date"):
         print("missing date stuff")
@@ -28,6 +29,7 @@ def transform_query_dates(query_input: dict):
     return query_input
 
 
+# remove unicode from input text
 def strip_unicode(text):
     return text.encode('ascii', errors='ignore').decode('ascii')
 

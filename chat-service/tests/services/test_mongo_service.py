@@ -1,7 +1,7 @@
 import pytest
 from pymongo.errors import PyMongoError
 from services.mongo_service import MongoService  # adjust import path as needed
-
+from utils.constants import QUERY, PROJECTION, COLLECTION_NAME
 
 def test_mongo_service_init_success(mocker):
     mock_client = mocker.patch("services.mongo_service.MongoClient")  # adjust path
@@ -18,17 +18,22 @@ def test_mongo_service_init_failure(mocker):
 
     with pytest.raises(ConnectionError, match="Failed to connect to MongoDB: Connection failed"):
         MongoService()
-
 def test_find_success(mocker):
-    # Mocking the transformed query
-    mock_transform = mocker.patch("services.mongo_service.utils.transform_query_dates")
-    mock_transform.return_value = {"name": "Test"}
+    # Input and transformed query
+    raw_input = {
+        QUERY: {"name": "Test"},
+        PROJECTION: {"_id": 1},
+        COLLECTION_NAME: "test_collection"
+    }
 
-    # Mocking the serialization
+    # Patching the transformation and serialization utilities
+    mock_transform = mocker.patch("services.mongo_service.utils.transform_query_dates")
+    mock_transform.return_value = raw_input
+
     mock_serialize = mocker.patch("services.mongo_service.utils.serialize_objectid")
     mock_serialize.return_value = [{"_id": 1, "name": "Test"}]
 
-    # Mocking MongoDB collection and client
+    # Mocking MongoDB behavior
     mock_collection = mocker.MagicMock()
     mock_collection.find.return_value = [{"_id": 1, "name": "Test"}]
 
@@ -39,19 +44,24 @@ def test_find_success(mocker):
     mock_client.return_value.__getitem__.return_value = mock_db
 
     service = MongoService()
-    results = service.find("test_collection", {"name": "Test"}, {"_id": 1})
+    results = service.find(raw_input)
 
     assert results == [{"_id": 1, "name": "Test"}]
-    mock_transform.assert_called_once_with({"name": "Test"})
+    mock_transform.assert_called_once_with(raw_input)
     mock_collection.find.assert_called_once_with({"name": "Test"}, {"_id": 1})
     mock_serialize.assert_called_once_with([{"_id": 1, "name": "Test"}])
 
-def test_find_failure(mocker):
-    # Skip transform because query fails at Mongo call
-    mock_transform = mocker.patch("services.mongo_service.utils.transform_query_dates")
-    mock_transform.return_value = {"key": "value"}
 
-    # Mock collection that raises error
+def test_find_failure(mocker):
+    raw_input = {
+        QUERY: {"key": "value"},
+        PROJECTION: None,
+        COLLECTION_NAME: "test_collection"
+    }
+
+    mock_transform = mocker.patch("services.mongo_service.utils.transform_query_dates")
+    mock_transform.return_value = raw_input
+
     mock_collection = mocker.MagicMock()
     mock_collection.find.side_effect = PyMongoError("Query failed")
 
@@ -64,7 +74,7 @@ def test_find_failure(mocker):
     service = MongoService()
 
     with pytest.raises(RuntimeError, match="Mongo query failed: Query failed"):
-        service.find("test_collection", {"key": "value"})
-    
-    mock_transform.assert_called_once_with({"key": "value"})
-    mock_collection.find.assert_called_once()
+        service.find(raw_input)
+
+    mock_transform.assert_called_once_with(raw_input)
+    mock_collection.find.assert_called_once_with({"key": "value"}, None)

@@ -53,7 +53,7 @@ def _generate_mongo_query_from_LLM(user_prompt: str):
 # Execute a mongo query on the database
 def _execute_mongo_query(mongo_query):
     try:
-        mongo_results = mongoService.find(mongo_query[COLLECTION_NAME], mongo_query[QUERY], mongo_query[PROJECTION])
+        mongo_results = mongoService.find(mongo_query)
         return mongo_results
     except Exception as e:
         abort(STATUS_INTERNAL_ERROR, description="Error processing MongoDB query: " + str(e))

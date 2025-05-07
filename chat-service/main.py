@@ -2,7 +2,6 @@ import json
 from services.model_service import ModelService
 from flask import Flask, abort, jsonify, request
 from services.mongo_service import MongoService
-from utils import utils
 from utils.constants import POST, STATUS_OK, STATUS_INTERNAL_ERROR, STATUS_BAD_REQUEST, STATUS_FORBIDDEN, STATUS_NOT_FOUND, REQUEST_ENDPOINT, ACCOUNT_ID_PARAM, QUERY_GENERATOR_SYSTEM_PROMPT, USER_PROMPT, REASONING_SYSTEM_PROMPT, LLM_GUARDRAIL_RESPONSE, MESSAGE, STATUS, COLLECTION_NAME, QUERY, PROJECTION
 
 app = Flask(__name__)
@@ -49,7 +48,6 @@ def _generate_mongo_query_from_LLM(user_prompt: str):
         return modelService.get_llm_response(QUERY_GENERATOR_SYSTEM_PROMPT, user_prompt)
     except Exception as e:
         abort(STATUS_INTERNAL_ERROR, description="Error getting a response from the LLM: " + str(e))
-        return
 
 
 # Execute a mongo query on the database
@@ -63,8 +61,11 @@ def _execute_mongo_query(mongo_query):
 
 # Use a reasoning LLM to craft a response based on the results from MongoDB and the user prompt
 def _get_reasoning_response(mongo_results, user_prompt, collection_type):
-    llm_response = modelService.get_reasoning_response(REASONING_SYSTEM_PROMPT, "Mongo results: " + str(mongo_results) + " from " + collection_type + " User prompt: " + str(user_prompt))
-    return utils.strip_unicode(llm_response)
+    try:
+        llm_response = modelService.get_reasoning_response(REASONING_SYSTEM_PROMPT, "Mongo results: " + str(mongo_results) + " from " + collection_type + " User prompt: " + str(user_prompt))
+        return llm_response
+    except Exception as e:
+        abort(STATUS_INTERNAL_ERROR, description="Error getting a response from the reasoning LLM: " + str(e))
 
 
 # Custom error response for 400 errors
@@ -72,15 +73,18 @@ def _get_reasoning_response(mongo_results, user_prompt, collection_type):
 def handle_400_error(error):
     return jsonify({MESSAGE: error.description, STATUS: STATUS_BAD_REQUEST})
 
+
 # Custom error response for 403 errors
 @app.errorhandler(STATUS_FORBIDDEN)
 def handle_403_error(error):
     return jsonify({MESSAGE: error.description, STATUS: STATUS_BAD_REQUEST})
 
+
 # Custom error response for 404 errors
 @app.errorhandler(STATUS_NOT_FOUND)
 def handle_404_error(error):
     return jsonify({MESSAGE: error.description, STATUS: STATUS_NOT_FOUND})
+
 
 # Custom error response for 500 errors
 @app.errorhandler(STATUS_INTERNAL_ERROR)

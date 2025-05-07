@@ -1,4 +1,5 @@
 from openai import OpenAI
+from utils import utils
 from utils.constants import GPT_MODEL, SYSTEM, USER, O4_MINI, ROLE, CONTENT
 
 class ModelService:
@@ -61,7 +62,9 @@ class ModelService:
                 ]
             )
             self._previous_response_id = response.id
-            return response.output_text
+
+            unicode_stripped = utils.strip_unicode(response.output_text)
+            return unicode_stripped
         except Exception as e:
             print("Unexpected error:", e)
             raise Exception

@@ -3,11 +3,12 @@ from services.model_service import ModelService
 from flask import Flask, abort, jsonify, request
 from services.mongo_service import MongoService
 from utils import utils
-from utils.constants import POST, STATUS_OK, STATUS_INTERNAL_ERROR, STATUS_BAD_REQUEST, STATUS_FORBIDDEN, STATUS_NOT_FOUND, REQUEST_ENDPOINT, ACCOUNT_ID_PARAM, QUERY_GENERATOR_SYSTEM_PROMPT, USER_PROMPT, LLM_REQUEST_SYSTEM_PROMPT, LLM_GUARDRAIL_RESPONSE, MESSAGE, STATUS, COLLECTION_NAME, QUERY, PROJECTION
+from utils.constants import POST, STATUS_OK, STATUS_INTERNAL_ERROR, STATUS_BAD_REQUEST, STATUS_FORBIDDEN, STATUS_NOT_FOUND, REQUEST_ENDPOINT, ACCOUNT_ID_PARAM, QUERY_GENERATOR_SYSTEM_PROMPT, USER_PROMPT, REASONING_SYSTEM_PROMPT, LLM_GUARDRAIL_RESPONSE, MESSAGE, STATUS, COLLECTION_NAME, QUERY, PROJECTION
 
 app = Flask(__name__)
 
 modelService = ModelService()
+mongoService = MongoService()
 
 """
     API endpoint for answering questions about their Google Ads data
@@ -54,23 +55,15 @@ def _generate_mongo_query_from_LLM(user_prompt: str):
 # Execute a mongo query on the database
 def _execute_mongo_query(mongo_query):
     try:
-        transformed_query = utils.transform_query_dates(mongo_query)
-
-        mongoService = MongoService()
-
-        mongo_results = mongoService.find(transformed_query[COLLECTION_NAME], transformed_query[QUERY], transformed_query[PROJECTION])
-
-        # Serialize any ObjectId in the MongoDB response before returning it
-        serialized_results = utils.serialize_objectid(mongo_results)
-
-        return serialized_results
+        mongo_results = mongoService.find(mongo_query[COLLECTION_NAME], mongo_query[QUERY], mongo_query[PROJECTION])
+        return mongo_results
     except Exception as e:
         abort(STATUS_INTERNAL_ERROR, description="Error processing MongoDB query: " + str(e))
 
 
 # Use a reasoning LLM to craft a response based on the results from MongoDB and the user prompt
 def _get_reasoning_response(mongo_results, user_prompt, collection_type):
-    llm_response = modelService.get_reasoning_response(LLM_REQUEST_SYSTEM_PROMPT, "Mongo results: " + str(mongo_results) + " from " + collection_type + " User prompt: " + str(user_prompt))
+    llm_response = modelService.get_reasoning_response(REASONING_SYSTEM_PROMPT, "Mongo results: " + str(mongo_results) + " from " + collection_type + " User prompt: " + str(user_prompt))
     return utils.strip_unicode(llm_response)
 
 

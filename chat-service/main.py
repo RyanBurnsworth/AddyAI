@@ -1,10 +1,13 @@
 import json
 from services.model_service import ModelService
-from flask import Flask, abort, jsonify, request
+from flask import Flask, Response, abort, jsonify, request
 from services.mongo_service import MongoService
-from utils.constants import POST, STATUS_OK, STATUS_INTERNAL_ERROR, STATUS_BAD_REQUEST, STATUS_FORBIDDEN, STATUS_NOT_FOUND, REQUEST_ENDPOINT, ACCOUNT_ID_PARAM, QUERY_GENERATOR_SYSTEM_PROMPT, USER_PROMPT, REASONING_SYSTEM_PROMPT, LLM_GUARDRAIL_RESPONSE, MESSAGE, STATUS, COLLECTION_NAME, QUERY, PROJECTION
+from utils.constants import POST, STATUS_OK, STATUS_INTERNAL_ERROR, STATUS_BAD_REQUEST, STATUS_FORBIDDEN, STATUS_NOT_FOUND, REQUEST_ENDPOINT, ACCOUNT_ID_PARAM, QUERY_GENERATOR_SYSTEM_PROMPT, USER_PROMPT, REASONING_SYSTEM_PROMPT, LLM_GUARDRAIL_RESPONSE, MESSAGE, STATUS, COLLECTION_NAME, STREAM_ENDPOINT
+from flask_cors import CORS
 
 app = Flask(__name__)
+
+CORS(app)
 
 modelService = ModelService()
 mongoService = MongoService()
@@ -12,7 +15,7 @@ mongoService = MongoService()
 """
     API endpoint for answering questions about their Google Ads data
 
-    @returns the response from the AI
+    @returns the response from the LLM
 """
 @app.route(REQUEST_ENDPOINT, methods=[POST])
 def user_request():
@@ -42,6 +45,26 @@ def user_request():
     return jsonify({MESSAGE: llm_response, STATUS: STATUS_OK})
 
 
+"""
+    API endpoint for answering questions about their Google Ads data
+
+    @returns a streaming response from the LLM
+"""
+@app.route(STREAM_ENDPOINT, methods=[POST])
+def stream():
+    body = request.get_json()
+
+    user_prompt = body.get(USER_PROMPT)
+
+    mongo_query = _generate_mongo_query_from_LLM(user_prompt)
+    json_query = json.loads(mongo_query)
+    mongo_results = _execute_mongo_query(json_query)
+
+    llm_response = _get_reasoning_streaming_response(mongo_results, user_prompt, json_query[COLLECTION_NAME])
+
+    return Response(llm_response, mimetype="text/event-stream")
+
+
 # Use an LLM to derive a mongo query from the user input
 def _generate_mongo_query_from_LLM(user_prompt: str):
     try:
@@ -63,6 +86,17 @@ def _execute_mongo_query(mongo_query):
 def _get_reasoning_response(mongo_results, user_prompt, collection_type):
     try:
         llm_response = modelService.get_reasoning_response(REASONING_SYSTEM_PROMPT, "Mongo results: " + str(mongo_results) + " from " + collection_type + " User prompt: " + str(user_prompt))
+        llm_response = llm_response 
+        return llm_response
+    except Exception as e:
+        abort(STATUS_INTERNAL_ERROR, description="Error getting a response from the reasoning LLM: " + str(e))
+
+
+# Use a reasoning LLM to craft a response based on the results from MongoDB and the user prompt
+def _get_reasoning_streaming_response(mongo_results, user_prompt, collection_type):
+    try:
+        llm_response = modelService.get_reasoning_streaming_response(REASONING_SYSTEM_PROMPT, "Mongo results: " + str(mongo_results) + " from " + collection_type + " User prompt: " + str(user_prompt))
+        llm_response = llm_response 
         return llm_response
     except Exception as e:
         abort(STATUS_INTERNAL_ERROR, description="Error getting a response from the reasoning LLM: " + str(e))

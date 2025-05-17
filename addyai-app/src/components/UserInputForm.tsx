@@ -22,7 +22,8 @@ function UserImportForm({ onMessageSubmitted }: UserImportFormProps) {
                     <input type="text" 
                         value={message}
                         onChange={(e) => setMessage(e.target.value) }
-                        className="w-full m-4 p-2 bg-gray-600 text-white border-black border-2 rounded-md" />
+                        placeholder="Ask AddyAI..."
+                        className="w-full m-4 p-4 border-amber-400 border-2 focus:outline-none focus:ring-0 focus:border-amber-400 text-white" />
                     <button className="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center shadow">
                         +
                     </button>

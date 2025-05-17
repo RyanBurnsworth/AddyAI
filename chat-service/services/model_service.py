@@ -14,7 +14,7 @@ class ModelService:
         Send a user request to the GPT 4.1 LLM
 
         @param system_prompt    the prompt for the system to run off of
-        @param user_prompt     the prompt from the user's input
+        @param user_prompt      the prompt from the user's input
         @returns response from the the GPT 4.1 LLM
     """
     def get_llm_response(self, system_prompt, user_prompt) -> str:
@@ -41,7 +41,7 @@ class ModelService:
         Send a user request that may require reasoning to the o4-mini LLM
 
         @param system_prompt    the prompt for the system to run off of
-        @param user_prompt     the prompt from the user's input
+        @param user_prompt      the prompt from the user's input
         @returns response from o4-mini
     """
     def get_reasoning_response(self, system_prompt, user_prompt) -> str:

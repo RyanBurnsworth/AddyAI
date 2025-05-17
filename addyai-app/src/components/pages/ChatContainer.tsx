@@ -3,10 +3,16 @@ import type MessageProps from "../../props/MessageProps";
 import MessageContainer from "../MessageContainer";
 import UserImportForm from "../UserInputForm";
 import { useLocation } from "react-router-dom";
+import { SnackBar } from "../reusable/SnackBar";
+import { APPLICATION_JSON, CUSTOMER_ID, POST } from "../../utils/constants";
 
 export default function ChatContainer() {
     const location = useLocation();
     const initialMessage = (location.state as { initialMessage?: string})?.initialMessage;
+
+    const [showSnackBar, setShowSnackBar] = useState<boolean>(false);
+    
+    const [errorMessage, setErrorMessage] = useState<string>("");
 
     const [messages, setMessages] = useState<MessageProps[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);    
@@ -15,7 +21,8 @@ export default function ChatContainer() {
     const handleSendMessage = async (message: string) => {
         const userMessage = { message, isUserInput: true };
         const responseMessage = { message: "", isUserInput: false };
-        const customerId = localStorage.getItem("customerId");
+        const customerId = localStorage.getItem(CUSTOMER_ID);
+        const messagingUrl = import.meta.env.VITE_MESSAGING_URL;
 
         // Update both React state and the ref
         const newMessages = [...messagesRef.current, userMessage, responseMessage];
@@ -24,10 +31,10 @@ export default function ChatContainer() {
         setIsLoading(true);
 
         try {
-            const response = await fetch("http://localhost:5000/request", {
-                method: "POST",
+            const response = await fetch(messagingUrl, {
+                method: POST,
                 headers: {
-                    "Content-Type": "application/json",
+                    CONTENT_TYPE: APPLICATION_JSON,
                 },
                 body: JSON.stringify({
                     "user_prompt": message,
@@ -46,6 +53,8 @@ export default function ChatContainer() {
         } catch (err) {
             console.error("Fetching error:", err);
             setIsLoading(false);
+            setErrorMessage("Error receiving response from service. Please try again.");
+            setShowSnackBar(true);
         }
     };
 
@@ -71,6 +80,14 @@ export default function ChatContainer() {
                     <UserImportForm onMessageSubmitted={handleSendMessage} />
                 </main>
             </div>
+
+            <SnackBar
+                message={errorMessage}
+                color="bg-red-900"
+                duration={2000}
+                onClose={() => setShowSnackBar(false)}
+                show={showSnackBar}
+            />
         </div>
     );
 }

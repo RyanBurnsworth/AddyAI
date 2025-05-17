@@ -1,8 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import question_balloons from "../../assets/question_ballons.png";
+import { CODE, CONSENT, OFFLINE, REFRESH_TOKEN } from "../../utils/constants";
 
 export default function Home() {
+  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+  const redirectUri = import.meta.env.VITE_GOOGLE_REDIRECT_URL;
+  const scope = import.meta.env.VITE_GOOGLE_SCOPE;
+
   const navigate = useNavigate();
   const [input, setInput] = useState<string>("");
 
@@ -25,19 +30,19 @@ export default function Home() {
 
   const getRefreshToken = () => {
     const params = new URLSearchParams({
-        client_id: '453865601493-6kmumtadvpc285p7sk5v638f0vab6r4c.apps.googleusercontent.com',
-        redirect_uri: 'http://localhost:5173/authorize',
-        response_type: 'code',
-        scope: 'https://www.googleapis.com/auth/adwords openid email profile',
-        access_type: 'offline',
-        prompt: 'consent'
+        client_id: clientId,
+        redirect_uri: redirectUri,
+        response_type: CODE,
+        scope: scope,
+        access_type: OFFLINE,
+        prompt: CONSENT
     });
 
     window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
   };
 
   const handleClick = () => {
-    if (!localStorage.getItem('refreshToken')) {
+    if (!localStorage.getItem(REFRESH_TOKEN)) {
       getRefreshToken();
       return;
     }

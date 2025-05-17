@@ -1,0 +1,13 @@
+export const CODE = 'code';
+export const NAME = 'name';
+export const EMAIL = 'email';
+export const PICTURE = 'picture';
+export const REFRESH_TOKEN = 'refreshToken';
+export const CUSTOMER_ID = 'customerId';
+export const GET = 'GET';
+export const POST = 'POST';
+export const CONTENT_TYPE = 'Content-Type';
+export const APPLICATION_JSON = 'application/json';
+export const CONSENT = 'consent';
+export const OFFLINE = 'offline';
+export const INCLUDE = 'include';

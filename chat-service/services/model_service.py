@@ -1,14 +1,17 @@
 from openai import OpenAI
+from services.data_service import DataService
 from utils import utils
 from utils.constants import GPT_MODEL, SYSTEM, USER, O4_MINI, ROLE, CONTENT
 
 class ModelService:
     client = OpenAI()
+    
+    _data_service: DataService
 
     _previous_response_id: str = None
 
-    def __init__(self):
-        pass
+    def __init__(self, data_service):
+        self._data_service = data_service
 
     """
         Send a user request to the GPT 4.1 LLM
@@ -32,6 +35,8 @@ class ModelService:
                     }
                 ]
             )
+            ## Send input_tokens, output_tokens and model to data service
+            self._data_service.post_usage(response.usage.input_tokens, response.usage.output_tokens, GPT_MODEL)
             return response.output_text
         except Exception as e:
             print("Unexpected error:", e)
@@ -62,6 +67,10 @@ class ModelService:
                 ]
             )
             self._previous_response_id = response.id
+
+
+            # update the data service with the tokens usage
+            self._data_service.post_usage(response.usage.input_tokens, response.usage.output_tokens, O4_MINI)
 
             unicode_stripped = utils.strip_unicode(response.output_text)
             return unicode_stripped

@@ -1,15 +1,15 @@
 from http.client import HTTPException
-import json
-
 from flask_cors import CORS
+from services.data_service import DataService
 from services.model_service import ModelService
-from flask import Flask, abort, jsonify, request
-from utils.constants import POST, STATUS_OK, STATUS_INTERNAL_ERROR, STATUS_BAD_REQUEST, STATUS_FORBIDDEN, STATUS_NOT_FOUND, REQUEST_ENDPOINT, ACCOUNT_ID_PARAM, QUERY_GENERATOR_SYSTEM_PROMPT, USER_PROMPT, REASONING_SYSTEM_PROMPT, LLM_GUARDRAIL_RESPONSE, MESSAGE, STATUS, COLLECTION_NAME, QUERY, PROJECTION
+from flask import Flask, abort, json, jsonify, request
+from utils.constants import MESSAGE, POST, STATUS, STATUS_INTERNAL_ERROR, STATUS_BAD_REQUEST, STATUS_FORBIDDEN, REQUEST_ENDPOINT, ACCOUNT_ID_PARAM, QUERY_GENERATOR_SYSTEM_PROMPT, STATUS_NOT_FOUND, STATUS_OK, USER_PROMPT, REASONING_SYSTEM_PROMPT, LLM_GUARDRAIL_RESPONSE
 
 app = Flask(__name__)
 CORS(app)
 
-modelService = ModelService()
+dataService = DataService()
+modelService = ModelService(data_service=dataService)
 
 """
     API endpoint for answering questions about their Google Ads data
@@ -31,53 +31,48 @@ def user_request():
         abort(STATUS_BAD_REQUEST, description="Missing required field: user_prompt")
 
     try:
-        # allow the LLM to generate the MongoDB query by deriving from the user's prompt
-        mongo_query = _generate_mongo_query_from_LLM(user_prompt)
-        if mongo_query == LLM_GUARDRAIL_RESPONSE:
+        # allow the LLM to generate the Postgres query by deriving from the user's prompt
+        psql_queries = _generate_psql_query_from_LLM(user_prompt)
+
+        psql_queries = json.loads(psql_queries)
+        print("QUERIES: ", psql_queries)
+        print(type(psql_queries))
+
+        if psql_queries == LLM_GUARDRAIL_RESPONSE:
             abort(STATUS_FORBIDDEN, description=LLM_GUARDRAIL_RESPONSE)
     except Exception as e:
-        print("Error generating Mongo query: ", str(e))
+        print("Error generating PSQL query: ", str(e))
         abort(STATUS_INTERNAL_ERROR, description="Error getting a response from the LLM: " + str(e))
 
     try:
-        # execute the query on the 
-        json_query = json.loads(mongo_query)
-        # mongo_results = _execute_mongo_query(json_query)
-        # if not mongo_results:
-        #     abort(STATUS_NOT_FOUND, description="Error finding data related to query: " + str(mongo_query))
+        query_results = dataService.send_sql_queries(psql_queries["queries"])
+        if not query_results:
+            abort(STATUS_NOT_FOUND, description="Error finding data related to query: " + str(query_results))
     except Exception as e:
-        print("Error executing Mongo query: ", str(e))
-        abort(STATUS_INTERNAL_ERROR, description="Error processing MongoDB query: " + str(e))
+        print("Error executing Postgres query: ", str(e))
+        abort(STATUS_INTERNAL_ERROR, description="Error processing Postgres query: " + str(e))
 
     try:
-        print("TODO")
-       # llm_response = _get_reasoning_response(mongo_results, user_prompt, json_query[COLLECTION_NAME])
+       llm_response = _get_reasoning_response(query_results, user_prompt)
     except Exception as e:
         print("Error get response from reasoning LLM: ", str(e))
         abort(STATUS_INTERNAL_ERROR, description="Error getting a response from the reasoning LLM: " + str(e))
 
-    # return jsonify({MESSAGE: llm_response, STATUS: STATUS_OK})
+    return jsonify({MESSAGE: llm_response, STATUS: STATUS_OK})
 
 
-# Use an LLM to derive a mongo query from the user input
-def _generate_mongo_query_from_LLM(user_prompt: str):
+# Use an LLM to derive a PSQL query from the user input
+def _generate_psql_query_from_LLM(user_prompt: str):
     try:
+        print("")
         return modelService.get_llm_response(QUERY_GENERATOR_SYSTEM_PROMPT, user_prompt)
     except Exception as e:
         raise e
 
-# Execute a mongo query on the database
-# def _execute_mongo_query(mongo_query):
-#     try:
-#         # mongo_results = mongoService.find(mongo_query)
-#         return mongo_results
-#     except Exception as e:
-#         raise e
-
-# Use a reasoning LLM to craft a response based on the results from MongoDB and the user prompt
-def _get_reasoning_response(mongo_results, user_prompt, collection_type):
+# Use a reasoning LLM to craft a response based on the results from Postgres and the user prompt
+def _get_reasoning_response(query_results, user_prompt):
     try:
-        llm_response = modelService.get_reasoning_response(REASONING_SYSTEM_PROMPT, "Mongo results: " + str(mongo_results) + " from " + collection_type + " User prompt: " + str(user_prompt))
+        llm_response = modelService.get_reasoning_response(REASONING_SYSTEM_PROMPT, "query results: " + str(query_results) + " User prompt: " + str(user_prompt))
         return llm_response
     except Exception as e:
         raise e

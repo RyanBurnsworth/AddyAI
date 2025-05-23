@@ -2,6 +2,8 @@ import requests
 
 class DataService:
     url = "http://localhost:3000/google/request"
+
+    ## TODO Remove Hardcoding
     params = {
         "customerId": "9059845250",
         "loginCustomerId": "2898332235",
@@ -11,14 +13,46 @@ class DataService:
     def __init__(self):
         pass
 
-    def fetch_data(self, query):
-        self.params["query"] = query
-        response = requests.get(self.url, params=self.params)
+    def send_sql_queries(self, queries, base_url="http://localhost:3000/data/request"):
+        """
+        Sends a list of SQL queries to the NestJS data endpoint via POST.
 
-        # Check the response
-        print(response.status_code)
-        print(response.url)         # This shows the full URL with params
-        print(response.json())      # If the response is in JSON format
-    
-        return response.json()
-    
+        Args:
+            queries (list[str]): List of SQL query strings.
+            base_url (str): Endpoint URL.
+
+        Returns:
+            list: List of responses from the server for each query.
+        """
+        try:
+            response = requests.post(
+                base_url,
+                json={"queries": queries},
+                headers={"Content-Type": "application/json"}
+            )
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            print(f"Request failed: {e}")
+            return None
+
+    def post_usage(self, input_tokens, output_tokens, model, base_url="http://localhost:3000/usage"):
+        usage_dto = {
+            "userId": "2", # TODO REMOVE HARDCODING
+            "inputTokens": input_tokens,
+            "outputTokens": output_tokens,
+            "model": model
+        }
+
+        try:
+            response = requests.post(
+                base_url,
+                json=usage_dto,
+                headers={"Content-Type": "application/json"}
+            )
+            response.raise_for_status()
+            print("Received USAGE response: " + str(response))
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            print(f"Request failed: {e}")
+            return None

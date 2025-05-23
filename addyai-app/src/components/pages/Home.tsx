@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import question_balloons from "../../assets/question_ballons.png";
 import { CODE, CONSENT, OFFLINE, REFRESH_TOKEN } from "../../utils/constants";
+import SignInDialog from "../reusable/SignInDialog";
+import NavBar from "../reusable/NavBar";
 
 export default function Home() {
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
   const redirectUri = import.meta.env.VITE_GOOGLE_REDIRECT_URL;
   const scope = import.meta.env.VITE_GOOGLE_SCOPE;
+
+  const [showSignInDialog, setShowSignInDialog] = useState<boolean>(false);
 
   const navigate = useNavigate();
   const [input, setInput] = useState<string>("");
@@ -19,6 +22,7 @@ export default function Home() {
   ];
 
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
+  const [signedIn, setSignedIn] = useState<boolean>(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -27,6 +31,12 @@ export default function Home() {
 
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    if (localStorage.getItem(REFRESH_TOKEN)) {
+      setSignedIn(true);
+    }
+  });
 
   const getRefreshToken = () => {
     const params = new URLSearchParams({
@@ -42,8 +52,8 @@ export default function Home() {
   };
 
   const handleClick = () => {
-    if (!localStorage.getItem(REFRESH_TOKEN)) {
-      getRefreshToken();
+    if (!signedIn) {
+      setShowSignInDialog(true);
       return;
     }
 
@@ -54,51 +64,44 @@ export default function Home() {
     }
   };
 
+  const handleSignInDialogClick = (isCancelled: boolean) => {
+    if (!isCancelled) {
+      getRefreshToken();
+    }
+
+    setShowSignInDialog(false);
+  };
+
   return (
-    <div className="h-screen w-screen overflow-y-scroll snap-y snap-mandatory scroll-smooth">
-      {/* First screen */}
-      <section className="h-screen w-full snap-start flex flex-col justify-center items-center">
-        <div className="flex flex-col w-[90%] max-w-xl text-center">
-          <h1 className="mb-8 text-3xl md:text-4xl font-bold">
-            Ask Your Ads Data Anything!
-          </h1>
-          <input
-            type="text"
-            className="mb-8 p-4 border-amber-400 border-2 focus:outline-none focus:ring-0 focus:border-amber-400"
-            placeholder={placeholders[placeholderIndex]}
-            onChange={(e) => setInput(e.target.value)}
-          />
-          <button
-            onClick={handleClick}
-            className="bg-blue-500 p-3 rounded text-white hover:bg-blue-600 transition"
-          >
-            Ask Your Google Ads
-          </button>
-        </div>
-      </section>
-
-      {/* Second screen (parallax-style content below) */}
-      <section className="h-screen w-full snap-start flex flex-col justify-center items-center bg-gradient-to-b from-blue-100 to-white text-gray-800">
-        <img src={question_balloons} />
-        <h2 className="text-2xl md:text-3xl font-semibold mb-4">
-          Understand your Google Ads like never before
-        </h2>
-        <p className="max-w-xl text-center px-4">
-          Dive deeper into your ad performance, budget, and strategy with AddyAI's
-          real-time answers. Scroll up anytime to ask more questions.
-        </p>
-      </section>
-
-      {/* Third screen (parallax-style content below) */}
-      <section className="h-screen w-full snap-start flex flex-col justify-center items-center bg-gradient-to-b from-blue-100 to-white text-gray-800">
-        <h2 className="text-2xl md:text-3xl font-semibold mb-4">
-          Understand your Google Ads like never before
-        </h2>
-        <p className="max-w-xl text-center px-4">
-          Dive deeper into your ad performance, budget, and strategy with AddyAI's
-          real-time answers. Scroll up anytime to ask more questions.
-        </p>
-      </section>
-    </div>
+    <>
+      <NavBar></NavBar>
+      <div className="h-screen w-screen overflow-y-hidden snap-y snap-mandatory scroll-smooth">
+        {/* First screen */}
+        <section className="h-screen w-full snap-start flex flex-col justify-center items-center">
+          <div className="flex flex-col w-[90%] max-w-xl text-center">
+            <span className="mb-2 text-3xl md:text-4xl font-bold">
+              Your Google Ads Co-Pilot
+            </span>
+            <span className="mb-4 text-2xl text-green-400">Powered by AddyAI</span>
+            <input
+              type="text"
+              className="mb-8 p-4 border-gray-400 border-2 focus:outline-none focus:ring-0 focus:border-green-400"
+              placeholder={placeholders[placeholderIndex]}
+              onChange={(e) => setInput(e.target.value)}
+            />
+            <button
+              onClick={handleClick}
+              className="bg-blue-400 p-3 rounded text-white hover:bg-blue-400 transition"
+            >
+              Ask Your Google Ads
+            </button>
+          </div>
+        </section>
+        <SignInDialog
+          show={showSignInDialog}
+          onClose={handleSignInDialogClick}
+        />
+      </div>
+    </>
   );
 }

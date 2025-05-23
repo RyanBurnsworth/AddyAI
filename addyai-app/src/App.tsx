@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import Home from './components/pages/Home';
 import ChatContainer from './components/pages/ChatContainer';
 import Authorize from "./components/pages/Authorize";
+import Profile from "./components/pages/Profile";
 
 function App() {
   const location = useLocation();
@@ -46,6 +47,19 @@ function App() {
               transition={{ duration: 0.4 }}
             >
               <Authorize />
+            </motion.div>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <motion.div
+              initial={{ opacity: 0, x: 100 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -100 }}
+              transition={{ duration: 0.4 }}
+            >
+              <Profile />
             </motion.div>
           }
         />

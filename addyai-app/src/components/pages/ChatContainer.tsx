@@ -4,10 +4,14 @@ import MessageContainer from "../MessageContainer";
 import UserImportForm from "../UserInputForm";
 import { useLocation } from "react-router-dom";
 import { SnackBar } from "../reusable/SnackBar";
-import { APPLICATION_JSON, CUSTOMER_ID, POST } from "../../utils/constants";
+import { APPLICATION_JSON, CUSTOMER_ID, POST, REFRESH_TOKEN } from "../../utils/constants";
+import NavBar from "../reusable/NavBar";
+import { useNavigate } from "react-router-dom";
 
 export default function ChatContainer() {
     const location = useLocation();
+    const navigate = useNavigate();
+
     const initialMessage = (location.state as { initialMessage?: string})?.initialMessage;
 
     const [showSnackBar, setShowSnackBar] = useState<boolean>(false);
@@ -20,12 +24,11 @@ export default function ChatContainer() {
 
     const handleSendMessage = async (message: string) => {
         const userMessage = { message, isUserInput: true };
-        const responseMessage = { message: "", isUserInput: false };
         const customerId = localStorage.getItem(CUSTOMER_ID);
         const messagingUrl = import.meta.env.VITE_MESSAGING_URL;
 
-        // Update both React state and the ref
-        const newMessages = [...messagesRef.current, userMessage, responseMessage];
+        // Add user message first
+        const newMessages = [...messagesRef.current, userMessage];
         messagesRef.current = newMessages;
         setMessages(newMessages);
         setIsLoading(true);
@@ -34,20 +37,27 @@ export default function ChatContainer() {
             const response = await fetch(messagingUrl, {
                 method: POST,
                 headers: {
-                    CONTENT_TYPE: APPLICATION_JSON,
+                    'Content-Type': APPLICATION_JSON,
                 },
                 body: JSON.stringify({
-                    "user_prompt": message,
-                    "account_id": customerId
+                    user_prompt: message,
+                    account_id: customerId
                 }),
             });
 
             if (!response.body) throw new Error("No response body");
-            const content = await response.json();
-            if (!content || content.status == 400 || content.status == 404 || content.status == 500) {
-                
-            }
 
+            const incoming = await response.json();
+
+            // Example: assuming the response has a field "message"
+            const botMessage = {
+                message: incoming.message ?? "No response received.",
+                isUserInput: false,
+            };
+
+            const updatedMessages = [...messagesRef.current, botMessage];
+            messagesRef.current = updatedMessages;
+            setMessages(updatedMessages);
             setIsLoading(false);
 
         } catch (err) {
@@ -62,14 +72,16 @@ export default function ChatContainer() {
         if (initialMessage) {
             handleSendMessage(initialMessage);
         }
+        
+        // if user is not logged in, redirect to home
+        if (!localStorage.getItem(REFRESH_TOKEN)) {
+            navigate("/");
+        }
     }, [initialMessage]);
     
     return (
         <div className="min-h-screen w-screen flex flex-col">
-            <div className="w-full bg-gray text-white p-4 shadow-md">
-                <h1 className="text-xl font-bold">AddyAI</h1>
-            </div>
-
+            <NavBar></NavBar>
             <div className="flex flex-1 w-full">
                 <aside className="hidden md:block w-64 bg-zinc-900 p-4">
                     <p className="font-semibold">Chat History</p>

@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="8be38edf-3f31-4705-988e-49295734869a" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/../addyai-app/src/assets/google_signin_button.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../addyai-app/src/components/pages/Profile.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../addyai-app/src/components/reusable/BillingChart.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../addyai-app/src/components/reusable/NavBar.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../addyai-app/src/components/reusable/SignInDialog.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../addyai-app/src/props/BillingChartProps.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../addyai-app/src/props/DialogProps.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/loader.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/AdGroups/Ad group performance (1).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/AdGroups/Ad group performance (10).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/AdGroups/Ad group performance (11).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/AdGroups/Ad group performance (12).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/AdGroups/Ad group performance (13).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/AdGroups/Ad group performance (14).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/AdGroups/Ad group performance (15).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/AdGroups/Ad group performance (16).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/AdGroups/Ad group performance (17).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/AdGroups/Ad group performance (18).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/AdGroups/Ad group performance (19).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/AdGroups/Ad group performance (2).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/AdGroups/Ad group performance (20).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/AdGroups/Ad group performance (21).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/AdGroups/Ad group performance (22).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/AdGroups/Ad group performance (23).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/AdGroups/Ad group performance (24).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/AdGroups/Ad group performance (25).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/AdGroups/Ad group performance (26).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/AdGroups/Ad group performance (27).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/AdGroups/Ad group performance (28).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/AdGroups/Ad group performance (29).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/AdGroups/Ad group performance (3).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/AdGroups/Ad group performance (30).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/AdGroups/Ad group performance (4).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/AdGroups/Ad group performance (5).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/AdGroups/Ad group performance (6).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/AdGroups/Ad group performance (7).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/AdGroups/Ad group performance (8).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/AdGroups/Ad group performance (9).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/AdGroups/Ad group performance.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Ads/Ads performance (1).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Ads/Ads performance (10).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Ads/Ads performance (11).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Ads/Ads performance (12).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Ads/Ads performance (13).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Ads/Ads performance (14).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Ads/Ads performance (15).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Ads/Ads performance (16).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Ads/Ads performance (17).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Ads/Ads performance (18).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Ads/Ads performance (19).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Ads/Ads performance (2).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Ads/Ads performance (20).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Ads/Ads performance (21).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Ads/Ads performance (22).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Ads/Ads performance (23).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Ads/Ads performance (24).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Ads/Ads performance (25).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Ads/Ads performance (26).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Ads/Ads performance (27).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Ads/Ads performance (28).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Ads/Ads performance (29).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Ads/Ads performance (3).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Ads/Ads performance (30).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Ads/Ads performance (4).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Ads/Ads performance (5).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Ads/Ads performance (6).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Ads/Ads performance (7).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Ads/Ads performance (8).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Ads/Ads performance (9).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Ads/Ads performance.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Campaigns/Campaign performance (1).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Campaigns/Campaign performance (10).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Campaigns/Campaign performance (11).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Campaigns/Campaign performance (12).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Campaigns/Campaign performance (13).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Campaigns/Campaign performance (14).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Campaigns/Campaign performance (15).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Campaigns/Campaign performance (16).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Campaigns/Campaign performance (17).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Campaigns/Campaign performance (18).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Campaigns/Campaign performance (19).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Campaigns/Campaign performance (2).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Campaigns/Campaign performance (20).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Campaigns/Campaign performance (21).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Campaigns/Campaign performance (22).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Campaigns/Campaign performance (23).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Campaigns/Campaign performance (24).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Campaigns/Campaign performance (25).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Campaigns/Campaign performance (26).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Campaigns/Campaign performance (27).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Campaigns/Campaign performance (28).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Campaigns/Campaign performance (29).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Campaigns/Campaign performance (3).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Campaigns/Campaign performance (30).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Campaigns/Campaign performance (4).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Campaigns/Campaign performance (5).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Campaigns/Campaign performance (6).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Campaigns/Campaign performance (7).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Campaigns/Campaign performance (8).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Campaigns/Campaign performance (9).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Campaigns/Campaign performance.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Keywords/Search keyword (1).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Keywords/Search keyword (10).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Keywords/Search keyword (11).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Keywords/Search keyword (12).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Keywords/Search keyword (13).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Keywords/Search keyword (14).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Keywords/Search keyword (15).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Keywords/Search keyword (16).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Keywords/Search keyword (17).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Keywords/Search keyword (18).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Keywords/Search keyword (19).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Keywords/Search keyword (2).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Keywords/Search keyword (20).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Keywords/Search keyword (21).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Keywords/Search keyword (22).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Keywords/Search keyword (23).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Keywords/Search keyword (24).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Keywords/Search keyword (25).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Keywords/Search keyword (26).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Keywords/Search keyword (27).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Keywords/Search keyword (28).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Keywords/Search keyword (29).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Keywords/Search keyword (3).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Keywords/Search keyword (30).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Keywords/Search keyword (4).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Keywords/Search keyword (5).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Keywords/Search keyword (6).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Keywords/Search keyword (7).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Keywords/Search keyword (8).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Keywords/Search keyword (9).csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/Keywords/Search keyword.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/csv-renamer.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/reports/report-updater.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dev-env-loader/table-creator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../addyai-app/.env" beforeDir="false" afterPath="$PROJECT_DIR$/../addyai-app/.env" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../addyai-app/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/../addyai-app/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../addyai-app/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../addyai-app/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../addyai-app/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../addyai-app/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../addyai-app/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../addyai-app/src/App.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../addyai-app/src/assets/question_ballons.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../addyai-app/src/components/Message.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../addyai-app/src/components/Message.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../addyai-app/src/components/MessageContainer.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../addyai-app/src/components/MessageContainer.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../addyai-app/src/components/UserInputForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../addyai-app/src/components/UserInputForm.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../addyai-app/src/components/pages/Authorize.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../addyai-app/src/components/pages/Authorize.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../addyai-app/src/components/pages/ChatContainer.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../addyai-app/src/components/pages/ChatContainer.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../addyai-app/src/components/pages/Home.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../addyai-app/src/components/pages/Home.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../addyai-app/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/../addyai-app/src/index.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../addyai-app/src/utils/constants.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../addyai-app/src/utils/constants.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../addyai-app/vite.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../addyai-app/vite.config.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/services/data_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/data_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../data-service" beforeDir="false" afterPath="$PROJECT_DIR$/../data-service" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "RyanBurnsworth"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/RyanBurnsworth/AddyAI.git",
+    "accountId": "a84f34fc-0c36-42e5-95f3-7a84949e43d6"
+  }
+}]]></component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 5
+}]]></component>
+  <component name="ProjectId" id="2xkkYSyYYohMyXEhXVs2wkx6H3R" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "Rebasing master",
+    "last_opened_file_path": "C:/Users/ryand/Documents/Projects/addyai/chat-service"
+  }
+}]]></component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="8be38edf-3f31-4705-988e-49295734869a" name="Changes" comment="" />
+      <created>1748489505234</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1748489505234</updated>
+    </task>
+    <servers />
+  </component>
+</project>

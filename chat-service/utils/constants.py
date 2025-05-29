@@ -19,7 +19,6 @@ MESSAGE = "message"
 STATUS = "status"
 ERROR = "error"
 
-
 ROLE = "role"
 CONTENT = "content"
 

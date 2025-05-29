@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="e875c2be-22e2-4e2a-8c6b-e4647f2ceaa7" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/addyai-app/src/assets/question_ballons.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/addyai-app/src/components/pages/Authorize.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/addyai-app/src/components/pages/ChatContainer.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/addyai-app/src/components/pages/Home.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/chat-service/services/data_service.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data-service" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/addyai-app/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/addyai-app/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/addyai-app/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/addyai-app/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/addyai-app/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/addyai-app/src/App.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/addyai-app/src/components/RootContainer.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/addyai-app/src/components/UserInputForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/addyai-app/src/components/UserInputForm.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/addyai-app/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/addyai-app/src/index.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/addyai-app/src/main.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/addyai-app/src/main.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/chat-service/services/model_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/chat-service/services/model_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/chat-service/services/mongo_service.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/data-service/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/data-service/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data-service/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/data-service/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data-service/src/app.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/data-service/src/app.module.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data-service/src/controller/llm/llm.controller.ts" beforeDir="false" afterPath="$PROJECT_DIR$/data-service/src/controller/llm/llm.controller.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data-service/src/service/user/user.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/data-service/src/service/user/user.service.ts" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "RyanBurnsworth"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/RyanBurnsworth/AddyAI.git",
+    "accountId": "a84f34fc-0c36-42e5-95f3-7a84949e43d6"
+  }
+}]]></component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 3
+}]]></component>
+  <component name="ProjectId" id="2xkkKD0lkMqkIhWhB4AumWqqKDM" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "Rebasing master",
+    "last_opened_file_path": "C:/Users/ryand/Documents/Projects/addyai"
+  }
+}]]></component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="e875c2be-22e2-4e2a-8c6b-e4647f2ceaa7" name="Changes" comment="" />
+      <created>1748489392091</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1748489392091</updated>
+    </task>
+    <servers />
+  </component>
+</project>

@@ -1,9 +1,7 @@
-POST = "POST"
+GET = "GET"
 
-STATUS_OK = 200
 STATUS_BAD_REQUEST = 400
 STATUS_FORBIDDEN = 403
-STATUS_NOT_FOUND = 404
 STATUS_INTERNAL_ERROR = 500
 
 GPT_MODEL = "gpt-4.1"
@@ -11,19 +9,21 @@ O4_MINI = "o4-mini"
 SYSTEM = "developer"
 USER = "user"
 
-REQUEST_ENDPOINT = "/request"
-ACCOUNT_ID_PARAM = "account_id"
 USER_PROMPT = "user_prompt"
+RECORDS = "records"
+
+REQUEST_PSQL_ENDPOINT = "/psql"
+REQUEST_ANALYSIS = "/analysis"
 
 MESSAGE = "message"
 STATUS = "status"
+ERROR = "error"
 
-COLLECTION_NAME = "collection_name"
-QUERY = "query"
-PROJECTION = "projection"
 
 ROLE = "role"
 CONTENT = "content"
+
+APPLICATION_JSON = "application/json"
 
 QUERY_GENERATOR_SYSTEM_PROMPT = """
 You are an expert in SQL, Google Ads, and data analytics. You are helping a user analyze Google Ads data stored in a Postgres database.

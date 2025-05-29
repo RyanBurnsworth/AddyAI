@@ -3,7 +3,7 @@ from flask_cors import CORS
 from services.data_service import DataService
 from services.model_service import ModelService
 from flask import Flask, abort, json, jsonify, request
-from utils.constants import MESSAGE, POST, STATUS, STATUS_INTERNAL_ERROR, STATUS_BAD_REQUEST, STATUS_FORBIDDEN, REQUEST_ENDPOINT, ACCOUNT_ID_PARAM, QUERY_GENERATOR_SYSTEM_PROMPT, STATUS_NOT_FOUND, STATUS_OK, USER_PROMPT, REASONING_SYSTEM_PROMPT, LLM_GUARDRAIL_RESPONSE
+from utils.constants import APPLICATION_JSON, ERROR, GET, RECORDS, REQUEST_ANALYSIS, REQUEST_PSQL_ENDPOINT, STATUS, STATUS_INTERNAL_ERROR, STATUS_BAD_REQUEST, STATUS_FORBIDDEN, QUERY_GENERATOR_SYSTEM_PROMPT, REASONING_SYSTEM_PROMPT, LLM_GUARDRAIL_RESPONSE, USER_PROMPT
 
 app = Flask(__name__)
 CORS(app)
@@ -12,22 +12,16 @@ dataService = DataService()
 modelService = ModelService(data_service=dataService)
 
 """
-    API endpoint for answering questions about their Google Ads data
-
-    @returns the response from the AI
+    Endpoint for generating the PSQL queries
+    
+    @returns an array of PSQL queries
 """
-@app.route(REQUEST_ENDPOINT, methods=[POST])
-def user_request():
-    body = request.get_json(silent=True)
+@app.route(REQUEST_PSQL_ENDPOINT, methods=[GET])
+def fetch_psql_queries():
+    user_prompt = request.args.get(USER_PROMPT)
 
-    account_id = body.get(ACCOUNT_ID_PARAM)
-    user_prompt = body.get(USER_PROMPT)
-
-    # if the account_id is or user_prompt not present in the body then return 400
-    if account_id is None:
-        abort(STATUS_BAD_REQUEST, description="Missing required field: account id")
-        return
-    elif user_prompt is None:
+    # if the user_prompt not present in the body then return 400
+    if user_prompt is None or user_prompt == "":
         abort(STATUS_BAD_REQUEST, description="Missing required field: user_prompt")
 
     try:
@@ -35,8 +29,6 @@ def user_request():
         psql_queries = _generate_psql_query_from_LLM(user_prompt)
 
         psql_queries = json.loads(psql_queries)
-        print("QUERIES: ", psql_queries)
-        print(type(psql_queries))
 
         if psql_queries == LLM_GUARDRAIL_RESPONSE:
             abort(STATUS_FORBIDDEN, description=LLM_GUARDRAIL_RESPONSE)
@@ -44,22 +36,29 @@ def user_request():
         print("Error generating PSQL query: ", str(e))
         abort(STATUS_INTERNAL_ERROR, description="Error getting a response from the LLM: " + str(e))
 
+    return psql_queries["queries"]
+
+"""
+    Endpoint for analyzing and responding to prompt
+    Analyzes the user prompt with the necessary records
+
+    @returns the analysis output
+"""
+@app.route(REQUEST_ANALYSIS, methods=[GET])
+def fetch_analysis():
+    user_prompt = request.args.get(USER_PROMPT)
+    records = request.args.get(RECORDS)
+
+    if user_prompt is None or user_prompt == "" or records is None or records == "":
+        abort(STATUS_BAD_REQUEST, description="Missing required fields: user_prompt or records")
+    
     try:
-        query_results = dataService.send_sql_queries(psql_queries["queries"])
-        if not query_results:
-            abort(STATUS_NOT_FOUND, description="Error finding data related to query: " + str(query_results))
+        analysis = _get_reasoning_response(records, user_prompt)
     except Exception as e:
-        print("Error executing Postgres query: ", str(e))
-        abort(STATUS_INTERNAL_ERROR, description="Error processing Postgres query: " + str(e))
-
-    try:
-       llm_response = _get_reasoning_response(query_results, user_prompt)
-    except Exception as e:
-        print("Error get response from reasoning LLM: ", str(e))
-        abort(STATUS_INTERNAL_ERROR, description="Error getting a response from the reasoning LLM: " + str(e))
-
-    return jsonify({MESSAGE: llm_response, STATUS: STATUS_OK})
-
+        print("Error generating analysis: ", str(e))
+        abort(STATUS_INTERNAL_ERROR, decription="Failed to generate analysis")
+    
+    return analysis
 
 # Use an LLM to derive a PSQL query from the user input
 def _generate_psql_query_from_LLM(user_prompt: str):
@@ -81,10 +80,10 @@ def _get_reasoning_response(query_results, user_prompt):
 def handle_exception(e):
     response = e.get_response()
     response.data = jsonify({
-        "error": e.description,
-        "status": e.code
+        ERROR: e.description,
+        STATUS: e.code
     }).data
-    response.content_type = "application/json"
+    response.content_type = APPLICATION_JSON
     return response
 
 if __name__ == '__main__':

@@ -20,7 +20,6 @@ class DataService:
                 headers={"Content-Type": "application/json"}
             )
             response.raise_for_status()
-            print("Received USAGE response: " + str(response))
             return response.json()
         except requests.exceptions.RequestException as e:
             print(f"Request failed: {e}")

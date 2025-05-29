@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { PICTURE, REFRESH_TOKEN } from "../../utils/constants";
+import { MdOutlineAccountTree } from "react-icons/md";
+import { RiAccountCircleFill } from "react-icons/ri";
+import { CiLogout, CiSettings } from "react-icons/ci";
 
 export default function NavBar() {
   const [signedIn, setSignedIn] = useState<boolean>(false);
@@ -34,7 +37,7 @@ export default function NavBar() {
 
   return (
     <div className="flex flex-row justify-between items-center p-4">
-      <div className="text-xl font-bold">AddyAI</div>
+      <div className="text-xl font-bold ml-4">AddyAI</div>
 
       <div className="flex items-center relative" ref={dropdownRef}>
         {signedIn && (
@@ -55,16 +58,25 @@ export default function NavBar() {
               }`}
             >
               <div className="flex flex-col gap-1 bg-transparent">
-                <button className="text-sm text-left hover:underline">Profile</button>
-                <button className="text-sm text-left hover:underline">Settings</button>
-                <button className="text-sm text-left hover:underline text-red-600">Log Out</button>
+                <button className="text-sm text-left hover:underline">
+                  <div className="flex flex-row"><MdOutlineAccountTree size={20} className="mr-4 text-amber-400"/> Accounts</div>
+                </button>
+                <button className="text-sm text-left hover:underline">
+                  <div className="flex flex-row"><RiAccountCircleFill size={20} className="mr-4 text-amber-400"/> Profile</div>
+                </button>
+                <button className="text-sm text-left hover:underline">
+                  <div className="flex flex-row"><CiSettings size={20} className="mr-4 text-amber-400"/> Settings</div>
+                </button>
+                <button className="text-sm text-left hover:underline text-red-600">
+                  <div className="flex flex-row"><CiLogout size={20} className="mr-4 text-red-500"/> Log Out</div>
+                </button>
               </div>
             </div>
           </>
         )}
 
         {!signedIn && (
-          <span className="cursor-pointer hover:underline">Sign In</span>
+          <span className="cursor-pointer hover:underline mr-4">Sign In</span>
         )}
       </div>
     </div>

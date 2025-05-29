@@ -2,104 +2,260 @@ import { useEffect, useRef, useState } from "react";
 import type MessageProps from "../../props/MessageProps";
 import MessageContainer from "../MessageContainer";
 import UserImportForm from "../UserInputForm";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { SnackBar } from "../reusable/SnackBar";
-import { APPLICATION_JSON, CUSTOMER_ID, POST, REFRESH_TOKEN } from "../../utils/constants";
+import {
+  APPLICATION_JSON,
+  CUSTOMER_ID,
+  POST,
+  USERID,
+} from "../../utils/constants";
 import NavBar from "../reusable/NavBar";
-import { useNavigate } from "react-router-dom";
+import { LuPanelLeftClose, LuPanelLeftOpen } from "react-icons/lu";
+import classNames from "classnames";
+import { RiChatNewLine } from "react-icons/ri";
 
 export default function ChatContainer() {
-    const location = useLocation();
-    const navigate = useNavigate();
+  const location = useLocation();
+  const navigate = useNavigate();
 
-    const initialMessage = (location.state as { initialMessage?: string})?.initialMessage;
+  const initialMessage = (location.state as { initialMessage?: string })
+    ?.initialMessage;
 
-    const [showSnackBar, setShowSnackBar] = useState<boolean>(false);
-    
-    const [errorMessage, setErrorMessage] = useState<string>("");
+  const [showSnackBar, setShowSnackBar] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [messages, setMessages] = useState<MessageProps[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isPanelOpen, setIsPanelOpen] = useState<boolean>(true);
 
-    const [messages, setMessages] = useState<MessageProps[]>([]);
-    const [isLoading, setIsLoading] = useState<boolean>(false);    
-    const messagesRef = useRef<MessageProps[]>([]); // Local mutable reference to track latest messages
+  const [conversationHistory, setConversationHistory] = useState<Record<
+    string,
+    { id: number; headline: string; createdAt: string }[]
+  > | null>(null);
 
-    const handleSendMessage = async (message: string) => {
-        const userMessage = { message, isUserInput: true };
-        const customerId = localStorage.getItem(CUSTOMER_ID);
-        const messagingUrl = import.meta.env.VITE_MESSAGING_URL;
+  const messagesRef = useRef<MessageProps[]>([]);
 
-        // Add user message first
-        const newMessages = [...messagesRef.current, userMessage];
-        messagesRef.current = newMessages;
-        setMessages(newMessages);
-        setIsLoading(true);
+  const handleSendMessage = async (message: string) => {
+    const userMessage = { message, isUserInput: true };
+    const customerId = localStorage.getItem(CUSTOMER_ID);
+    const messagingUrl = import.meta.env.VITE_MESSAGING_URL;
 
-        try {
-            const response = await fetch(messagingUrl, {
-                method: POST,
-                headers: {
-                    'Content-Type': APPLICATION_JSON,
-                },
-                body: JSON.stringify({
-                    user_prompt: message,
-                    account_id: customerId
-                }),
-            });
+    const newMessages = [...messagesRef.current, userMessage];
+    messagesRef.current = newMessages;
 
-            if (!response.body) throw new Error("No response body");
+    setMessages(newMessages);
+    setIsLoading(true);
 
-            const incoming = await response.json();
+    try {
+      const response = await fetch(messagingUrl, {
+        method: POST,
+        headers: {
+          "Content-Type": APPLICATION_JSON,
+        },
 
-            // Example: assuming the response has a field "message"
-            const botMessage = {
-                message: incoming.message ?? "No response received.",
-                isUserInput: false,
-            };
+        body: JSON.stringify({
+          user_prompt: message,
+          account_id: customerId,
+        }),
+      });
 
-            const updatedMessages = [...messagesRef.current, botMessage];
-            messagesRef.current = updatedMessages;
-            setMessages(updatedMessages);
-            setIsLoading(false);
+      if (response.status !== 200) {
+        setErrorMessage("Failed to receive incoming message");
+        setShowSnackBar(true);
+        return;
+      }
 
-        } catch (err) {
-            console.error("Fetching error:", err);
-            setIsLoading(false);
-            setErrorMessage("Error receiving response from service. Please try again.");
-            setShowSnackBar(true);
-        }
-    };
+      const incoming = await response.json();
 
-    useEffect(() => {
-        if (initialMessage) {
-            handleSendMessage(initialMessage);
-        }
-        
-        // if user is not logged in, redirect to home
-        if (!localStorage.getItem(REFRESH_TOKEN)) {
-            navigate("/");
-        }
-    }, [initialMessage]);
-    
-    return (
-        <div className="min-h-screen w-screen flex flex-col">
-            <NavBar></NavBar>
-            <div className="flex flex-1 w-full">
-                <aside className="hidden md:block w-64 bg-zinc-900 p-4">
-                    <p className="font-semibold">Chat History</p>
-                </aside>
+      const botMessage = {
+        message: incoming.message ?? "No response received.",
+        isUserInput: false,
+      };
 
-                <main className="flex-1 flex flex-col items-center justify-between">
-                    <MessageContainer messages={messages} isLoading={isLoading} />
-                    <UserImportForm onMessageSubmitted={handleSendMessage} />
-                </main>
-            </div>
+      const updatedMessages = [...messagesRef.current, botMessage];
+      messagesRef.current = updatedMessages;
+      setMessages(updatedMessages);
+      setIsLoading(false);
 
-            <SnackBar
-                message={errorMessage}
-                color="bg-red-900"
-                duration={2000}
-                onClose={() => setShowSnackBar(false)}
-                show={showSnackBar}
-            />
-        </div>
+    } catch (err) {
+      console.error("Fetching error:", err);
+      setIsLoading(false);
+      setErrorMessage(
+        "Error receiving response from service. Please try again."
+      );
+      setShowSnackBar(true);
+    }
+  };
+
+  const handleLoadingConversationHistory = async () => {
+    const params = new URLSearchParams({
+      user_id: localStorage.getItem(USERID)!!,
+      customer_id: localStorage.getItem(CUSTOMER_ID)!!,
+    });
+
+    const response = await fetch(
+      `http://localhost:3000/conversation/grouped?${params.toString()}`
     );
+
+    if (response.status !== 200) {
+      setErrorMessage("Failed to load conversation history");
+      setShowSnackBar(true);
+      return;
+    }
+
+    const data = await response.json();
+    setConversationHistory(data || {});
+  };
+
+  useEffect(() => {
+    handleLoadingConversationHistory();
+
+    if (initialMessage) {
+      handleSendMessage(initialMessage);
+      location.state = null; // clear after use
+    } else if (!initialMessage && messages.length == 0) {
+      navigate("/");
+      return;
+    }
+
+    // Remove initialMessage from location.state to prevent re-triggering
+    navigate(location.pathname, { replace: true });
+
+  }, [initialMessage]);
+
+  const loadConversationById = async (conversationId: number) => {
+    try {
+      const params = new URLSearchParams({
+        user_id: localStorage.getItem(USERID)!!,
+        customer_id: localStorage.getItem(CUSTOMER_ID)!!,
+        conversation_id: conversationId.toString(),
+      });
+
+      const response = await fetch(
+        `http://localhost:3000/conversation?${params.toString()}`
+      );
+      
+      if (response.status !== 200) {
+        setErrorMessage("Failed to load conversation");
+        setShowSnackBar(true);
+        return;
+      }
+
+      const data = await response.json();
+
+      const exchanges = data.exchange ?? [];
+
+      const loadedMessages: MessageProps[] = exchanges.flatMap((item: any) => {
+        const messages: MessageProps[] = [];
+        if (item.input) {
+          messages.push({ message: item.input, isUserInput: true });
+        }
+        if (item.output) {
+          messages.push({ message: item.output, isUserInput: false });
+        }
+        return messages;
+      });
+
+      setMessages(loadedMessages);
+      messagesRef.current = loadedMessages; // update the ref too
+    } catch (error) {
+      console.error("Error loading conversation:", error);
+      setErrorMessage("Failed to load conversation.");
+      setShowSnackBar(true);
+    }
+  };
+
+  return (
+    <div className="min-h-screen w-screen flex flex-col">
+      <div className="flex flex-1 w-full">
+        {/* 👇 Transition Panel */}
+        <aside
+          className={classNames(
+            "bg-zinc-900 text-white p-4 flex-col transition-all duration-300 hidden sm:flex",
+            {
+              "w-64": isPanelOpen,
+              "w-12": !isPanelOpen,
+            }
+          )}
+        >
+          <div className="flex flex-row justify-between items-center mt-2 mb-8">
+            {isPanelOpen && (
+              <RiChatNewLine
+                size={24}
+                title="Start New Chat"
+                className="text-green-400"
+              />
+            )}
+            {isPanelOpen ? (
+              <LuPanelLeftClose
+                size={24}
+                onClick={() => setIsPanelOpen(!isPanelOpen)}
+                title="Close Panel"
+                className="text-amber-400"
+              />
+            ) : (
+              <LuPanelLeftOpen
+                size={24}
+                onClick={() => setIsPanelOpen(!isPanelOpen)}
+                title="Open Panel"
+                className="text-amber-400"
+              />
+            )}
+          </div>
+
+          {isPanelOpen && (
+            <div className="space-y-4">
+              {conversationHistory &&
+                Object.entries(conversationHistory)
+                  .filter(([_, conversations]) => conversations.length > 0)
+                  .map(([period, conversations]) => (
+                    <div key={period}>
+                      <h3 className="text-xs text-zinc-400 uppercase mb-2">
+                        {period
+                          .replace(/_/g, " ")
+                          .replace(/\b\w/g, (c) => c.toUpperCase())}
+                      </h3>
+                      <ul className="space-y-1">
+                        {conversations.map((conv) => (
+                          <li
+                            key={conv.id}
+                            className="text-sm text-white hover:bg-zinc-800 p-2 rounded cursor-pointer"
+                            onClick={() => loadConversationById(conv.id)}
+                          >
+                            {conv.headline}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+
+              {/* fallback if all sections are empty or null */}
+              {conversationHistory &&
+                Object.values(conversationHistory).every(
+                  (group) => group.length === 0
+                ) && (
+                  <p className="text-zinc-400 text-sm">No Chat History Yet!</p>
+                )}
+            </div>
+          )}
+        </aside>
+
+        <div className="flex flex-col w-full">
+          <NavBar />
+          <main className="flex-1 flex flex-col items-center justify-between">
+            <MessageContainer messages={messages} isLoading={isLoading} />
+            <UserImportForm onMessageSubmitted={handleSendMessage} />
+          </main>
+        </div>
+      </div>
+
+      <SnackBar
+        message={errorMessage}
+        color="bg-red-900"
+        duration={2000}
+        onClose={() => setShowSnackBar(false)}
+        show={showSnackBar}
+      />
+    </div>
+  );
 }

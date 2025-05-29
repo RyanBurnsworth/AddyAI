@@ -7,7 +7,7 @@ export default function SignInDialog({ show, onClose }: DialogProps) {
         <div className="fixed inset-0 bg-transparent bg-opacity-50 flex justify-center items-center z-50">
             <div className="relative rounded bg-white to-gray-300 p-8 shadow-lg w-full max-w-lg text-center">
                 <div
-                    onClick={() => onClose(true)}
+                    onClick={() => onClose!!(true)}
                     className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-xl font-bold bg-transparent border-none focus:outline-none hover:cursor-pointer"
                     aria-label="Close">
                         &times;
@@ -20,7 +20,7 @@ export default function SignInDialog({ show, onClose }: DialogProps) {
                         src={google_signin_button} 
                         className="w-60 h-auto cursor-pointer transition-transform duration-300 hover:scale-105 hover:shadow-lg hover:brightness-110" 
                         alt="Google Sign In" 
-                        onClick={() => onClose(false)} 
+                        onClick={() => onClose!!(false)} 
                     />
                 </div>
                 <div className="flex justify-center text-gray-900 underline cursor-pointer mt-8">Privacy Policy</div>

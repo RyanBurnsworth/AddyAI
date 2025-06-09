@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import type DialogProps from "../../props/DialogProps";
-import { CUSTOMER_ID, LAST_SYNCED, MANAGER_ID, USERID } from "../../utils/constants";
+import {
+  CUSTOMER_ID,
+  LAST_SYNCED,
+  MANAGER_ID,
+  USERID,
+} from "../../utils/constants";
 
 interface Account {
   id: number;
@@ -13,7 +18,11 @@ interface Account {
   created_at: string;
 }
 
-export default function AccountSelectorDialog({ show, onSuccess, onError }: DialogProps) {
+export default function AccountSelectorDialog({
+  show,
+  onSuccess,
+  onError,
+}: DialogProps) {
   if (!show) return null;
 
   const [selectedManager, setSelectedManager] = useState("");
@@ -142,7 +151,7 @@ export default function AccountSelectorDialog({ show, onSuccess, onError }: Dial
     if (!selected.lastSynced) {
       localStorage.setItem(CUSTOMER_ID, selected.customerId);
       localStorage.setItem(LAST_SYNCED, selected.lastSynced?.toString() ?? "");
-      if (selected.managerId && selected.managerId !== '')
+      if (selected.managerId && selected.managerId !== "")
         localStorage.setItem(MANAGER_ID, selected.managerId);
 
       onSuccess!!();
@@ -159,7 +168,6 @@ export default function AccountSelectorDialog({ show, onSuccess, onError }: Dial
   return (
     <div className="fixed inset-0 bg-transparent bg-opacity-50 flex justify-center items-center z-50">
       <div className="relative rounded bg-gray-100 to-gray-300 p-8 shadow-lg w-full max-w-lg text-center">
-
         <h2 className="text-xl text-gray-900 font-semibold mb-4">
           Account Selection
         </h2>
@@ -224,7 +232,7 @@ export default function AccountSelectorDialog({ show, onSuccess, onError }: Dial
 
         <div className="flex justify-center">
           <button
-            disabled={loading}
+            disabled={selectedCustomer === ""}
             onClick={handleSyncAccount}
             className="mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
           >

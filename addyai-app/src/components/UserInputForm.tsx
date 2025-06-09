@@ -1,10 +1,11 @@
 import { useState } from "react";
 
 interface UserImportFormProps {
+    isLoading: boolean;
     onMessageSubmitted: (message: string) => void;
 }
 
-function UserImportForm({ onMessageSubmitted }: UserImportFormProps) {
+function UserImportForm({ isLoading, onMessageSubmitted }: UserImportFormProps) {
     const [message, setMessage] = useState("")
 
     const handleMessageSubmit = (event: React.FormEvent) => {
@@ -24,7 +25,7 @@ function UserImportForm({ onMessageSubmitted }: UserImportFormProps) {
                         onChange={(e) => setMessage(e.target.value) }
                         placeholder="Ask AddyAI..."
                         className="w-full m-4 p-4 border-green-400 border-2 focus:outline-none focus:ring-0 focus:border-green-400 text-white" />
-                    <button className="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center shadow">
+                    <button className="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center shadow" disabled={isLoading}>
                         +
                     </button>
             </div>

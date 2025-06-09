@@ -92,6 +92,7 @@ export default function ChatContainer() {
 
       const updatedMessages = [...messagesRef.current, botMessage];
       messagesRef.current = updatedMessages;
+
       setMessages(updatedMessages);
       setIsLoading(false);
     } catch (err) {
@@ -210,7 +211,8 @@ export default function ChatContainer() {
               <RiChatNewLine
                 size={24}
                 title="Start New Chat"
-                className="text-green-400"
+                onClick={() => navigate('/')}
+                className="text-green-400 cursor-pointer"
               />
             )}
             {isPanelOpen ? (
@@ -218,14 +220,14 @@ export default function ChatContainer() {
                 size={24}
                 onClick={() => setIsPanelOpen(!isPanelOpen)}
                 title="Close Panel"
-                className="text-amber-400"
+                className="text-amber-400 cursor-pointer"
               />
             ) : (
               <LuPanelLeftOpen
                 size={24}
                 onClick={() => setIsPanelOpen(!isPanelOpen)}
                 title="Open Panel"
-                className="text-amber-400"
+                className="text-amber-400 cursor-pointer"
               />
             )}
           </div>

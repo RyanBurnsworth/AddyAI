@@ -20,6 +20,7 @@ export default function Finish() {
 
         if (!sessionId) {
           console.error("No session ID found in URL.");
+          setIsSuccessful(false);
           return;
         }
 
@@ -41,6 +42,7 @@ export default function Finish() {
         setLoading(false);
       } catch (error) {
         console.error("Error fetching session status:", error);
+        setIsSuccessful(false);
         setLoading(false);
       }
     };

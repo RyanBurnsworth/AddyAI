@@ -15,7 +15,6 @@ import NavBar from "../reusable/NavBar";
 import AccountSelectorDialog from "../reusable/AccountSelectorDialog";
 import SyncDialog from "../reusable/SyncDialog";
 import { SnackBar } from "../reusable/SnackBar";
-import PaymentDialog from "../reusable/PaymentSelectionDialog";
 
 export default function Home() {
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;

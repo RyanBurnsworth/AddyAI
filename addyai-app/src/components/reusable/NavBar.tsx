@@ -3,12 +3,15 @@ import { PICTURE, REFRESH_TOKEN } from "../../utils/constants";
 import { MdOutlineAccountTree } from "react-icons/md";
 import { RiAccountCircleFill } from "react-icons/ri";
 import { CiLogout, CiSettings } from "react-icons/ci";
+import { useNavigate } from "react-router-dom";
 
 export default function NavBar() {
   const [signedIn, setSignedIn] = useState<boolean>(false);
   const [profilePicture, setProfilePicture] = useState<string>("");
   const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (localStorage.getItem(PICTURE)) {
@@ -59,16 +62,34 @@ export default function NavBar() {
             >
               <div className="flex flex-col gap-1 bg-transparent">
                 <button className="text-sm text-left hover:underline">
-                  <div className="flex flex-row"><MdOutlineAccountTree size={20} className="mr-4 text-amber-400"/> Accounts</div>
+                  <div className="flex flex-row" 
+                      onClick={() => navigate('/profile')}>
+                    <MdOutlineAccountTree
+                      size={20}
+                      className="mr-4 text-amber-400"
+                    />{" "}
+                    Accounts
+                  </div>
                 </button>
                 <button className="text-sm text-left hover:underline">
-                  <div className="flex flex-row"><RiAccountCircleFill size={20} className="mr-4 text-amber-400"/> Profile</div>
+                  <div className="flex flex-row">
+                    <RiAccountCircleFill
+                      size={20}
+                      className="mr-4 text-amber-400"
+                    />{" "}
+                    Profile
+                  </div>
                 </button>
                 <button className="text-sm text-left hover:underline">
-                  <div className="flex flex-row"><CiSettings size={20} className="mr-4 text-amber-400"/> Settings</div>
+                  <div className="flex flex-row">
+                    <CiSettings size={20} className="mr-4 text-amber-400" />{" "}
+                    Settings
+                  </div>
                 </button>
                 <button className="text-sm text-left hover:underline text-red-600">
-                  <div className="flex flex-row"><CiLogout size={20} className="mr-4 text-red-500"/> Log Out</div>
+                  <div className="flex flex-row">
+                    <CiLogout size={20} className="mr-4 text-red-500" /> Log Out
+                  </div>
                 </button>
               </div>
             </div>

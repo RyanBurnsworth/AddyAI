@@ -28,6 +28,7 @@ export default function ChatContainer() {
   const [messages, setMessages] = useState<MessageProps[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isPanelOpen, setIsPanelOpen] = useState<boolean>(true);
+  const [isHistoryLoading, setIsHistoryLoading] = useState<boolean>(true);
 
   const [conversationHistory, setConversationHistory] = useState<Record<
     string,
@@ -61,7 +62,9 @@ export default function ChatContainer() {
           userId,
           userPrompt: message,
           customerId,
-          ...(conversationId !== undefined && { conversationId: Number(conversationId) })
+          ...(conversationId !== undefined && {
+            conversationId: Number(conversationId),
+          }),
         }),
       });
 
@@ -78,11 +81,12 @@ export default function ChatContainer() {
       } else {
         incoming = await response.text();
       }
-      
+
       localStorage.setItem(CONVERSATION_ID, incoming?.conversationId);
 
       const botMessage = {
-        message: incoming?.result ?? "Sorry, I wasn't able to find that answer.",
+        message:
+          incoming?.result ?? "Sorry, I wasn't able to find that answer.",
         isUserInput: false,
       };
 
@@ -90,9 +94,8 @@ export default function ChatContainer() {
       messagesRef.current = updatedMessages;
       setMessages(updatedMessages);
       setIsLoading(false);
-
     } catch (err) {
-      console.error("Fetching error: ", err );
+      console.error("Fetching error: ", err);
       setIsLoading(false);
       setErrorMessage(
         "Error receiving response from service. Please try again."
@@ -102,23 +105,33 @@ export default function ChatContainer() {
   };
 
   const handleLoadingConversationHistory = async () => {
+    setIsHistoryLoading(true); // ← Start spinner
+
     const params = new URLSearchParams({
       user_id: localStorage.getItem(USERID)!!,
       customer_id: localStorage.getItem(CUSTOMER_ID)!!,
     });
 
-    const response = await fetch(
-      `http://localhost:3000/conversation/grouped?${params.toString()}`
-    );
+    try {
+      const response = await fetch(
+        `http://localhost:3000/conversation/grouped?${params.toString()}`
+      );
 
-    if (response.status !== 200) {
-      setErrorMessage("Failed to load conversation history");
+      if (response.status !== 200) {
+        setErrorMessage("Failed to load conversation history");
+        setShowSnackBar(true);
+        return;
+      }
+
+      const data = await response.json();
+      setConversationHistory(data || {});
+    } catch (err) {
+      console.error(err);
+      setErrorMessage("Unexpected error loading history");
       setShowSnackBar(true);
-      return;
+    } finally {
+      setIsHistoryLoading(false); // ← End spinner
     }
-
-    const data = await response.json();
-    setConversationHistory(data || {});
   };
 
   useEffect(() => {
@@ -134,7 +147,6 @@ export default function ChatContainer() {
 
     // Remove initialMessage from location.state to prevent re-triggering
     navigate(location.pathname, { replace: true });
-
   }, [initialMessage]);
 
   const loadConversationById = async (conversationId: number) => {
@@ -148,7 +160,7 @@ export default function ChatContainer() {
       const response = await fetch(
         `http://localhost:3000/conversation?${params.toString()}`
       );
-      
+
       if (response.status !== 200) {
         setErrorMessage("Failed to load conversation");
         setShowSnackBar(true);
@@ -172,7 +184,7 @@ export default function ChatContainer() {
 
       setMessages(loadedMessages);
       messagesRef.current = loadedMessages; // update the ref too
-      localStorage.setItem(CONVERSATION_ID, data.id)
+      localStorage.setItem(CONVERSATION_ID, data.id);
     } catch (error) {
       console.error("Error loading conversation:", error);
       setErrorMessage("Failed to load conversation.");
@@ -220,7 +232,33 @@ export default function ChatContainer() {
 
           {isPanelOpen && (
             <div className="space-y-4">
-              {conversationHistory &&
+              {isHistoryLoading ? (
+                <div className="flex justify-center items-center h-40">
+                  <svg
+                    className="animate-spin h-6 w-6 text-amber-400"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                    />
+                  </svg>
+                </div>
+              ) : conversationHistory &&
+                Object.entries(conversationHistory).some(
+                  ([_, conversations]) => conversations.length > 0
+                ) ? (
                 Object.entries(conversationHistory)
                   .filter(([_, conversations]) => conversations.length > 0)
                   .map(([period, conversations]) => (
@@ -242,14 +280,10 @@ export default function ChatContainer() {
                         ))}
                       </ul>
                     </div>
-                  ))}
-              {/* fallback if all sections are empty or null */}
-              {conversationHistory &&
-                Object.values(conversationHistory).every(
-                  (group) => group.length === 0
-                ) && (
-                  <p className="text-zinc-400 text-sm">No Chat History Yet!</p>
-                )}
+                  ))
+              ) : (
+                <p className="text-zinc-400 text-sm">No Chat History Yet!</p>
+              )}
             </div>
           )}
         </aside>

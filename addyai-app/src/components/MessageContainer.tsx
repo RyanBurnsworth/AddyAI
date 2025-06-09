@@ -13,7 +13,7 @@ function MessageContainer({messages, isLoading}: {messages: MessageProps[], isLo
 
     return (
         <>
-        <div className="w-full sm:w-[300px] md:w-[600px] lg:w-[800px] max-h-[80vh] overflow-auto scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-200 p-4">
+        <div className="w-full sm:w-[300px] md:w-[600px] lg:w-[1000px] max-h-[80vh] overflow-auto scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-200 p-4">
             {messages.map((msg, idx) =>
                     msg.isUserInput ? (
                         <Message key={idx} message={msg.message} isUserInput={true} />

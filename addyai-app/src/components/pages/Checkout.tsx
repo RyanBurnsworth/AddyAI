@@ -4,12 +4,15 @@ import {
   EmbeddedCheckout,
 } from "@stripe/react-stripe-js";
 import { loadStripe, type Stripe } from "@stripe/stripe-js";
+import { useSearchParams } from "react-router-dom";
 
 export default function Checkout() {
   const stripePromise: Promise<Stripe | null> = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
-
+  const [searchParams] = useSearchParams();
+  const amount = parseInt(searchParams.get("amount") || "0");
+  
   const fetchClientSecret = useCallback(async (): Promise<string> => {
-    const response = await fetch("http://localhost:3000/payment/create-session?amount=2000", {
+    const response = await fetch(`http://localhost:3000/payment/create-session?amount=${amount}`, {
       method: "GET"
     });
 

@@ -18,7 +18,7 @@ function UserImportForm({ onMessageSubmitted }: UserImportFormProps) {
     return (
         <>
         <form onSubmit={handleMessageSubmit}>
-            <div className="flex items-center justify-center w-full sm:w-[400px] md:w-[600px] lg:w-[800px] p-4 rounded-b-md shadow-md">
+            <div className="flex items-center justify-center w-full sm:w-[400px] md:w-[600px] lg:w-[1000px] p-4 rounded-b-md shadow-md">
                     <input type="text" 
                         value={message}
                         onChange={(e) => setMessage(e.target.value) }

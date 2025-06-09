@@ -5,5 +5,5 @@ export default interface DialogProps {
 
     onError?: (error: string) => void;
 
-    onSuccess?: () => void;
+    onSuccess?: (amount?: number) => void;
 }

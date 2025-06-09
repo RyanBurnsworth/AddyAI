@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import {
   CODE,
   CONSENT,
+  CONVERSATION_ID,
   CUSTOMER_ID,
   LAST_SYNCED,
   OFFLINE,
@@ -14,6 +15,7 @@ import NavBar from "../reusable/NavBar";
 import AccountSelectorDialog from "../reusable/AccountSelectorDialog";
 import SyncDialog from "../reusable/SyncDialog";
 import { SnackBar } from "../reusable/SnackBar";
+import PaymentDialog from "../reusable/PaymentSelectionDialog";
 
 export default function Home() {
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -21,7 +23,8 @@ export default function Home() {
   const scope = import.meta.env.VITE_GOOGLE_SCOPE;
 
   const [showSignInDialog, setShowSignInDialog] = useState<boolean>(false);
-  const [showAccountSelectorDialog, setShowAccountSelectorDialog] = useState<boolean>(false);
+  const [showAccountSelectorDialog, setShowAccountSelectorDialog] =
+    useState<boolean>(false);
   const [showSyncDialog, setShowSyncDialog] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showSnackBar, setShowSnackBar] = useState<boolean>(false);
@@ -47,13 +50,20 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    // reset the conversationId
+    localStorage.removeItem(CONVERSATION_ID);
+
     if (!localStorage.getItem(REFRESH_TOKEN) || !localStorage.getItem(USERID)) {
       setShowSignInDialog(true);
     } else if (!localStorage.getItem(CUSTOMER_ID) && errorMessage === null) {
       setShowSignInDialog(false);
       setShowSyncDialog(false);
       setShowAccountSelectorDialog(true);
-    } else if ((!localStorage.getItem(LAST_SYNCED) || localStorage.getItem(LAST_SYNCED) === '') && errorMessage === null) {
+    } else if (
+      (!localStorage.getItem(LAST_SYNCED) ||
+        localStorage.getItem(LAST_SYNCED) === "") &&
+      errorMessage === null
+    ) {
       setShowSignInDialog(false);
       setShowAccountSelectorDialog(false);
       setShowSyncDialog(true);
@@ -95,9 +105,7 @@ export default function Home() {
       <div className="h-screen w-screen overflow-y-hidden snap-y snap-mandatory scroll-smooth">
         {/* First screen */}
         <section className="h-screen w-full snap-start flex flex-col justify-center items-center">
-
           <div className="flex flex-col w-[90%] max-w-xl text-center">
-
             <span className="mb-2 text-3xl md:text-4xl font-bold">
               Your Google Ads Co-Pilot
             </span>
@@ -134,35 +142,33 @@ export default function Home() {
 
         <SignInDialog
           show={showSignInDialog}
-
           onClose={handleSignInDialogClick}
         />
 
         <AccountSelectorDialog
           show={showAccountSelectorDialog}
-
           onError={(msg) => {
             setShowAccountSelectorDialog(false);
             setErrorMessage(msg);
             setShowSnackBar(true);
           }}
-
           onSuccess={() => {
             setShowAccountSelectorDialog(false);
 
-            if (!localStorage.getItem(LAST_SYNCED) || localStorage.getItem(LAST_SYNCED) === '')
+            if (
+              !localStorage.getItem(LAST_SYNCED) ||
+              localStorage.getItem(LAST_SYNCED) === ""
+            )
               setShowSyncDialog(true);
           }}
         />
 
-        <SyncDialog 
-          show={showSyncDialog} 
-
+        <SyncDialog
+          show={showSyncDialog}
           onError={(msg) => {
             setErrorMessage(msg);
             setShowSnackBar(true);
           }}
-
           onSuccess={() => {
             setShowSyncDialog(false);
           }}

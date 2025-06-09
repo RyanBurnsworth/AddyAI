@@ -4,6 +4,7 @@ export const EMAIL = 'email';
 export const PICTURE = 'picture';
 export const REFRESH_TOKEN = 'refreshToken';
 export const CUSTOMER_ID = 'customerId';
+export const CONVERSATION_ID = "conversationId";
 export const MANAGER_ID = 'managerId';
 export const GET = 'GET';
 export const PUT = 'PUT';

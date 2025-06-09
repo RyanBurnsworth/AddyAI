@@ -6,6 +6,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { SnackBar } from "../reusable/SnackBar";
 import {
   APPLICATION_JSON,
+  CONVERSATION_ID,
   CUSTOMER_ID,
   POST,
   USERID,
@@ -35,9 +36,13 @@ export default function ChatContainer() {
 
   const messagesRef = useRef<MessageProps[]>([]);
 
+  let response: any;
   const handleSendMessage = async (message: string) => {
     const userMessage = { message, isUserInput: true };
+
+    const userId = Number(localStorage.getItem(USERID));
     const customerId = localStorage.getItem(CUSTOMER_ID);
+    const conversationId = localStorage.getItem(CONVERSATION_ID) ?? undefined;
     const messagingUrl = import.meta.env.VITE_MESSAGING_URL;
 
     const newMessages = [...messagesRef.current, userMessage];
@@ -47,28 +52,37 @@ export default function ChatContainer() {
     setIsLoading(true);
 
     try {
-      const response = await fetch(messagingUrl, {
+      response = await fetch(messagingUrl, {
         method: POST,
         headers: {
           "Content-Type": APPLICATION_JSON,
         },
-
         body: JSON.stringify({
-          user_prompt: message,
-          account_id: customerId,
+          userId,
+          userPrompt: message,
+          customerId,
+          ...(conversationId !== undefined && { conversationId: Number(conversationId) })
         }),
       });
 
-      if (response.status !== 200) {
+      if (response.status !== 201) {
         setErrorMessage("Failed to receive incoming message");
         setShowSnackBar(true);
         return;
       }
 
-      const incoming = await response.json();
+      let incoming;
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        incoming = await response.json();
+      } else {
+        incoming = await response.text();
+      }
+      
+      localStorage.setItem(CONVERSATION_ID, incoming?.conversationId);
 
       const botMessage = {
-        message: incoming.message ?? "No response received.",
+        message: incoming?.result ?? "Sorry, I wasn't able to find that answer.",
         isUserInput: false,
       };
 
@@ -78,7 +92,7 @@ export default function ChatContainer() {
       setIsLoading(false);
 
     } catch (err) {
-      console.error("Fetching error:", err);
+      console.error("Fetching error: ", err );
       setIsLoading(false);
       setErrorMessage(
         "Error receiving response from service. Please try again."
@@ -158,6 +172,7 @@ export default function ChatContainer() {
 
       setMessages(loadedMessages);
       messagesRef.current = loadedMessages; // update the ref too
+      localStorage.setItem(CONVERSATION_ID, data.id)
     } catch (error) {
       console.error("Error loading conversation:", error);
       setErrorMessage("Failed to load conversation.");
@@ -228,7 +243,6 @@ export default function ChatContainer() {
                       </ul>
                     </div>
                   ))}
-
               {/* fallback if all sections are empty or null */}
               {conversationHistory &&
                 Object.values(conversationHistory).every(

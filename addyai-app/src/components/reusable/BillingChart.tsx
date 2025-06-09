@@ -10,14 +10,16 @@ import {
   Rectangle,
   BarChart
 } from "recharts";
+import { USERID } from "../../utils/constants";
 
 export default function BillingChart() {
   const [chartData, setChartData] = useState([]);
 
   useEffect(() => {
+    const userId = localStorage.getItem(USERID);
     const fetchUsageData = async () => {
       try {
-        const response = await fetch("http://localhost:3000/usage/aggregate?userId=2");
+        const response = await fetch(`http://localhost:3000/usage/aggregate?userId=${userId}`);
         const data = await response.json();
 
         // Transform API data into chart format
@@ -51,10 +53,10 @@ export default function BillingChart() {
           <Legend />
           <Bar
             dataKey="tokens"
-            fill="#8884d8"
-            activeBar={<Rectangle fill="pink" stroke="blue" />}
+            fill="#66bb6a"
+            activeBar={<Rectangle fill="#FFCA28" stroke="green" />}
           />
-          <Bar dataKey="cost" fill="#82ca9d" />
+          <Bar dataKey="cost" fill="#07AE07" />
         </BarChart>
       </ResponsiveContainer>
     </div>

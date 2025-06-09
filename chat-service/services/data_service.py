@@ -19,6 +19,7 @@ class DataService:
                 json=usage_dto,
                 headers={"Content-Type": "application/json"}
             )
+            print(response)
             response.raise_for_status()
             return response.json()
         except requests.exceptions.RequestException as e:

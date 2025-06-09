@@ -3,7 +3,7 @@ from flask_cors import CORS
 from services.data_service import DataService
 from services.model_service import ModelService
 from flask import Flask, abort, json, jsonify, request
-from utils.constants import APPLICATION_JSON, ERROR, GET, RECORDS, REQUEST_ANALYSIS, REQUEST_PSQL_ENDPOINT, STATUS, STATUS_INTERNAL_ERROR, STATUS_BAD_REQUEST, STATUS_FORBIDDEN, QUERY_GENERATOR_SYSTEM_PROMPT, REASONING_SYSTEM_PROMPT, LLM_GUARDRAIL_RESPONSE, USER_PROMPT
+from utils.constants import APPLICATION_JSON, CUSTOMER_ID, ERROR, GET, RECORDS, REQUEST_ANALYSIS, REQUEST_PSQL_ENDPOINT, STATUS, STATUS_INTERNAL_ERROR, STATUS_BAD_REQUEST, STATUS_FORBIDDEN, QUERY_GENERATOR_SYSTEM_PROMPT, REASONING_SYSTEM_PROMPT, LLM_GUARDRAIL_RESPONSE, USER_ID, USER_PROMPT
 
 app = Flask(__name__)
 CORS(app)
@@ -19,14 +19,16 @@ modelService = ModelService(data_service=dataService)
 @app.route(REQUEST_PSQL_ENDPOINT, methods=[GET])
 def fetch_psql_queries():
     user_prompt = request.args.get(USER_PROMPT)
-
+    user_id = request.args.get(USER_ID)
+    customer_id = request.args.get(CUSTOMER_ID)
+    
     # if the user_prompt not present in the body then return 400
     if user_prompt is None or user_prompt == "":
         abort(STATUS_BAD_REQUEST, description="Missing required field: user_prompt")
 
     try:
         # allow the LLM to generate the Postgres query by deriving from the user's prompt
-        psql_queries = _generate_psql_query_from_LLM(user_prompt)
+        psql_queries = _generate_psql_query_from_LLM(user_id, customer_id, user_prompt)
 
         psql_queries = json.loads(psql_queries)
 
@@ -44,34 +46,36 @@ def fetch_psql_queries():
 
     @returns the analysis output
 """
-@app.route(REQUEST_ANALYSIS, methods=[GET])
+@app.route(REQUEST_ANALYSIS, methods=["POST"])
 def fetch_analysis():
-    user_prompt = request.args.get(USER_PROMPT)
-    records = request.args.get(RECORDS)
+    data = request.get_json()
 
-    if user_prompt is None or user_prompt == "" or records is None or records == "":
-        abort(STATUS_BAD_REQUEST, description="Missing required fields: user_prompt or records")
-    
+    user_id = data.get(USER_ID)
+    user_prompt = data.get(USER_PROMPT)
+    records = data.get(RECORDS)
+
+    if not user_id or not user_prompt:
+        abort(STATUS_BAD_REQUEST, description="Missing required fields: user_id or user_prompt")
+
     try:
-        analysis = _get_reasoning_response(records, user_prompt)
+        analysis = _get_reasoning_response(user_id, records, user_prompt)
     except Exception as e:
-        print("Error generating analysis: ", str(e))
-        abort(STATUS_INTERNAL_ERROR, decription="Failed to generate analysis")
-    
-    return analysis
+        print("Error generating analysis:", str(e))
+        abort(STATUS_INTERNAL_ERROR, description="Failed to generate analysis")
+
+    return jsonify(analysis)
 
 # Use an LLM to derive a PSQL query from the user input
-def _generate_psql_query_from_LLM(user_prompt: str):
+def _generate_psql_query_from_LLM(user_id: int, customer_id: str, user_prompt: str):
     try:
-        print("")
-        return modelService.get_llm_response(QUERY_GENERATOR_SYSTEM_PROMPT, user_prompt)
+        return modelService.get_llm_response(QUERY_GENERATOR_SYSTEM_PROMPT, user_id, customer_id, user_prompt)
     except Exception as e:
         raise e
 
 # Use a reasoning LLM to craft a response based on the results from Postgres and the user prompt
-def _get_reasoning_response(query_results, user_prompt):
+def _get_reasoning_response(user_id, query_results, user_prompt):
     try:
-        llm_response = modelService.get_reasoning_response(REASONING_SYSTEM_PROMPT, "query results: " + str(query_results) + " User prompt: " + str(user_prompt))
+        llm_response = modelService.get_reasoning_response(user_id, REASONING_SYSTEM_PROMPT, "query results: " + str(query_results) + " User prompt: " + str(user_prompt))
         return llm_response
     except Exception as e:
         raise e

@@ -2,6 +2,7 @@ from openai import OpenAI
 from services.data_service import DataService
 from utils import utils
 from utils.constants import GPT_MODEL, SYSTEM, USER, O4_MINI, ROLE, CONTENT
+from datetime import date
 
 class ModelService:
     client = OpenAI()
@@ -20,7 +21,7 @@ class ModelService:
         @param user_prompt      the prompt from the user's input
         @returns response from the the GPT 4.1 LLM
     """
-    def get_llm_response(self, system_prompt, user_prompt) -> str:
+    def get_llm_response(self, system_prompt, user_id, customer_id, user_prompt) -> str:
         try:
             response = self.client.responses.create(
                 model=GPT_MODEL,
@@ -31,12 +32,13 @@ class ModelService:
                     },
                     {
                         ROLE: USER,
-                        CONTENT: user_prompt
+                        CONTENT: user_prompt + " userId = " + str(user_id) + " customerId=" + customer_id + " current date: " + str(date.today())
                     }
                 ]
             )
             ## Send input_tokens, output_tokens and model to data service
-            self._data_service.post_usage(response.usage.input_tokens, response.usage.output_tokens, GPT_MODEL)
+            self._data_service.post_usage(user_id, response.usage.input_tokens, response.usage.output_tokens, GPT_MODEL)
+            print(response.output_text)
             return response.output_text
         except Exception as e:
             print("Unexpected error:", e)
@@ -49,7 +51,7 @@ class ModelService:
         @param user_prompt      the prompt from the user's input
         @returns response from o4-mini
     """
-    def get_reasoning_response(self, system_prompt, user_prompt) -> str:
+    def get_reasoning_response(self, user_id, system_prompt, user_prompt) -> str:
         try:
             response = self.client.responses.create(
                 model=O4_MINI,
@@ -70,7 +72,7 @@ class ModelService:
 
 
             # update the data service with the tokens usage
-            self._data_service.post_usage(response.usage.input_tokens, response.usage.output_tokens, O4_MINI)
+            self._data_service.post_usage(user_id, response.usage.input_tokens, response.usage.output_tokens, O4_MINI)
 
             unicode_stripped = utils.strip_unicode(response.output_text)
             return unicode_stripped

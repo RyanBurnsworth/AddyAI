@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   CODE,
   CONSENT,
@@ -9,12 +9,12 @@ import {
   OFFLINE,
   REFRESH_TOKEN,
   USERID,
-} from "../../utils/constants";
-import SignInDialog from "../reusable/SignInDialog";
-import NavBar from "../reusable/NavBar";
-import AccountSelectorDialog from "../reusable/AccountSelectorDialog";
-import SyncDialog from "../reusable/SyncDialog";
-import { SnackBar } from "../reusable/SnackBar";
+} from '../../utils/constants';
+import SignInDialog from '../reusable/SignInDialog';
+import NavBar from '../reusable/NavBar';
+import AccountSelectorDialog from '../reusable/AccountSelectorDialog';
+import SyncDialog from '../reusable/SyncDialog';
+import { SnackBar } from '../reusable/SnackBar';
 
 export default function Home() {
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -22,27 +22,26 @@ export default function Home() {
   const scope = import.meta.env.VITE_GOOGLE_SCOPE;
 
   const [showSignInDialog, setShowSignInDialog] = useState<boolean>(false);
-  const [showAccountSelectorDialog, setShowAccountSelectorDialog] =
-    useState<boolean>(false);
+  const [showAccountSelectorDialog, setShowAccountSelectorDialog] = useState<boolean>(false);
   const [showSyncDialog, setShowSyncDialog] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showSnackBar, setShowSnackBar] = useState<boolean>(false);
 
   const navigate = useNavigate();
-  const [input, setInput] = useState<string>("");
+  const [input, setInput] = useState<string>('');
 
   const placeholders = [
     "How many conversions did Spring Sale Blowout get in this year's Spring season?",
-    "How much has my account spent in the last 7 days?",
-    "Is conversion tracking enabled on my account?",
-    "Should I increase my daily budget for Lawn Equipment since it is going to be Summer?",
+    'How much has my account spent in the last 7 days?',
+    'Is conversion tracking enabled on my account?',
+    'Should I increase my daily budget for Lawn Equipment since it is going to be Summer?',
   ];
 
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setPlaceholderIndex((prev) => (prev + 1) % placeholders.length);
+      setPlaceholderIndex(prev => (prev + 1) % placeholders.length);
     }, 2000);
 
     return () => clearInterval(interval);
@@ -59,8 +58,7 @@ export default function Home() {
       setShowSyncDialog(false);
       setShowAccountSelectorDialog(true);
     } else if (
-      (!localStorage.getItem(LAST_SYNCED) ||
-        localStorage.getItem(LAST_SYNCED) === "") &&
+      (!localStorage.getItem(LAST_SYNCED) || localStorage.getItem(LAST_SYNCED) === '') &&
       errorMessage === null
     ) {
       setShowSignInDialog(false);
@@ -84,7 +82,7 @@ export default function Home() {
 
   const handleClick = () => {
     if (input.trim()) {
-      navigate("/chat", {
+      navigate('/chat', {
         state: { initialMessage: input.trim() },
       });
     }
@@ -105,19 +103,15 @@ export default function Home() {
         {/* First screen */}
         <section className="h-screen w-full snap-start flex flex-col justify-center items-center">
           <div className="flex flex-col w-[90%] max-w-xl text-center">
-            <span className="mb-2 text-3xl md:text-4xl font-bold">
-              Your Google Ads Co-Pilot
-            </span>
+            <span className="mb-2 text-3xl md:text-4xl font-bold">Your Google Ads Co-Pilot</span>
 
-            <span className="mb-4 text-2xl text-green-400">
-              Powered by AddyAI
-            </span>
+            <span className="mb-4 text-2xl text-green-400">Powered by AddyAI</span>
 
             <input
               type="text"
               className="mb-8 p-4 border-gray-400 border-2 focus:outline-none focus:ring-0 focus:border-amber-400"
               placeholder={placeholders[placeholderIndex]}
-              onChange={(e) => setInput(e.target.value)}
+              onChange={e => setInput(e.target.value)}
             />
 
             <button
@@ -139,14 +133,11 @@ export default function Home() {
           )}
         </section>
 
-        <SignInDialog
-          show={showSignInDialog}
-          onClose={handleSignInDialogClick}
-        />
+        <SignInDialog show={showSignInDialog} onClose={handleSignInDialogClick} />
 
         <AccountSelectorDialog
           show={showAccountSelectorDialog}
-          onError={(msg) => {
+          onError={msg => {
             setShowAccountSelectorDialog(false);
             setErrorMessage(msg);
             setShowSnackBar(true);
@@ -154,17 +145,14 @@ export default function Home() {
           onSuccess={() => {
             setShowAccountSelectorDialog(false);
 
-            if (
-              !localStorage.getItem(LAST_SYNCED) ||
-              localStorage.getItem(LAST_SYNCED) === ""
-            )
+            if (!localStorage.getItem(LAST_SYNCED) || localStorage.getItem(LAST_SYNCED) === '')
               setShowSyncDialog(true);
           }}
         />
 
         <SyncDialog
           show={showSyncDialog}
-          onError={(msg) => {
+          onError={msg => {
             setErrorMessage(msg);
             setShowSnackBar(true);
           }}

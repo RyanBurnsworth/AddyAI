@@ -1,13 +1,8 @@
-import { useState } from "react";
-import type DialogProps from "../../props/DialogProps";
-import {
-  CUSTOMER_ID,
-  LAST_SYNCED,
-  MANAGER_ID,
-  REFRESH_TOKEN,
-  USERID,
-} from "../../utils/constants";
-import { IoArrowBackOutline } from "react-icons/io5";
+import { useState } from 'react';
+import type DialogProps from '../../props/DialogProps';
+import { CUSTOMER_ID, LAST_SYNCED, MANAGER_ID, REFRESH_TOKEN, USERID } from '../../utils/constants';
+import { IoArrowBackOutline } from 'react-icons/io5';
+
 export default function SyncDialog({ show, onError, onSuccess }: DialogProps) {
   if (!show) return null;
 
@@ -16,10 +11,10 @@ export default function SyncDialog({ show, onError, onSuccess }: DialogProps) {
   const handleSync = async () => {
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:3000/sync", {
-        method: "POST",
+      const response = await fetch('http://localhost:3000/sync', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           userId: localStorage.getItem(USERID),
@@ -36,15 +31,15 @@ export default function SyncDialog({ show, onError, onSuccess }: DialogProps) {
       localStorage.setItem(LAST_SYNCED, new Date().toString());
       onSuccess!!();
     } catch (error) {
-      onError!!("Failed to sync with Google Ads");
-      console.error("POST failed:", error);
+      onError!!('Failed to sync with Google Ads');
+      console.error('POST failed:', error);
     } finally {
       setLoading(false);
     }
   };
 
   const goBack = () => {
-    localStorage.setItem("customerId", "")
+    localStorage.setItem('customerId', '');
   };
 
   return (
@@ -58,7 +53,8 @@ export default function SyncDialog({ show, onError, onSuccess }: DialogProps) {
             Synchronize Your Google Ads Account
           </h2>
           <p className="text-gray-800 font-weight-400 mb-4">
-            We'll start by synchronizing the last 6 months of data. Don't close this window. This may take a few minutes.
+            We'll start by synchronizing the last 6 months of data. Don't close this window. This
+            may take a few minutes.
           </p>
 
           <div className="flex justify-center">
@@ -66,7 +62,7 @@ export default function SyncDialog({ show, onError, onSuccess }: DialogProps) {
               onClick={handleSync}
               disabled={loading}
               className={`px-4 py-2 rounded bg-green-500 text-white ${
-                loading ? "opacity-50 cursor-not-allowed" : "hover:bg-green-600"
+                loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-green-600'
               }`}
             >
               {loading ? (
@@ -75,7 +71,7 @@ export default function SyncDialog({ show, onError, onSuccess }: DialogProps) {
                   Syncing...
                 </div>
               ) : (
-                "Sync Account"
+                'Sync Account'
               )}
             </button>
           </div>

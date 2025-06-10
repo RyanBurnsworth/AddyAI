@@ -1,11 +1,6 @@
-import { useEffect, useState } from "react";
-import type DialogProps from "../../props/DialogProps";
-import {
-  CUSTOMER_ID,
-  LAST_SYNCED,
-  MANAGER_ID,
-  USERID,
-} from "../../utils/constants";
+import { useEffect, useState } from 'react';
+import type DialogProps from '../../props/DialogProps';
+import { CUSTOMER_ID, LAST_SYNCED, MANAGER_ID, USERID } from '../../utils/constants';
 
 interface Account {
   id: number;
@@ -18,15 +13,11 @@ interface Account {
   created_at: string;
 }
 
-export default function AccountSelectorDialog({
-  show,
-  onSuccess,
-  onError,
-}: DialogProps) {
+export default function AccountSelectorDialog({ show, onSuccess, onError }: DialogProps) {
   if (!show) return null;
 
-  const [selectedManager, setSelectedManager] = useState("");
-  const [selectedCustomer, setSelectedCustomer] = useState("");
+  const [selectedManager, setSelectedManager] = useState('');
+  const [selectedCustomer, setSelectedCustomer] = useState('');
 
   const [managerAccounts, setManagerAccounts] = useState<
     {
@@ -54,12 +45,12 @@ export default function AccountSelectorDialog({
 
   const [loading, setLoading] = useState(true);
 
-  const accountUrl = "http://localhost:3000/account";
-  const refreshToken = localStorage.getItem("refreshToken");
+  const accountUrl = 'http://localhost:3000/account';
+  const refreshToken = localStorage.getItem('refreshToken');
 
   const params = new URLSearchParams({
-    refresh_token: refreshToken ?? "",
-    user_id: localStorage.getItem(USERID) ?? "",
+    refresh_token: refreshToken ?? '',
+    user_id: localStorage.getItem(USERID) ?? '',
   });
 
   useEffect(() => {
@@ -70,21 +61,21 @@ export default function AccountSelectorDialog({
         const response = await fetch(accountUrl + `?${params.toString()}`);
         if (!response.ok) {
           const err = await response.json();
-          console.error("Error fetching accounts:", err?.message);
-          onError!!(err?.message ?? "Error fetching accounts");
+          console.error('Error fetching accounts:', err?.message);
+          onError!!(err?.message ?? 'Error fetching accounts');
           return;
         }
 
         const data: Account[] = await response.json();
         if (!data) return;
 
-        const managers = data.filter((acc) => acc.isManager);
-        const managerAccountsFormatted = managers.map((manager) => ({
+        const managers = data.filter(acc => acc.isManager);
+        const managerAccountsFormatted = managers.map(manager => ({
           managerId: manager.customerId,
           name: manager.name || `Manager ${manager.customerId}`,
           clients: data
-            .filter((acc) => acc.managerId === manager.customerId)
-            .map((client) => ({
+            .filter(acc => acc.managerId === manager.customerId)
+            .map(client => ({
               customerId: client.customerId,
               name: client.name || `Client ${client.customerId}`,
               managerId: client.managerId,
@@ -94,8 +85,8 @@ export default function AccountSelectorDialog({
         }));
 
         const standaloneCustomers = data
-          .filter((acc) => !acc.isManager && acc.managerId === null)
-          .map((client) => ({
+          .filter(acc => !acc.isManager && acc.managerId === null)
+          .map(client => ({
             customerId: client.customerId,
             name: client.name || `Client ${client.customerId}`,
             managerId: client.managerId,
@@ -106,8 +97,8 @@ export default function AccountSelectorDialog({
         setManagerAccounts(managerAccountsFormatted);
         setCustomerAccounts(standaloneCustomers);
       } catch (error) {
-        console.error("Fetch failed:", error);
-        onError!!("Error fetching accounts from Google Ads");
+        console.error('Fetch failed:', error);
+        onError!!('Error fetching accounts from Google Ads');
       } finally {
         setLoading(false);
       }
@@ -119,58 +110,46 @@ export default function AccountSelectorDialog({
   const handleManagerChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selected = event.target.value;
     setSelectedManager(selected);
-    setSelectedCustomer(""); // reset customer
+    setSelectedCustomer(''); // reset customer
 
     if (selected) {
-      const manager = managerAccounts.find((m) => m.managerId === selected);
+      const manager = managerAccounts.find(m => m.managerId === selected);
       setCustomerAccounts(manager?.clients ?? []);
     } else {
-      const standaloneCustomers = managerAccounts.flatMap((m) =>
-        m.clients.length === 0 ? [] : []
-      );
+      const standaloneCustomers = managerAccounts.flatMap(m => (m.clients.length === 0 ? [] : []));
       setCustomerAccounts(standaloneCustomers);
     }
   };
 
-  const handleCustomerChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
+  const handleCustomerChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedCustomer(event.target.value);
   };
 
   const handleSyncAccount = () => {
-    const selected = customerAccounts.find(
-      (acc) => acc.customerId === selectedCustomer
-    );
+    const selected = customerAccounts.find(acc => acc.customerId === selectedCustomer);
 
     if (!selected) {
-      onError!!("Please select a customer account");
+      onError!!('Please select a customer account');
       return;
     }
 
     if (!selected.lastSynced) {
       localStorage.setItem(CUSTOMER_ID, selected.customerId);
-      localStorage.setItem(LAST_SYNCED, selected.lastSynced?.toString() ?? "");
-      if (selected.managerId && selected.managerId !== "")
+      localStorage.setItem(LAST_SYNCED, selected.lastSynced?.toString() ?? '');
+      if (selected.managerId && selected.managerId !== '')
         localStorage.setItem(MANAGER_ID, selected.managerId);
 
       onSuccess!!();
     } else {
-      alert(
-        `Last synced at: ${new Date(selected.lastSynced).toLocaleString()}`
-      );
+      alert(`Last synced at: ${new Date(selected.lastSynced).toLocaleString()}`);
       onSuccess!!();
     }
-
-    // Optionally trigger sync logic here
   };
 
   return (
     <div className="fixed inset-0 bg-transparent bg-opacity-50 flex justify-center items-center z-50">
       <div className="relative rounded bg-gray-100 to-gray-300 p-8 shadow-lg w-full max-w-lg text-center">
-        <h2 className="text-xl text-gray-900 font-semibold mb-4">
-          Google Ads Account Selector
-        </h2>
+        <h2 className="text-xl text-gray-900 font-semibold mb-4">Google Ads Account Selector</h2>
 
         {loading ? (
           <div className="flex justify-center my-8">
@@ -194,7 +173,7 @@ export default function AccountSelectorDialog({
                   className="w-full p-2 rounded-lg bg-white border border-gray-300 text-gray-700"
                 >
                   <option value="">None</option>
-                  {managerAccounts.map((m) => (
+                  {managerAccounts.map(m => (
                     <option key={m.managerId} value={m.managerId}>
                       {m.name} ({m.managerId})
                     </option>
@@ -217,7 +196,7 @@ export default function AccountSelectorDialog({
               className="w-full p-2 rounded-lg bg-white border border-gray-300 text-gray-700"
             >
               <option value="">-- Select --</option>
-              {customerAccounts.map((c) => (
+              {customerAccounts.map(c => (
                 <option key={c.customerId} value={c.customerId}>
                   {c.name} ({c.customerId})
                 </option>
@@ -228,7 +207,7 @@ export default function AccountSelectorDialog({
 
         <div className="flex justify-center">
           <button
-            disabled={selectedCustomer === ""}
+            disabled={selectedCustomer === ''}
             onClick={handleSyncAccount}
             className="mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
           >

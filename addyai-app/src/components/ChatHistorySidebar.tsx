@@ -1,9 +1,9 @@
 // ChatHistorySidebar.tsx
-import { useState } from "react";
-import classNames from "classnames";
-import { LuPanelLeftClose, LuPanelLeftOpen } from "react-icons/lu";
-import { RiChatNewLine } from "react-icons/ri";
-import { useNavigate } from "react-router-dom";
+import { useState } from 'react';
+import classNames from 'classnames';
+import { LuPanelLeftClose, LuPanelLeftOpen } from 'react-icons/lu';
+import { RiChatNewLine } from 'react-icons/ri';
+import { useNavigate } from 'react-router-dom';
 
 interface ChatHistorySidebarProps {
   isPanelOpen: boolean;
@@ -26,10 +26,10 @@ export default function ChatHistorySidebar({
   return (
     <aside
       className={classNames(
-        "bg-zinc-900 text-white p-4 flex-col transition-all duration-300 hidden sm:flex",
+        'bg-zinc-900 text-white p-4 flex-col transition-all duration-300 hidden sm:flex',
         {
-          "w-64": isPanelOpen,
-          "w-12": !isPanelOpen,
+          'w-64': isPanelOpen,
+          'w-12': !isPanelOpen,
         }
       )}
     >
@@ -38,7 +38,7 @@ export default function ChatHistorySidebar({
           <RiChatNewLine
             size={24}
             title="Start New Chat"
-            onClick={() => navigate("/")}
+            onClick={() => navigate('/')}
             className="text-green-400 cursor-pointer"
           />
         )}
@@ -93,12 +93,10 @@ export default function ChatHistorySidebar({
               .map(([period, conversations]) => (
                 <div key={period}>
                   <h3 className="text-xs text-zinc-400 uppercase mb-2">
-                    {period
-                      .replace(/_/g, " ")
-                      .replace(/\b\w/g, (c) => c.toUpperCase())}
+                    {period.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
                   </h3>
                   <ul className="space-y-1">
-                    {conversations.map((conv) => (
+                    {conversations.map(conv => (
                       <li
                         key={conv.id}
                         className="text-sm text-white hover:bg-zinc-800 p-2 rounded cursor-pointer"

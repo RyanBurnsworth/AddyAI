@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 import {
   ResponsiveContainer,
   CartesianGrid,
@@ -8,9 +8,9 @@ import {
   Legend,
   Bar,
   Rectangle,
-  BarChart
-} from "recharts";
-import { USERID } from "../../utils/constants";
+  BarChart,
+} from 'recharts';
+import { USERID } from '../../utils/constants';
 
 export default function BillingChart() {
   const [chartData, setChartData] = useState([]);
@@ -31,7 +31,7 @@ export default function BillingChart() {
 
         setChartData(formatted);
       } catch (error) {
-        console.error("Failed to fetch usage data:", error);
+        console.error('Failed to fetch usage data:', error);
       }
     };
 
@@ -40,12 +40,11 @@ export default function BillingChart() {
 
   return (
     <div className="mt-4 h-[300px]">
-      <h2 className="mb-4"><strong>Usage</strong></h2>
+      <h2 className="mb-4">
+        <strong>Usage</strong>
+      </h2>
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart
-          data={chartData}
-          margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-        >
+        <BarChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="name" />
           <YAxis />

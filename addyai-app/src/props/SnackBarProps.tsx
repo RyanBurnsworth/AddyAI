@@ -1,11 +1,11 @@
 export default interface SnackBarProps {
-    message: string;
+  message: string;
 
-    duration: number;
+  duration: number;
 
-    show: boolean;
+  show: boolean;
 
-    color: string;
-    
-    onClose: () => void;
+  color: string;
+
+  onClose: () => void;
 }

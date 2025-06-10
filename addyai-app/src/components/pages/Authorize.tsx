@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 import {
   APPLICATION_JSON,
   CODE,
@@ -9,32 +9,30 @@ import {
   PICTURE,
   PUT,
   REFRESH_TOKEN,
-} from "../../utils/constants";
-import { GridLoader } from "react-spinners";
-import { useNavigate } from "react-router-dom";
+} from '../../utils/constants';
+import { GridLoader } from 'react-spinners';
+import { useNavigate } from 'react-router-dom';
 
 export default function Authorize() {
   const navigate = useNavigate();
 
   const [error, setError] = useState<boolean>(false);
-  const [textHeader, setTextHeader] = useState<string>("Authorizing");
-  const [textSubHeader, setTextSubHeader] = useState<string>(
-    "Authorizing Access to Google Ads..."
-  );
+  const [textHeader, setTextHeader] = useState<string>('Authorizing');
+  const [textSubHeader, setTextSubHeader] = useState<string>('Authorizing Access to Google Ads...');
 
   // Send the authorization code on load
   useEffect(() => {
     // Get the full query string from the URL
     const queryParams = new URLSearchParams(window.location.search);
     const code = queryParams.get(CODE);
-    const errorParam = queryParams.get("error");
+    const errorParam = queryParams.get('error');
 
     const authorizeUrl = import.meta.env.VITE_AUTHORIZE_URL;
     const upsertUserUrl = import.meta.env.VITE_UPSERT_USER_URL;
 
     if (errorParam) {
-      setTextHeader("Error Authorizing");
-      setTextSubHeader("User denied access to Google Ads");
+      setTextHeader('Error Authorizing');
+      setTextSubHeader('User denied access to Google Ads');
       setError(true);
       return;
     }
@@ -54,8 +52,8 @@ export default function Authorize() {
         });
 
         if (authResponse.status !== 200) {
-          console.error("Error fetching authorization");
-          setTextHeader("Error Obtaining Authorization");
+          console.error('Error fetching authorization');
+          setTextHeader('Error Obtaining Authorization');
           setTextSubHeader("Couldn't obtain authorization from Google Ads");
           setError(true);
           return;
@@ -64,8 +62,8 @@ export default function Authorize() {
         const authData = await authResponse.json();
 
         // Update text header and subheader
-        setTextHeader("Authorization Success");
-        setTextSubHeader("Obtaining Account Information...");
+        setTextHeader('Authorization Success');
+        setTextSubHeader('Obtaining Account Information...');
 
         // prepare the user payload for step 3
         const userPayload = {
@@ -87,21 +85,21 @@ export default function Authorize() {
         localStorage.setItem(EMAIL, userPayload.email);
         localStorage.setItem(REFRESH_TOKEN, userPayload.refreshToken);
 
-        setTextHeader("Validating User");
-        setTextSubHeader("Validating User Information...");
+        setTextHeader('Validating User');
+        setTextSubHeader('Validating User Information...');
 
         // Step 2: Validate an existing user or create a new user
         const upsertUser = await fetch(upsertUserURL, {
           method: PUT,
           headers: {
-            "Content-Type": APPLICATION_JSON,
+            'Content-Type': APPLICATION_JSON,
           },
           body: JSON.stringify(userPayload),
         });
 
         if (upsertUser.status !== 201) {
-          console.error("Error upserting user");
-          setTextHeader("Error Setting User");
+          console.error('Error upserting user');
+          setTextHeader('Error Setting User');
           setTextSubHeader("Couldn't validate user information");
           setError(true);
           return;
@@ -109,17 +107,17 @@ export default function Authorize() {
 
         // upsert the user into the db
         const userResp = await upsertUser.json();
-        localStorage.setItem("userId", userResp.id);
+        localStorage.setItem('userId', userResp.id);
 
-        setTextHeader("Saving Account Info");
-        setTextSubHeader("Storing Account Access Information...");
+        setTextHeader('Saving Account Info');
+        setTextSubHeader('Storing Account Access Information...');
 
         // navigate back to the homescreen
-        navigate("/");
+        navigate('/');
       } catch (error) {
-        console.log("Error authorizing user: ", error);
-        setTextHeader("Error Authorizing");
-        setTextSubHeader("Please try again later");
+        console.log('Error authorizing user: ', error);
+        setTextHeader('Error Authorizing');
+        setTextSubHeader('Please try again later');
         setError(true);
         return;
       }
@@ -134,7 +132,7 @@ export default function Authorize() {
       <h1 className="text-center text-xl font-semibold mb-4">{textHeader}</h1>
       <span className="mb-4">{textSubHeader}</span>
       {!error && <GridLoader color="#4ade80" size={24} />}
-      {error && <button onClick={() => navigate("/")}>Return Home</button>}
+      {error && <button onClick={() => navigate('/')}>Return Home</button>}
     </div>
   );
 }

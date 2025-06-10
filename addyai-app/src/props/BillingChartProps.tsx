@@ -1,7 +1,7 @@
 export default interface BillingChartProps {
-    color: string;
+  color: string;
 
-    onHoverColor: string;
+  onHoverColor: string;
 
-    onHoverStrokeColor: string;
+  onHoverStrokeColor: string;
 }

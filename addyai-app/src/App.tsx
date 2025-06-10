@@ -1,12 +1,12 @@
-import { Routes, Route, useLocation } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
+import { Routes, Route, useLocation } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
 import Home from './components/pages/Home';
 import ChatContainer from './components/pages/ChatContainer';
-import Authorize from "./components/pages/Authorize";
-import Profile from "./components/pages/Profile";
-import HomePage from "./components/pages/HomePage";
-import Checkout from "./components/pages/Checkout";
-import Finish from "./components/pages/Finish";
+import Authorize from './components/pages/Authorize';
+import Profile from './components/pages/Profile';
+import HomePage from './components/pages/HomePage';
+import Checkout from './components/pages/Checkout';
+import Finish from './components/pages/Finish';
 
 function App() {
   const location = useLocation();
@@ -78,7 +78,7 @@ function App() {
               <HomePage />
             </motion.div>
           }
-        />        
+        />
         <Route
           path="/checkout"
           element={
@@ -91,7 +91,7 @@ function App() {
               <Checkout />
             </motion.div>
           }
-        />        
+        />
         <Route
           path="/finish"
           element={

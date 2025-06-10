@@ -1,4 +1,4 @@
 export default interface MessageProps {
-    message: string;
-    isUserInput: boolean;
+  message: string;
+  isUserInput: boolean;
 }

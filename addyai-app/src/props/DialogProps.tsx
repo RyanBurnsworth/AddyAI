@@ -1,9 +1,9 @@
 export default interface DialogProps {
-    show: boolean;
+  show: boolean;
 
-    onClose?: (isCancelled: boolean) => void;
+  onClose?: (isCancelled: boolean) => void;
 
-    onError?: (error: string) => void;
+  onError?: (error: string) => void;
 
-    onSuccess?: (amount?: number) => void;
+  onSuccess?: (amount?: number) => void;
 }

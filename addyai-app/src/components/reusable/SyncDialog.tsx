@@ -7,6 +7,7 @@ import {
   REFRESH_TOKEN,
   USERID,
 } from "../../utils/constants";
+import { IoArrowBackOutline } from "react-icons/io5";
 export default function SyncDialog({ show, onError, onSuccess }: DialogProps) {
   if (!show) return null;
 
@@ -42,22 +43,24 @@ export default function SyncDialog({ show, onError, onSuccess }: DialogProps) {
     }
   };
 
+  const goBack = () => {
+    localStorage.setItem("customerId", "")
+  };
+
   return (
     <>
       <div className="fixed inset-0 bg-transparent bg-opacity-50 flex justify-center items-center z-50">
         <div className="relative rounded bg-white to-gray-300 p-8 shadow-lg w-full max-w-lg text-center">
+          <div className="absolute top-4 left-4 text-gray-700 cursor-pointer flex items-center gap-2 mb-4">
+            <IoArrowBackOutline onClick={goBack} />
+          </div>
           <h2 className="text-xl text-gray-900 font-semibold mb-4">
-            Looks Like This Account Isn't Synced
+            Synchronize Your Google Ads Account
           </h2>
           <p className="text-gray-800 font-weight-400 mb-4">
-            Sync your Google Ads data to start using AddyAI with this account
-          </p>
-          <br />
-          <p className="text-gray-800 font-weight-800 mb-4">
-            <strong>AddyAI Google Ads Co-Pilot</strong>
+            We'll start by synchronizing the last 6 months of data. Don't close this window. This may take a few minutes.
           </p>
 
-          <p className="text-gray-800 font-weight-400 mb-4">293-291-2955</p>
           <div className="flex justify-center">
             <button
               onClick={handleSync}
@@ -75,10 +78,6 @@ export default function SyncDialog({ show, onError, onSuccess }: DialogProps) {
                 "Sync Account"
               )}
             </button>
-          </div>
-
-          <div className="flex justify-center text-gray-900 underline cursor-pointer mt-8">
-            Privacy Policy
           </div>
         </div>
       </div>

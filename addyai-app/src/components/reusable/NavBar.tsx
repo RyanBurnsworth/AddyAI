@@ -95,10 +95,6 @@ export default function NavBar() {
             </div>
           </>
         )}
-
-        {!signedIn && (
-          <span className="cursor-pointer hover:underline mr-4">Sign In</span>
-        )}
       </div>
     </div>
   );

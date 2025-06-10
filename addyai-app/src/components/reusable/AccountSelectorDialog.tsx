@@ -169,12 +169,8 @@ export default function AccountSelectorDialog({
     <div className="fixed inset-0 bg-transparent bg-opacity-50 flex justify-center items-center z-50">
       <div className="relative rounded bg-gray-100 to-gray-300 p-8 shadow-lg w-full max-w-lg text-center">
         <h2 className="text-xl text-gray-900 font-semibold mb-4">
-          Account Selection
+          Google Ads Account Selector
         </h2>
-
-        <p className="text-gray-800 font-weight-400 mb-4">
-          Select the account you would like to work with
-        </p>
 
         {loading ? (
           <div className="flex justify-center my-8">

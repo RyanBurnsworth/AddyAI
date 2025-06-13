@@ -7,7 +7,6 @@ export default function SyncDialog({ show, onError, onSuccess }: DialogProps) {
   if (!show) return null;
 
   const [loading, setLoading] = useState(false);
-
   const handleSync = async () => {
     setLoading(true);
     try {
@@ -25,14 +24,15 @@ export default function SyncDialog({ show, onError, onSuccess }: DialogProps) {
       });
 
       if (response.status !== 201) {
-        // TODO throw an error
+        onError!!('Failed to sync with Google Ads');
+        console.error('Failed to sync with Google Ads account');
       }
 
       localStorage.setItem(LAST_SYNCED, new Date().toString());
       onSuccess!!();
     } catch (error) {
       onError!!('Failed to sync with Google Ads');
-      console.error('POST failed:', error);
+      console.error('Failed to sync with Google Ads account');
     } finally {
       setLoading(false);
     }

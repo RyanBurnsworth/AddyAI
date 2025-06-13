@@ -125,7 +125,7 @@ export default function AccountSelectorDialog({ show, onSuccess, onError }: Dial
     setSelectedCustomer(event.target.value);
   };
 
-  const handleSyncAccount = () => {
+  const handleSyncAccount = async () => {
     const selected = customerAccounts.find(acc => acc.customerId === selectedCustomer);
 
     if (!selected) {
@@ -133,17 +133,12 @@ export default function AccountSelectorDialog({ show, onSuccess, onError }: Dial
       return;
     }
 
-    if (!selected.lastSynced) {
-      localStorage.setItem(CUSTOMER_ID, selected.customerId);
-      localStorage.setItem(LAST_SYNCED, selected.lastSynced?.toString() ?? '');
-      if (selected.managerId && selected.managerId !== '')
-        localStorage.setItem(MANAGER_ID, selected.managerId);
+    localStorage.setItem(CUSTOMER_ID, selected.customerId);
+    localStorage.setItem(LAST_SYNCED, selected.lastSynced?.toString() ?? '');
+    if (selected.managerId && selected.managerId !== '')
+      localStorage.setItem(MANAGER_ID, selected.managerId);
 
-      onSuccess!!();
-    } else {
-      alert(`Last synced at: ${new Date(selected.lastSynced).toLocaleString()}`);
-      onSuccess!!();
-    }
+    onSuccess!!();
   };
 
   return (

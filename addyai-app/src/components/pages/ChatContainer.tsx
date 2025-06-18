@@ -33,6 +33,7 @@ export default function ChatContainer() {
 
   const userId = useMemo(() => Number(localStorage.getItem(USERID)), []);
   const customerId = useMemo(() => localStorage.getItem(CUSTOMER_ID), []);
+
   const messagesRef = useRef<MessageProps[]>([]);
   const messagingUrl = import.meta.env.VITE_MESSAGING_URL;
 
@@ -40,6 +41,10 @@ export default function ChatContainer() {
     async (message: string) => {
       const userMessage = { message, isUserInput: true };
       const newMessages = [...messagesRef.current, userMessage];
+      const conversationId = localStorage.getItem(CONVERSATION_ID);
+
+      if (!conversationId || '') navigate('/');
+
       messagesRef.current = newMessages;
       setMessages(newMessages);
       setIsLoading(true);
@@ -52,8 +57,8 @@ export default function ChatContainer() {
             userId,
             userPrompt: message,
             customerId,
-            ...(localStorage.getItem(CONVERSATION_ID) && {
-              conversationId: Number(localStorage.getItem(CONVERSATION_ID)),
+            ...(conversationId && {
+              conversationId: Number(conversationId),
             }),
           }),
         });
@@ -70,6 +75,7 @@ export default function ChatContainer() {
           message: data?.result ?? "Sorry, I wasn't able to find that answer.",
           isUserInput: false,
         };
+
         const updatedMessages = [...messagesRef.current, botMessage];
         messagesRef.current = updatedMessages;
         setMessages(updatedMessages);
@@ -96,9 +102,7 @@ export default function ChatContainer() {
       const data = await res.json();
       setConversationHistory(data);
     } catch (err) {
-      console.error(err);
-      setErrorMessage('Unexpected error loading history');
-      setShowSnackBar(true);
+      console.error('Error loading chat history');
     } finally {
       setIsHistoryLoading(false);
     }

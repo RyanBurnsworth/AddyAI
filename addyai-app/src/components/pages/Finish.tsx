@@ -38,6 +38,7 @@ export default function Finish() {
         const session = await response.text();
         if (session === 'complete') setIsSuccessful(true);
         else if (session === 'open') setIsSuccessful(false);
+        else if (!session || session === '') setIsSuccessful(false);
 
         setLoading(false);
       } catch (error) {

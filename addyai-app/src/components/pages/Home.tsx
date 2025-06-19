@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { ChevronRight, Zap, Users, BarChart3, Play, ArrowRight } from 'lucide-react';
 import AddyAILogo from '../reusable/logo/AddyAILogo'; // Assuming this is your logo component
 import NavBar from '../reusable/NavBar'; // Assuming NavBar is updated and available
+import { useNavigate } from 'react-router-dom';
 
 interface VisibilityState {
   [key: string]: boolean;
@@ -11,6 +12,7 @@ export default function EnhancedHome() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [currentMetric, setCurrentMetric] = useState(0);
   const [isVisible, setIsVisible] = useState<VisibilityState>({});
+  const navigate = useNavigate();
 
   // Mock live metrics
   const liveMetrics = [
@@ -130,7 +132,10 @@ export default function EnhancedHome() {
 
             {/* Enhanced CTA Buttons - Better centered */}
             <div className="flex flex-col sm:flex-row gap-4 mb-12 justify-center">
-              <button className="group relative px-8 py-4 bg-gradient-to-r from-green-500 to-green-600 rounded-full font-semibold text-lg overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-green-500/25">
+              <button
+                className="group relative px-8 py-4 bg-gradient-to-r from-green-500 to-green-600 rounded-full font-semibold text-lg overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-green-500/25"
+                onClick={() => navigate('/start')}
+              >
                 <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-green-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <div className="relative flex items-center justify-center space-x-2">
                   <Zap className="w-5 h-5" />
@@ -298,14 +303,14 @@ export default function EnhancedHome() {
                 </li>
                 <li>
                   <a
-                    href="/privacy"
+                    href="/privacy-policy"
                     className="text-zinc-400 hover:text-green-400 transition-colors"
                   >
                     Privacy Policy
                   </a>
                 </li>
                 <li>
-                  <a href="/terms" className="text-zinc-400 hover:text-green-400 transition-colors">
+                  <a href="/tos" className="text-zinc-400 hover:text-green-400 transition-colors">
                     Terms of Service
                   </a>
                 </li>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react'; // Import useCallback
 import { useNavigate } from 'react-router-dom';
 import {
   CODE,
@@ -11,11 +11,11 @@ import {
   USERID,
 } from '../../utils/constants';
 import SignInDialog from '../reusable/SignInDialog';
-import NavBar from '../reusable/NavBar'; // Assuming you have a NavBar component to maintain consistency
+import NavBar from '../reusable/NavBar';
 import AccountSelectorDialog from '../reusable/AccountSelectorDialog';
 import SyncDialog from '../reusable/SyncDialog';
 import { SnackBar } from '../reusable/SnackBar';
-import { Rocket, ChevronRight, Search } from 'lucide-react'; // Import Search icon for the input field
+import { Rocket, ChevronRight, Search } from 'lucide-react';
 
 export default function Start() {
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -43,29 +43,35 @@ export default function Start() {
   useEffect(() => {
     const interval = setInterval(() => {
       setPlaceholderIndex(prev => (prev + 1) % placeholders.length);
-    }, 2000);
+    }, 2000); // This effect causes re-renders every 2 seconds.
 
     return () => clearInterval(interval);
   }, []);
 
+  // Effect to manage dialog visibility based on local storage and error state
   useEffect(() => {
     localStorage.removeItem(CONVERSATION_ID);
 
+    // Prioritize sign-in if tokens are missing
     if (!localStorage.getItem(REFRESH_TOKEN) || !localStorage.getItem(USERID)) {
       setShowSignInDialog(true);
+      setShowAccountSelectorDialog(false); // Ensure other dialogs are hidden
+      setShowSyncDialog(false);
     } else if (!localStorage.getItem(CUSTOMER_ID) && errorMessage === null) {
+      // If signed in but customer ID is missing and no error is present
       setShowSignInDialog(false);
       setShowSyncDialog(false);
-      setShowAccountSelectorDialog(true);
+      setShowAccountSelectorDialog(true); // Show account selector
     } else if (
       (!localStorage.getItem(LAST_SYNCED) || localStorage.getItem(LAST_SYNCED) === '') &&
       errorMessage === null
     ) {
+      // If customer ID is set but not synced and no error is present
       setShowSignInDialog(false);
       setShowAccountSelectorDialog(false);
-      setShowSyncDialog(true);
+      setShowSyncDialog(true); // Show sync dialog
     }
-  }, [errorMessage]);
+  }, [errorMessage]); // errorMessage is a dependency.
 
   const getRefreshToken = () => {
     const params = new URLSearchParams({
@@ -94,6 +100,46 @@ export default function Start() {
     }
     setShowSignInDialog(false);
   };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleClick();
+    }
+  };
+
+  // Memoize onError for AccountSelectorDialog to prevent re-renders in child
+  const handleAccountSelectorError = useCallback((msg: string) => {
+    setShowAccountSelectorDialog(false);
+    setErrorMessage(msg);
+    setShowSnackBar(true);
+  }, []); // Empty dependency array because state setters are stable.
+
+  // Memoize onSuccess for AccountSelectorDialog to prevent re-renders in child
+  const handleAccountSelectorSuccess = useCallback(() => {
+    setShowAccountSelectorDialog(false);
+    // After selecting an account, check if it needs syncing
+    if (!localStorage.getItem(LAST_SYNCED) || localStorage.getItem(LAST_SYNCED) === '') {
+      setShowSyncDialog(true);
+    }
+    // Also, clear any error message if a success happened
+    setErrorMessage(null); // Clear error on success to potentially allow re-showing if needed later
+    setShowSnackBar(false); // Hide snackbar on success
+  }, []); // Empty dependency array because state setters and localStorage are stable.
+
+  // Memoize onError for SyncDialog
+  const handleSyncDialogError = useCallback((msg: string) => {
+    setErrorMessage(msg);
+    setShowSnackBar(true);
+  }, []);
+
+  // Memoize onSuccess for SyncDialog
+  const handleSyncDialogSuccess = useCallback(() => {
+    setShowSyncDialog(false);
+    // Clear error message on successful sync
+    setErrorMessage(null);
+    setShowSnackBar(false);
+  }, []);
 
   return (
     <>
@@ -149,6 +195,7 @@ export default function Start() {
                 className="w-full pl-12 pr-4 py-4 rounded-xl bg-white/10 text-white placeholder-zinc-400 border border-green-400/50 focus:outline-none focus:ring-2 focus:ring-green-400 transition-all duration-300 text-lg"
                 placeholder={placeholders[placeholderIndex]}
                 onChange={e => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
                 value={input}
               />
             </div>
@@ -171,7 +218,9 @@ export default function Start() {
               message={errorMessage}
               color="bg-red-600"
               duration={3000}
-              onClose={() => setShowSnackBar(false)}
+              onClose={() => {
+                setShowSnackBar(false);
+              }}
               show={showSnackBar}
             />
           )}
@@ -181,27 +230,14 @@ export default function Start() {
 
         <AccountSelectorDialog
           show={showAccountSelectorDialog}
-          onError={msg => {
-            setShowAccountSelectorDialog(false);
-            setErrorMessage(msg);
-            setShowSnackBar(true);
-          }}
-          onSuccess={() => {
-            setShowAccountSelectorDialog(false);
-            if (!localStorage.getItem(LAST_SYNCED) || localStorage.getItem(LAST_SYNCED) === '')
-              setShowSyncDialog(true);
-          }}
+          onError={handleAccountSelectorError} // Use memoized callback
+          onSuccess={handleAccountSelectorSuccess} // Use memoized callback
         />
 
         <SyncDialog
           show={showSyncDialog}
-          onError={msg => {
-            setErrorMessage(msg);
-            setShowSnackBar(true);
-          }}
-          onSuccess={() => {
-            setShowSyncDialog(false);
-          }}
+          onError={handleSyncDialogError} // Use memoized callback
+          onSuccess={handleSyncDialogSuccess} // Use memoized callback
         />
       </div>
       {/* Matched CSS animations from Home page */}

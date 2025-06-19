@@ -37,66 +37,6 @@ export default function Chat() {
   const messagingUrl = import.meta.env.VITE_MESSAGING_URL;
   const baseURL = import.meta.env.VITE_BASE_URL;
 
-  const handleSendMessage = useCallback(
-    async (message: string) => {
-      const userMessage = { message, isUserInput: true };
-      const newMessages = [...messagesRef.current, userMessage];
-      const conversationId = localStorage.getItem(CONVERSATION_ID);
-
-      if (!conversationId || '') {
-        // If no conversationId, assume initial message and navigate to home to start new chat
-        if (!initialMessage) {
-          // Only navigate if it's not the initial message from start page
-          navigate('/');
-        }
-        // Proceed with sending message, API will handle new conversation creation
-      }
-
-      messagesRef.current = newMessages;
-      setMessages(newMessages);
-      setIsLoading(true);
-
-      try {
-        const res = await fetch(messagingUrl, {
-          method: POST,
-          headers: { 'Content-Type': APPLICATION_JSON },
-          body: JSON.stringify({
-            userId,
-            userPrompt: message,
-            customerId,
-            ...(conversationId && {
-              conversationId: Number(conversationId),
-            }),
-          }),
-        });
-
-        if (res.status !== 201) throw new Error('Bad status');
-
-        const contentType = res.headers.get('content-type');
-        const data = contentType?.includes('application/json')
-          ? await res.json()
-          : await res.text();
-
-        localStorage.setItem(CONVERSATION_ID, data?.conversationId);
-        const botMessage = {
-          message: data?.result ?? "Sorry, I wasn't able to find that answer.",
-          isUserInput: false,
-        };
-
-        const updatedMessages = [...messagesRef.current, botMessage];
-        messagesRef.current = updatedMessages;
-        setMessages(updatedMessages);
-      } catch (err) {
-        console.error('Error:', err);
-        setErrorMessage('Error receiving response from service. Please try again.');
-        setShowSnackBar(true);
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [customerId, messagingUrl, userId, initialMessage, navigate] // Added initialMessage and navigate to dependencies
-  );
-
   const handleLoadingConversationHistory = useCallback(async () => {
     setIsHistoryLoading(true);
     try {
@@ -113,7 +53,78 @@ export default function Chat() {
     } finally {
       setIsHistoryLoading(false);
     }
-  }, [userId, customerId, baseURL]); // Added baseURL to dependencies
+  }, [userId, customerId, baseURL]);
+
+  const handleSendMessage = useCallback(
+    async (message: string) => {
+      const userMessage = { message, isUserInput: true };
+      const newMessages = [...messagesRef.current, userMessage];
+      let currentConversationId = localStorage.getItem(CONVERSATION_ID);
+
+      // If no conversation ID and no initial message, navigate to home (should not happen if flow is correct)
+      if (!currentConversationId && !initialMessage) {
+        navigate('/');
+        return; // Prevent further execution if navigating away
+      }
+
+      messagesRef.current = newMessages;
+      setMessages(newMessages);
+      setIsLoading(true);
+
+      try {
+        const payload: {
+          userId: number;
+          userPrompt: string;
+          customerId: string | null;
+          conversationId?: number;
+        } = {
+          userId,
+          userPrompt: message,
+          customerId,
+        };
+
+        if (currentConversationId) {
+          payload.conversationId = Number(currentConversationId);
+        }
+
+        const res = await fetch(messagingUrl, {
+          method: POST,
+          headers: { 'Content-Type': APPLICATION_JSON },
+          body: JSON.stringify(payload),
+        });
+
+        if (res.status !== 201) throw new Error('Bad status');
+
+        const contentType = res.headers.get('content-type');
+        const data = contentType?.includes('application/json')
+          ? await res.json()
+          : await res.text();
+
+        // Update conversation ID in local storage
+        localStorage.setItem(CONVERSATION_ID, data?.conversationId);
+
+        // After successfully sending the message and getting a response, reload history
+        // This ensures the new conversation or updated headline appears immediately
+        await handleLoadingConversationHistory();
+
+        const botMessage = {
+          message: data?.result ?? "Sorry, I wasn't able to find that answer.",
+          isUserInput: false,
+        };
+
+        const updatedMessages = [...messagesRef.current, botMessage];
+        messagesRef.current = updatedMessages;
+        setMessages(updatedMessages);
+      } catch (err) {
+        console.error('Error:', err);
+        setErrorMessage('Error receiving response from service. Please try again.');
+        setShowSnackBar(true);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [customerId, messagingUrl, userId, initialMessage, navigate, handleLoadingConversationHistory]
+  );
 
   const loadConversationById = useCallback(
     async (conversationId: number) => {
@@ -143,35 +154,41 @@ export default function Chat() {
         setShowSnackBar(true);
       }
     },
-    [userId, customerId, baseURL] // Added baseURL to dependencies
+    [userId, customerId, baseURL]
   );
 
   useEffect(() => {
+    // Load history on initial render
     handleLoadingConversationHistory();
+
     if (initialMessage) {
       handleSendMessage(initialMessage);
     } else if (!initialMessage && messages.length === 0) {
-      navigate('/');
+      // Only navigate to home if there's no initial message and no messages loaded
+      // This prevents redirecting after a conversation has started or been loaded
+      if (!localStorage.getItem(CONVERSATION_ID)) {
+        navigate('/');
+      }
     }
+    // Clean up location state to prevent re-triggering initial message on subsequent renders
     navigate(location.pathname, { replace: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Removed messages from dependency array to prevent infinite loop, handles initial message once.
+  }, []); // Empty dependency array ensures this runs only once on mount
 
   return (
-    <div className="min-h-screen w-screen flex flex-col bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 text-white overflow-hidden relative">
-      {/* Animated Background Grid & Radial Gradient - Matched from Home */}
+    <div className="h-screen w-screen flex flex-col bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 text-white overflow-hidden relative">
+      {/* Animated Background Grid & Radial Gradient */}
       <div className="fixed inset-0 opacity-20">
         <div
           className="absolute inset-0"
           style={{
-            // Static center for the radial gradient as mousePosition is not available here
             backgroundImage: `radial-gradient(circle at 50% 50%, rgba(74, 222, 128, 0.15) 0%, transparent 40%)`,
           }}
         />
         <div className="grid-background" />
       </div>
 
-      {/* Floating Particles - Matched from Home */}
+      {/* Floating Particles */}
       <div className="fixed inset-0 pointer-events-none">
         {[...Array(20)].map((_, i) => (
           <div
@@ -187,8 +204,13 @@ export default function Chat() {
         ))}
       </div>
 
-      <div className="relative z-10 flex flex-1 w-full">
-        {/* ChatHistorySidebar - Assuming it handles its own styling within the dark theme */}
+      {/* NavBar - positioned above everything */}
+      <NavBar />
+
+      <div className="relative z-10 flex flex-1 h-full min-h-0 pt-20">
+        {' '}
+        {/* Added pt-20 for NavBar space */}
+        {/* ChatHistorySidebar */}
         <ChatHistorySidebar
           isPanelOpen
           isLoading={isLoading}
@@ -196,16 +218,14 @@ export default function Chat() {
           conversationHistory={conversationHistory}
           loadConversationById={loadConversationById}
         />
-
-        <div className="flex flex-col flex-1">
-          {' '}
-          {/* Changed w-full to flex-1 to allow sidebar space */}
-          <NavBar />
-          <main className="flex-1 flex flex-col items-center justify-between p-4">
-            {' '}
-            {/* Added padding here */}
+        <div className="flex flex-col flex-1 min-h-0">
+          <main className="flex-1 flex flex-col min-h-0">
             <MessageContainer messages={messages} isLoading={isLoading} />
-            <UserImportForm isLoading={isLoading} onMessageSubmitted={handleSendMessage} />
+            <div className="flex-shrink-0 p-4">
+              {' '}
+              {/* Wrapper for UserInputForm */}
+              <UserImportForm isLoading={isLoading} onMessageSubmitted={handleSendMessage} />
+            </div>
           </main>
         </div>
       </div>
@@ -218,7 +238,7 @@ export default function Chat() {
         show={showSnackBar}
       />
 
-      {/* Matched CSS animations from Home/Start page */}
+      {/* CSS animations */}
       <style>{`
         .grid-background {
           background-image: linear-gradient(rgba(74, 222, 128, 0.1) 1px, transparent 1px),

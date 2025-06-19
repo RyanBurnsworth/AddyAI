@@ -40,20 +40,20 @@ export default function NavBar() {
   };
 
   return (
-    <div className="flex flex-row justify-between items-center p-4 bg-zinc-900/80 backdrop-blur-md border-b border-zinc-700/50 shadow-lg w-full z-30">
+    <div className="fixed top-0 left-0 right-0 flex flex-row justify-between items-center p-4 bg-zinc-900/80 backdrop-blur-md border-b border-zinc-700/50 shadow-lg w-full z-50">
       <div
-        className="text-2xl font-bold ml-4 cursor-pointer bg-gradient-to-r from-green-400 to-amber-400 bg-clip-text text-transparent hover:from-green-300 hover:to-amber-300 transition-colors duration-200"
+        className="text-2xl font-bold ml-4 cursor-pointer bg-gradient-to-r from-green-400 to-amber-400 bg-clip-text text-transparent hover:from-green-300 hover:to-amber-300 transition-colors duration-200 relative z-10"
         onClick={() => navigate('/start')}
       >
         AddyAI
       </div>
 
-      <div className="flex items-center relative mr-8" ref={dropdownRef}>
+      <div className="flex items-center relative mr-8 z-10" ref={dropdownRef}>
         {signedIn && (
           <>
             <img
               src={profilePicture}
-              className="w-12 h-12 rounded-full p-1 border-2 border-zinc-600 hover:border-green-400 transition cursor-pointer"
+              className="w-12 h-12 rounded-full p-1 border-2 border-zinc-600 hover:border-green-400 transition cursor-pointer relative z-10"
               alt="Profile"
               onClick={() => setDropdownOpen(prev => !prev)}
             />

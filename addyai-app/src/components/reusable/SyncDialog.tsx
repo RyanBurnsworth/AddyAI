@@ -7,10 +7,12 @@ export default function SyncDialog({ show, onError, onSuccess }: DialogProps) {
   if (!show) return null;
 
   const [loading, setLoading] = useState(false);
+  const baseUrl = import.meta.env.VITE_BASE_URL;
+
   const handleSync = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:3000/sync', {
+      const response = await fetch(`${baseUrl}/sync`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -44,31 +46,31 @@ export default function SyncDialog({ show, onError, onSuccess }: DialogProps) {
 
   return (
     <>
-      <div className="fixed inset-0 bg-transparent bg-opacity-50 flex justify-center items-center z-50">
-        <div className="relative rounded bg-white to-gray-300 p-8 shadow-lg w-full max-w-lg text-center">
-          <div className="absolute top-4 left-4 text-gray-700 cursor-pointer flex items-center gap-2 mb-4">
-            <IoArrowBackOutline onClick={goBack} />
+      <div className="fixed inset-0 bg-zinc-950/70 backdrop-blur-sm flex justify-center items-center z-50">
+        <div className="relative rounded-2xl bg-zinc-900/90 p-8 shadow-xl w-full max-w-lg text-center border border-zinc-700">
+          <div className="absolute top-4 left-4 text-green-400 cursor-pointer flex items-center gap-2 mb-4 hover:text-green-300 transition-colors duration-200">
+            <IoArrowBackOutline size={24} onClick={goBack} /> {/* Increased size for visibility */}
           </div>
-          <h2 className="text-xl text-gray-900 font-semibold mb-4">
+          <h2 className="text-2xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-amber-400">
             Synchronize Your Google Ads Account
           </h2>
-          <p className="text-gray-800 font-weight-400 mb-4">
-            We'll start by synchronizing the last 6 months of data. Don't close this window. This
-            may take a few minutes.
+          <p className="text-zinc-300 font-normal mb-6 leading-relaxed">
+            We'll start by synchronizing the last 6 months of data. Please keep this window open as
+            this may take a few minutes.
           </p>
 
           <div className="flex justify-center">
             <button
               onClick={handleSync}
               disabled={loading}
-              className={`px-4 py-2 rounded bg-green-500 text-white ${
-                loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-green-600'
+              className={`group relative px-6 py-3 bg-gradient-to-r from-green-500 to-amber-500 text-white rounded-full font-semibold text-base overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-500/25 ${
+                loading ? 'opacity-50 cursor-not-allowed' : ''
               }`}
             >
               {loading ? (
                 <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  Syncing...
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span>Syncing...</span>
                 </div>
               ) : (
                 'Sync Account'

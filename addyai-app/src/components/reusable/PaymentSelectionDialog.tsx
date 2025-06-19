@@ -3,7 +3,7 @@ import type DialogProps from '../../props/DialogProps';
 
 const predefinedAmounts = ['$5.00', '$10.00', '$20.00', '$25.00', '$50.00', '$100.00', 'Custom'];
 
-export default function PaymentDialog({ show, onError, onSuccess, onClose }: DialogProps) {
+export default function PaymentDialog({ show, onError, onSuccess }: DialogProps) {
   const [selectedAmount, setSelectedAmount] = useState(predefinedAmounts[0]);
   const [customAmount, setCustomAmount] = useState('');
 
@@ -21,21 +21,21 @@ export default function PaymentDialog({ show, onError, onSuccess, onClose }: Dia
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center z-50">
-      <div className="relative rounded-xl bg-white p-8 shadow-2xl w-full max-w-md">
-        <h2 className="text-2xl text-gray-900 font-semibold mb-6 text-center">
+    <div className="fixed inset-0 bg-zinc-950/70 backdrop-blur-sm flex justify-center items-center z-50">
+      <div className="relative rounded-2xl bg-zinc-900/90 p-8 shadow-xl w-full max-w-md text-center border border-zinc-700">
+        <h2 className="text-2xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-amber-400">
           Add Credit to Your AddyAI Balance
         </h2>
 
-        <div className="mb-4">
-          <label className="block text-gray-700 font-medium mb-1">Select Amount</label>
+        <div className="mb-4 text-left">
+          <label className="block text-zinc-300 font-medium mb-1">Select Amount</label>
           <select
             value={selectedAmount}
             onChange={e => setSelectedAmount(e.target.value)}
-            className="w-full border text-black border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-3 rounded-lg bg-white/10 text-white border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-green-400 transition-colors duration-200"
           >
             {predefinedAmounts.map(amount => (
-              <option key={amount} value={amount}>
+              <option key={amount} value={amount} className="bg-zinc-800 text-white">
                 {amount}
               </option>
             ))}
@@ -43,28 +43,30 @@ export default function PaymentDialog({ show, onError, onSuccess, onClose }: Dia
         </div>
 
         {selectedAmount === 'Custom' && (
-          <div className="mb-4">
-            <label className="block text-gray-700 font-medium mb-1">Enter Custom Amount</label>
+          <div className="mb-4 text-left">
+            <label className="block text-zinc-300 font-medium mb-1">Enter Custom Amount</label>
             <input
               type="text"
               placeholder="e.g. 42.00"
               value={customAmount}
               onChange={e => setCustomAmount(e.target.value)}
-              className="w-full border text-black border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-3 rounded-lg bg-white/10 text-white placeholder-zinc-400 border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-green-400 transition-colors duration-200"
             />
           </div>
         )}
 
-        <div className="flex justify-end space-x-3">
+        <div className="flex justify-end space-x-3 mt-6">
           <button
             onClick={handleSubmit}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+            className="group relative px-6 py-3 bg-gradient-to-r from-green-500 to-amber-500 text-white rounded-full font-semibold text-base overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-500/25"
           >
-            Confirm
+            <div className="relative flex items-center justify-center space-x-2">
+              <span>Confirm</span>
+            </div>
           </button>
           <button
             onClick={() => onError?.('User cancelled')}
-            className="px-4 py-2 rounded hover:bg-gray-400 transition"
+            className="px-6 py-3 rounded-full text-zinc-300 bg-zinc-700/50 hover:bg-zinc-700/70 transition-colors duration-200 font-semibold"
           >
             Cancel
           </button>

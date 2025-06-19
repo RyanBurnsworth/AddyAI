@@ -1,12 +1,14 @@
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import Home from './components/pages/Home';
-import ChatContainer from './components/pages/ChatContainer';
+import Start from './components/pages/Start';
+import Chat from './components/pages/Chat';
 import Authorize from './components/pages/Authorize';
-import Profile from './components/pages/Profile';
-import HomePage from './components/pages/HomePage';
+import Billing from './components/pages/Billing';
+import Home from './components/pages/Home';
 import Checkout from './components/pages/Checkout';
 import Finish from './components/pages/Finish';
+import PrivacyPolicy from './components/pages/PrivacyPolicy';
+import TermsOfService from './components/pages/TermsOfService';
 
 function App() {
   const location = useLocation();
@@ -36,7 +38,7 @@ function App() {
               exit={{ opacity: 0, x: -100 }}
               transition={{ duration: 0.4 }}
             >
-              <ChatContainer />
+              <Chat />
             </motion.div>
           }
         />
@@ -54,7 +56,7 @@ function App() {
           }
         />
         <Route
-          path="/profile"
+          path="/billing"
           element={
             <motion.div
               initial={{ opacity: 0, x: 100 }}
@@ -62,12 +64,12 @@ function App() {
               exit={{ opacity: 0, x: -100 }}
               transition={{ duration: 0.4 }}
             >
-              <Profile />
+              <Billing />
             </motion.div>
           }
         />
         <Route
-          path="/homepage"
+          path="/start"
           element={
             <motion.div
               initial={{ opacity: 0, x: 100 }}
@@ -75,7 +77,7 @@ function App() {
               exit={{ opacity: 0, x: -100 }}
               transition={{ duration: 0.4 }}
             >
-              <HomePage />
+              <Start />
             </motion.div>
           }
         />
@@ -102,6 +104,32 @@ function App() {
               transition={{ duration: 0.4 }}
             >
               <Finish />
+            </motion.div>
+          }
+        />
+        <Route
+          path="/privacy-policy"
+          element={
+            <motion.div
+              initial={{ opacity: 0, x: 100 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -100 }}
+              transition={{ duration: 0.4 }}
+            >
+              <PrivacyPolicy />
+            </motion.div>
+          }
+        />
+        <Route
+          path="/tos"
+          element={
+            <motion.div
+              initial={{ opacity: 0, x: 100 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -100 }}
+              transition={{ duration: 0.4 }}
+            >
+              <TermsOfService />
             </motion.div>
           }
         />

@@ -1,5 +1,5 @@
 import { BeatLoader } from 'react-spinners';
-import type MessageProps from '../props/MessageProps';
+import type MessageProps from '../../props/MessageProps';
 import Message from './Message';
 import { useEffect, useRef } from 'react';
 
@@ -19,7 +19,9 @@ function MessageContainer({
 
   return (
     <>
-      <div className="w-full sm:w-[300px] md:w-[600px] lg:w-[1000px] max-h-[80vh] overflow-auto scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-gray-200 p-4">
+      <div className="w-full max-w-4xl mx-auto flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-zinc-700 scrollbar-track-zinc-900 p-4 pt-20">
+        {' '}
+        {/* Added pt-20 for space from NavBar */}
         {messages.map((msg, idx) =>
           msg.isUserInput ? (
             <Message key={idx} message={msg.message} isUserInput={true} />
@@ -31,8 +33,8 @@ function MessageContainer({
       </div>
 
       {isLoading && (
-        <div className="flex items-center justify-center">
-          <BeatLoader color="#4ade80" size={16} />
+        <div className="flex items-center justify-center p-4">
+          <BeatLoader color="#4ade80" size={16} /> {/* Green accent loader */}
         </div>
       )}
     </>

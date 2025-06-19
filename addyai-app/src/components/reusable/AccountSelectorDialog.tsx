@@ -16,6 +16,8 @@ interface Account {
 export default function AccountSelectorDialog({ show, onSuccess, onError }: DialogProps) {
   if (!show) return null;
 
+  const customerAccountURL = import.meta.env.VITE_GOOGLE_CUSTOMER_ID_URL;
+
   const [selectedManager, setSelectedManager] = useState('');
   const [selectedCustomer, setSelectedCustomer] = useState('');
 
@@ -45,7 +47,6 @@ export default function AccountSelectorDialog({ show, onSuccess, onError }: Dial
 
   const [loading, setLoading] = useState(true);
 
-  const accountUrl = 'http://localhost:3000/account';
   const refreshToken = localStorage.getItem('refreshToken');
 
   const params = new URLSearchParams({
@@ -58,7 +59,7 @@ export default function AccountSelectorDialog({ show, onSuccess, onError }: Dial
       setLoading(true);
 
       try {
-        const response = await fetch(accountUrl + `?${params.toString()}`);
+        const response = await fetch(customerAccountURL + `?${params.toString()}`);
         if (!response.ok) {
           const err = await response.json();
           console.error('Error fetching accounts:', err?.message);
@@ -105,7 +106,7 @@ export default function AccountSelectorDialog({ show, onSuccess, onError }: Dial
     };
 
     fetchAccounts();
-  }, []);
+  }, [customerAccountURL, onError, params]); // Added dependencies
 
   const handleManagerChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const selected = event.target.value;
@@ -116,7 +117,9 @@ export default function AccountSelectorDialog({ show, onSuccess, onError }: Dial
       const manager = managerAccounts.find(m => m.managerId === selected);
       setCustomerAccounts(manager?.clients ?? []);
     } else {
-      const standaloneCustomers = managerAccounts.flatMap(m => (m.clients.length === 0 ? [] : []));
+      // If "None" is selected for manager, show all standalone customers again
+      const allCustomers = managerAccounts.flatMap(m => m.clients).filter(c => !c.isManager);
+      const standaloneCustomers = allCustomers.filter(acc => acc.managerId === null);
       setCustomerAccounts(standaloneCustomers);
     }
   };
@@ -142,13 +145,15 @@ export default function AccountSelectorDialog({ show, onSuccess, onError }: Dial
   };
 
   return (
-    <div className="fixed inset-0 bg-transparent bg-opacity-50 flex justify-center items-center z-50">
-      <div className="relative rounded bg-gray-100 to-gray-300 p-8 shadow-lg w-full max-w-lg text-center">
-        <h2 className="text-xl text-gray-900 font-semibold mb-4">Google Ads Account Selector</h2>
+    <div className="fixed inset-0 bg-zinc-950/70 backdrop-blur-sm flex justify-center items-center z-50">
+      <div className="relative rounded-2xl bg-zinc-900/90 p-8 shadow-xl w-full max-w-lg text-center border border-zinc-700">
+        <h2 className="text-2xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-amber-400">
+          Google Ads Account Selector
+        </h2>
 
         {loading ? (
           <div className="flex justify-center my-8">
-            <div className="w-8 h-8 border-4 border-gray-300 border-t-green-500 rounded-full animate-spin"></div>
+            <div className="w-10 h-10 border-4 border-zinc-600 border-t-green-400 rounded-full animate-spin"></div>
           </div>
         ) : (
           <>
@@ -156,7 +161,7 @@ export default function AccountSelectorDialog({ show, onSuccess, onError }: Dial
               <>
                 <label
                   htmlFor="managerSelect"
-                  className="block mb-2 mt-2 text-sm font-medium text-gray-700"
+                  className="block mb-2 mt-2 text-sm font-medium text-zinc-300 text-left"
                 >
                   Select Your Manager Account:
                 </label>
@@ -165,11 +170,17 @@ export default function AccountSelectorDialog({ show, onSuccess, onError }: Dial
                   id="managerSelect"
                   value={selectedManager}
                   onChange={handleManagerChange}
-                  className="w-full p-2 rounded-lg bg-white border border-gray-300 text-gray-700"
+                  className="w-full p-3 rounded-lg bg-white/10 text-white border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-green-400 transition-colors duration-200"
                 >
-                  <option value="">None</option>
+                  <option value="" className="bg-zinc-800 text-white">
+                    None
+                  </option>
                   {managerAccounts.map(m => (
-                    <option key={m.managerId} value={m.managerId}>
+                    <option
+                      key={m.managerId}
+                      value={m.managerId}
+                      className="bg-zinc-800 text-white"
+                    >
                       {m.name} ({m.managerId})
                     </option>
                   ))}
@@ -179,7 +190,7 @@ export default function AccountSelectorDialog({ show, onSuccess, onError }: Dial
 
             <label
               htmlFor="customerSelect"
-              className="block mb-2 mt-4 text-sm font-medium text-gray-700"
+              className="block mb-2 mt-4 text-sm font-medium text-zinc-300 text-left"
             >
               Select Your Customer Account:
             </label>
@@ -188,11 +199,13 @@ export default function AccountSelectorDialog({ show, onSuccess, onError }: Dial
               id="customerSelect"
               value={selectedCustomer}
               onChange={handleCustomerChange}
-              className="w-full p-2 rounded-lg bg-white border border-gray-300 text-gray-700"
+              className="w-full p-3 rounded-lg bg-white/10 text-white border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-green-400 transition-colors duration-200"
             >
-              <option value="">-- Select --</option>
+              <option value="" className="bg-zinc-800 text-white">
+                -- Select --
+              </option>
               {customerAccounts.map(c => (
-                <option key={c.customerId} value={c.customerId}>
+                <option key={c.customerId} value={c.customerId} className="bg-zinc-800 text-white">
                   {c.name} ({c.customerId})
                 </option>
               ))}
@@ -200,17 +213,19 @@ export default function AccountSelectorDialog({ show, onSuccess, onError }: Dial
           </>
         )}
 
-        <div className="flex justify-center">
+        <div className="flex justify-center mt-6">
           <button
             disabled={selectedCustomer === ''}
             onClick={handleSyncAccount}
-            className="mt-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+            className="group relative px-6 py-3 bg-gradient-to-r from-green-500 to-amber-500 text-white rounded-full font-semibold text-base overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Select Account
+            <div className="relative flex items-center justify-center space-x-2">
+              <span>Select Account</span>
+            </div>
           </button>
         </div>
 
-        <div className="flex justify-center text-gray-900 underline cursor-pointer mt-8">
+        <div className="flex justify-center text-zinc-400 underline cursor-pointer mt-8 hover:text-green-400 transition-colors duration-200">
           Privacy Policy
         </div>
       </div>

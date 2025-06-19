@@ -1,0 +1,393 @@
+/* AddyAILogo.css */
+
+/* Keyframe Animations */
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes textPulse {
+  from {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  to {
+    transform: scale(1.02);
+    filter: brightness(1.2);
+  }
+}
+
+@keyframes nodeGlow {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.2);
+  }
+}
+
+@keyframes dataFlow {
+  0% {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  50% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes orbit {
+  0% {
+    transform: rotate(0deg) translateX(100px) rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg) translateX(100px) rotate(-360deg);
+  }
+}
+
+@keyframes brainPulse {
+  0%,
+  100% {
+    transform: rotate(0deg) scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: rotate(180deg) scale(1.1);
+    opacity: 1;
+  }
+}
+
+@keyframes coreGlow {
+  from {
+    transform: scale(1);
+    box-shadow: 0 0 20px rgba(74, 222, 128, 0.5);
+    border-color: #4ade80;
+  }
+  to {
+    transform: scale(1.1);
+    box-shadow: 0 0 30px rgba(251, 191, 36, 0.7);
+    border-color: #fbbf24;
+  }
+}
+
+@keyframes floatAd {
+  0%,
+  100% {
+    transform: translateY(0px) scale(1);
+    opacity: 0.7;
+  }
+  33% {
+    transform: translateY(-15px) scale(1.1);
+    opacity: 1;
+  }
+  66% {
+    transform: translateY(-5px) scale(0.9);
+    opacity: 0.8;
+  }
+}
+
+@keyframes backgroundGlow {
+  from {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0.6;
+    transform: scale(1.05);
+  }
+}
+
+/* Main Container */
+.addyai-logo-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Glow Background */
+.glow-background {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  opacity: 0.3;
+  background: radial-gradient(
+    circle,
+    rgba(74, 222, 128, 0.1) 0%,
+    rgba(251, 191, 36, 0.1) 40%,
+    transparent 70%
+  );
+  animation: backgroundGlow 4s ease-in-out infinite alternate;
+}
+
+/* Rotating Rings */
+.rotating-ring {
+  position: absolute;
+  border: 2px solid transparent;
+  border-radius: 50%;
+}
+
+.ring-1 {
+  width: 192px;
+  height: 192px;
+  border-top-color: #4ade80;
+  border-right-color: #fbbf24;
+  box-shadow: 0 0 20px rgba(74, 222, 128, 0.3);
+  animation: rotate 4s linear infinite;
+}
+
+.ring-2 {
+  width: 256px;
+  height: 256px;
+  border-left-color: #fbbf24;
+  border-bottom-color: #4ade80;
+  box-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
+  animation: rotate 5s linear infinite reverse;
+}
+
+.ring-3 {
+  width: 320px;
+  height: 320px;
+  border-top-color: #4ade80;
+  border-left-color: #fbbf24;
+  box-shadow: 0 0 25px rgba(74, 222, 128, 0.2);
+  animation: rotate 6s linear infinite;
+}
+
+/* Neural Network Nodes */
+.neural-node {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  animation: nodeGlow 2s ease-in-out infinite alternate;
+}
+
+.node-1 {
+  top: 30%;
+  left: 25%;
+  background-color: #4ade80;
+  box-shadow: 0 0 15px rgba(74, 222, 128, 0.8);
+}
+
+.node-2 {
+  top: 45%;
+  right: 30%;
+  background-color: #fbbf24;
+  box-shadow: 0 0 15px rgba(251, 191, 36, 0.8);
+}
+
+.node-3 {
+  bottom: 35%;
+  left: 30%;
+  background-color: #4ade80;
+  box-shadow: 0 0 15px rgba(74, 222, 128, 0.8);
+}
+
+.node-4 {
+  bottom: 20%;
+  right: 25%;
+  background-color: #fbbf24;
+  box-shadow: 0 0 15px rgba(251, 191, 36, 0.8);
+}
+
+/* Neural Network Connections */
+.neural-connection {
+  position: absolute;
+  height: 2px;
+  opacity: 0.6;
+  background: linear-gradient(90deg, #4ade80, #fbbf24);
+  transform-origin: left;
+  animation: dataFlow 3s linear infinite;
+}
+
+.connection-1 {
+  top: 32%;
+  left: 27%;
+  width: 112px;
+  transform: rotate(25deg);
+}
+
+.connection-2 {
+  top: 42%;
+  left: 35%;
+  width: 96px;
+  transform: rotate(-30deg);
+}
+
+/* Brain Wave Patterns */
+.brain-wave {
+  position: absolute;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  opacity: 0.8;
+}
+
+.wave-1 {
+  width: 144px;
+  height: 144px;
+  border-top-color: #4ade80;
+  border-right-color: #fbbf24;
+  animation: brainPulse 2.5s ease-in-out infinite;
+}
+
+.wave-2 {
+  width: 112px;
+  height: 112px;
+  border-left-color: #fbbf24;
+  border-bottom-color: #4ade80;
+  animation: brainPulse 2.5s ease-in-out infinite reverse;
+  animation-delay: 0.5s;
+}
+
+/* Central AI Core */
+.ai-core {
+  position: absolute;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 2px solid #4ade80;
+  z-index: 10;
+  background: radial-gradient(circle, rgba(74, 222, 128, 0.3) 0%, rgba(251, 191, 36, 0.3) 100%);
+  animation: coreGlow 3s ease-in-out infinite alternate;
+}
+
+/* Orbiting Data Particles */
+.orbit-particle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  animation: orbit 4s linear infinite;
+}
+
+.particle-1 {
+  background-color: #4ade80;
+  box-shadow: 0 0 12px rgba(74, 222, 128, 0.9);
+}
+
+.particle-2 {
+  background-color: #fbbf24;
+  box-shadow: 0 0 12px rgba(251, 191, 36, 0.9);
+  animation-delay: 0.8s;
+}
+
+.particle-3 {
+  background-color: #4ade80;
+  box-shadow: 0 0 12px rgba(74, 222, 128, 0.9);
+  animation-delay: 1.6s;
+}
+
+.particle-4 {
+  background-color: #fbbf24;
+  box-shadow: 0 0 12px rgba(251, 191, 36, 0.9);
+  animation-delay: 2.4s;
+}
+
+.particle-5 {
+  background-color: #4ade80;
+  box-shadow: 0 0 12px rgba(74, 222, 128, 0.9);
+  animation-delay: 3.2s;
+}
+
+/* Floating Ad Metrics */
+.floating-metric {
+  position: absolute;
+  font-size: 12px;
+  font-weight: bold;
+  opacity: 0.7;
+  animation: floatAd 6s ease-in-out infinite;
+}
+
+.metric-1 {
+  top: 15%;
+  left: 20%;
+  color: #4ade80;
+}
+
+.metric-2 {
+  top: 25%;
+  right: 15%;
+  color: #fbbf24;
+  animation-delay: 2s;
+}
+
+.metric-3 {
+  bottom: 20%;
+  left: 15%;
+  color: #4ade80;
+  animation-delay: 4s;
+}
+
+.metric-4 {
+  bottom: 30%;
+  right: 20%;
+  color: #fbbf24;
+  animation-delay: 1s;
+}
+
+/* Brand Text */
+.brand-text {
+  position: absolute;
+  z-index: 20;
+  font-weight: bold;
+  color: #4ade80;
+  letter-spacing: 0.05em;
+  text-shadow: 0 0 20px rgba(74, 222, 128, 0.6);
+  animation: textPulse 3s ease-in-out infinite alternate;
+}
+
+.ai-text {
+  color: #fbbf24;
+  text-shadow: 0 0 20px rgba(251, 191, 36, 0.6);
+}
+
+/* Responsive text sizes */
+.text-2xl {
+  font-size: 1.5rem;
+}
+.text-3xl {
+  font-size: 1.875rem;
+}
+.text-5xl {
+  font-size: 3rem;
+}
+.text-6xl {
+  font-size: 3.75rem;
+}
+
+/* Responsive container sizes */
+.w-64 {
+  width: 16rem;
+}
+.h-52 {
+  height: 13rem;
+}
+.w-80 {
+  width: 20rem;
+}
+.h-64 {
+  height: 16rem;
+}
+.w-\[500px\] {
+  width: 500px;
+}
+.h-96 {
+  height: 24rem;
+}
+.w-\[600px\] {
+  width: 600px;
+}
+.h-\[480px\] {
+  height: 480px;
+}

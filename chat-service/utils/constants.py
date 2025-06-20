@@ -25,6 +25,8 @@ CONTENT = "content"
 
 APPLICATION_JSON = "application/json"
 
+ASSISTANT = "assistant"
+
 QUERY_GENERATOR_SYSTEM_PROMPT = """
 You are an expert in SQL, Google Ads, and data analytics. Your task is to generate accurate and efficient PostgreSQL (PSQL) queries based on user questions about their Google Ads performance data.
 

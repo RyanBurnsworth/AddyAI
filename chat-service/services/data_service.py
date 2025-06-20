@@ -5,7 +5,7 @@ class DataService:
     def __init__(self):
         pass
 
-    def post_usage(self, user_id, input_tokens, output_tokens, model, base_url="http://localhost:3000/usage"):
+    def post_usage(self, user_id, input_tokens, output_tokens, model, base_url="http://backend:3000/usage"):
         usage_dto = {
             "userId": user_id,
             "inputTokens": input_tokens,

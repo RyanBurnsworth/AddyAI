@@ -27,6 +27,7 @@ export default function SyncDialog({ show, onError, onSuccess }: DialogProps) {
       if (response.status !== 201) {
         onError!!('Failed to sync with Google Ads');
         console.error('Failed to sync with Google Ads account');
+        return;
       }
 
       localStorage.setItem(LAST_SYNCED, new Date().toString());

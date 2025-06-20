@@ -13,7 +13,7 @@ export function SnackBar({ message, duration, show, onClose, color }: SnackBarPr
 
   return (
     <div
-      className={`fixed bottom-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded shadow-lg text-white transition-opacity duration-300 z-[9999] ${
+      className={`fixed bottom-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded shadow-lg text-white transition-opacity duration-300 z-[99999999] ${
         show ? `opacity-100 ${color}` : 'opacity-0 pointer-events-none'
       }`}
     >

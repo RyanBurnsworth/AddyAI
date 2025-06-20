@@ -131,6 +131,9 @@ export default function Start() {
   const handleSyncDialogError = useCallback((msg: string) => {
     setErrorMessage(msg);
     setShowSnackBar(true);
+
+    // be sure last_synced is clear
+    localStorage.removeItem(LAST_SYNCED);
   }, []);
 
   // Memoize onSuccess for SyncDialog

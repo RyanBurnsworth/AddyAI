@@ -98,11 +98,12 @@ export default function Chat() {
           userId: number;
           userPrompt: string;
           customerId: string | null;
-          conversationId?: number;
+          conversationId?: number | null;
         } = {
           userId,
           userPrompt: message,
           customerId,
+          conversationId: Number(currentConversationId),
         };
 
         if (currentConversationId) {
@@ -123,7 +124,7 @@ export default function Chat() {
           : await res.text();
 
         // Update conversation ID in local storage
-        localStorage.setItem(CONVERSATION_ID, data?.conversationId);
+        if (data.conversation_id) localStorage.setItem(CONVERSATION_ID, data.conversationId);
 
         // After successfully sending the message and getting a response, reload history
         // This ensures the new conversation or updated headline appears immediately

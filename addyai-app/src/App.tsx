@@ -9,6 +9,7 @@ import Checkout from './components/pages/Checkout';
 import Finish from './components/pages/Finish';
 import PrivacyPolicy from './components/pages/PrivacyPolicy';
 import TermsOfService from './components/pages/TermsOfService';
+import ChatHistory from './components/pages/ChatHistory';
 
 function App() {
   const location = useLocation();
@@ -130,6 +131,19 @@ function App() {
               transition={{ duration: 0.4 }}
             >
               <TermsOfService />
+            </motion.div>
+          }
+        />
+        <Route
+          path="/conversation-history"
+          element={
+            <motion.div
+              initial={{ opacity: 0, x: 100 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -100 }}
+              transition={{ duration: 0.4 }}
+            >
+              <ChatHistory />
             </motion.div>
           }
         />

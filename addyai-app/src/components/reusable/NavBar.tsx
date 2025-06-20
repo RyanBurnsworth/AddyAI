@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { PICTURE, REFRESH_TOKEN } from '../../utils/constants';
-import { MdOutlineAccountTree } from 'react-icons/md';
+import { CUSTOMER_ID, PICTURE, REFRESH_TOKEN } from '../../utils/constants';
+import { MdAdd, MdGroup, MdHistory, MdReceipt } from 'react-icons/md';
 import { CiLogout } from 'react-icons/ci';
 import { useNavigate } from 'react-router-dom';
 
@@ -34,6 +34,11 @@ export default function NavBar() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const handleSwitchAccount = () => {
+    localStorage.removeItem(CUSTOMER_ID);
+    navigate('/start');
+  };
+
   const logout = () => {
     localStorage.clear();
     navigate('/');
@@ -43,7 +48,7 @@ export default function NavBar() {
     <div className="fixed top-0 left-0 right-0 flex flex-row justify-between items-center p-4 bg-zinc-900/80 backdrop-blur-md border-b border-zinc-700/50 shadow-lg w-full z-50">
       <div
         className="text-2xl font-bold ml-4 cursor-pointer bg-gradient-to-r from-green-400 to-amber-400 bg-clip-text text-transparent hover:from-green-300 hover:to-amber-300 transition-colors duration-200 relative z-10"
-        onClick={() => navigate('/start')}
+        onClick={() => navigate('/')}
       >
         AddyAI
       </div>
@@ -68,10 +73,35 @@ export default function NavBar() {
               <div className="flex flex-col gap-2">
                 <button
                   className="text-base text-left text-zinc-200 hover:bg-zinc-700/70 p-2 rounded-md transition-colors duration-150"
+                  onClick={() => navigate('/start')}
+                >
+                  <div className="flex flex-row items-center">
+                    <MdAdd size={20} className="mr-3 text-amber-400" /> Start New
+                  </div>
+                </button>
+                <button
+                  className="text-base text-left text-zinc-200 hover:bg-zinc-700/70 p-2 rounded-md transition-colors duration-150"
+                  onClick={() => handleSwitchAccount()}
+                >
+                  <div className="flex flex-row items-center">
+                    <MdGroup size={20} className="mr-3 text-amber-400" /> Switch Account
+                  </div>
+                </button>
+                <button
+                  className="text-base text-left text-zinc-200 hover:bg-zinc-700/70 p-2 rounded-md transition-colors duration-150"
                   onClick={() => navigate('/billing')}
                 >
                   <div className="flex flex-row items-center">
-                    <MdOutlineAccountTree size={20} className="mr-3 text-amber-400" /> Billing
+                    <MdReceipt size={20} className="mr-3 text-amber-400" /> Billing
+                  </div>
+                </button>
+                <button
+                  className="text-base text-left text-zinc-200 hover:bg-zinc-700/70 p-2 rounded-md transition-colors duration-150"
+                  onClick={() => navigate('/conversation-history')}
+                >
+                  <div className="flex flex-row items-center">
+                    <MdHistory size={20} className="mr-3 text-amber-400" />
+                    Conversation History
                   </div>
                 </button>
                 <button

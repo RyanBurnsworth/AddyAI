@@ -125,9 +125,6 @@ export default function AccountSelectorDialog({ show, onSuccess, onError }: Dial
       }
     };
 
-    // Only run fetchAccounts when the component mounts (because 'show' is checked at the top)
-    // and if customerAccountURL or handleError (due to onError) change.
-    // If you are certain customerAccountURL and onError are stable, you can make the dependency array empty.
     fetchAccounts();
   }, [customerAccountURL, handleError]); // 'show' is now handled by the early exit 'if (!show) return null;'
 

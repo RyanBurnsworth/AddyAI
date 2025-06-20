@@ -1,10 +1,9 @@
 import { USERID } from '../../utils/constants';
-import BillingChart from '../reusable/BillingChart'; // Assuming this component exists and can adapt
+import BillingChart from '../reusable/BillingChart';
 import { useEffect, useState } from 'react';
-import PaymentDialog from '../reusable/PaymentSelectionDialog'; // Assuming this component exists
+import PaymentDialog from '../reusable/PaymentSelectionDialog';
 import { useNavigate } from 'react-router-dom';
-import NavBar from '../reusable/NavBar'; // Assuming this NavBar is the one without absolute positioning
-import ProfileSidebar from '../reusable/ProfileSideBar'; // Assuming this component exists and can adapt
+import NavBar from '../reusable/NavBar';
 
 export default function Billing() {
   const navigate = useNavigate();
@@ -22,7 +21,7 @@ export default function Billing() {
         const userData = await response.json();
 
         // Ensure balance is formatted correctly, accounting for potential division by 1000
-        setBalance('$' + (Math.floor(Number(userData.balance) / 100) / 10).toFixed(2)); // Corrected calculation based on typical cents to dollars conversion
+        setBalance('$' + (Number(userData.balance) / 100 / 10).toFixed(2)); // Corrected calculation based on typical cents to dollars conversion
       } catch (error) {
         console.log('Error fetching user data: ', error);
       }
@@ -77,9 +76,6 @@ export default function Billing() {
 
         <div className="relative z-10 flex flex-1 w-full pt-16">
           {' '}
-          {/* Added pt-16 to offset NavBar height */}
-          {/* ProfileSidebar - Assuming it will be styled to match ChatHistorySidebar */}
-          <ProfileSidebar />
           <div className="flex flex-col flex-1 p-4 md:p-8">
             {' '}
             {/* Added overall padding to the main content area */}

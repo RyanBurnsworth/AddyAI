@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import type DialogProps from '../../props/DialogProps';
 import { CUSTOMER_ID, LAST_SYNCED, MANAGER_ID, REFRESH_TOKEN, USERID } from '../../utils/constants';
-import { IoArrowBackOutline } from 'react-icons/io5';
 
 export default function SyncDialog({ show, onError, onSuccess }: DialogProps) {
   if (!show) return null;
@@ -40,17 +39,10 @@ export default function SyncDialog({ show, onError, onSuccess }: DialogProps) {
     }
   };
 
-  const goBack = () => {
-    localStorage.setItem('customerId', '');
-  };
-
   return (
     <>
       <div className="fixed inset-0 bg-zinc-950/70 backdrop-blur-sm flex justify-center items-center z-50">
         <div className="relative rounded-2xl bg-zinc-900/90 p-8 shadow-xl w-full max-w-lg text-center border border-zinc-700">
-          <div className="absolute top-4 left-4 text-green-400 cursor-pointer flex items-center gap-2 mb-4 hover:text-green-300 transition-colors duration-200">
-            <IoArrowBackOutline size={24} onClick={goBack} /> {/* Increased size for visibility */}
-          </div>
           <h2 className="text-2xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-amber-400">
             Synchronize Your Google Ads Account
           </h2>

@@ -60,6 +60,10 @@ export default function EnhancedHome() {
     return () => observer.disconnect();
   }, []);
 
+  const handleWatchVideoClick = (url: string) => {
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
+
   return (
     <div className="w-full min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 text-white overflow-hidden relative">
       {/* Animated Background Grid */}
@@ -125,9 +129,9 @@ export default function EnhancedHome() {
             </h1>
 
             <p className="text-lg sm:text-xl lg:text-2xl max-w-4xl mx-auto mb-8 text-center text-zinc-300 leading-relaxed px-4">
-              Your AI Google Ads Co-Pilot. Revolutionizing campaign management with
-              <span className="text-green-400 font-semibold"> intelligent automation</span> and
-              <span className="text-amber-400 font-semibold"> real-time optimization</span>.
+              Your AI Google Ads Co-Pilot. Revolutionizing account management with
+              <span className="text-green-400 font-semibold"> intelligent analysis</span> and
+              <span className="text-amber-400 font-semibold"> smarter campaign strategy</span>.
             </p>
 
             {/* Enhanced CTA Buttons - Better centered */}
@@ -147,7 +151,9 @@ export default function EnhancedHome() {
               <button className="group px-8 py-4 border-2 border-amber-400/50 rounded-full font-semibold text-lg hover:bg-amber-400/10 transition-all duration-300 hover:border-amber-400">
                 <div className="flex items-center justify-center space-x-2">
                   <Play className="w-5 h-5" />
-                  <span>Watch Demo</span>
+                  <span onClick={() => handleWatchVideoClick('https://youtu.be/n7EIZk8PZXE')}>
+                    Watch Demo
+                  </span>
                 </div>
               </button>
             </div>
@@ -177,7 +183,7 @@ export default function EnhancedHome() {
                 {
                   title: 'Smart Connection',
                   description:
-                    'Seamlessly integrate with Google Ads using our secure OAuth2 connection. Setup takes less than 60 seconds.',
+                    'Seamlessly integrate with Google Ads using our secure OAuth2 connection. Connecting your account is simple and secure.',
                   icon: '🔗',
                   metrics: '99.9% Uptime',
                 },
@@ -281,9 +287,16 @@ export default function EnhancedHome() {
                 Try it yourself - ask anything about your Google Ads performance
               </p>
 
-              <button className="bg-gradient-to-r from-green-500 to-amber-500 hover:from-green-400 hover:to-amber-400 text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 hover:scale-105 hover:shadow-xl">
-                Start Free Trial
+              <button
+                className="bg-gradient-to-r from-green-500 to-amber-500 hover:from-green-400 hover:to-amber-400 text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 hover:scale-105 hover:shadow-xl"
+                onClick={() => navigate('/start')}
+              >
+                Get Free Credits
               </button>
+
+              <p className="text-zinc-400 mt-8 text-xs">
+                $1 worth of free credits to all new users
+              </p>
             </div>
           </div>
         </section>
@@ -315,10 +328,7 @@ export default function EnhancedHome() {
                   </a>
                 </li>
                 <li>
-                  <a
-                    href="/contact"
-                    className="text-zinc-400 hover:text-green-400 transition-colors"
-                  >
+                  <a href="#" className="text-zinc-400 hover:text-green-400 transition-colors">
                     Contact
                   </a>
                 </li>
@@ -332,27 +342,22 @@ export default function EnhancedHome() {
               </h3>
               <p className="text-zinc-400 mb-2">
                 Email:{' '}
-                <a
-                  href="mailto:support@addyai.com"
-                  className="hover:text-green-400 transition-colors"
-                >
-                  support@addyai.com
+                <a href="mailto:info@addyai.com" className="hover:text-green-400 transition-colors">
+                  info@addyai.com
                 </a>
               </p>
-              <p className="text-zinc-400">Location: Remote</p>
             </div>
 
             {/* Social Media */}
-            <div className="flex flex-col items-center sm:items-start">
-              {' '}
-              {/* Align left on small screens and up */}
+            <div>
               <h3 className="text-lg font-semibold mb-4 text-white bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-amber-400">
                 Follow Us
               </h3>
-              <div className="flex justify-center sm:justify-start gap-4 mt-2">
+              <div className="flex justify-center gap-4 mt-2">
                 {/* Twitter */}
                 <a
-                  href="#"
+                  href="https://x.com/AddyAIApp"
+                  target="_blank"
                   className="text-zinc-400 hover:text-green-400 transition-colors"
                   aria-label="Twitter"
                 >
@@ -363,7 +368,8 @@ export default function EnhancedHome() {
 
                 {/* Facebook */}
                 <a
-                  href="#"
+                  href="https://www.facebook.com/profile.php?id=61576694611488"
+                  target="_blank"
                   className="text-zinc-400 hover:text-green-400 transition-colors"
                   aria-label="Facebook"
                 >
@@ -374,7 +380,8 @@ export default function EnhancedHome() {
 
                 {/* LinkedIn */}
                 <a
-                  href="#"
+                  href="https://www.linkedin.com/company/addyaiapp/about"
+                  target="_blank"
                   className="text-zinc-400 hover:text-green-400 transition-colors"
                   aria-label="LinkedIn"
                 >
@@ -385,12 +392,13 @@ export default function EnhancedHome() {
 
                 {/* Reddit */}
                 <a
-                  href="#"
+                  href="https://www.reddit.com/user/AddyAI/"
+                  target="_blank"
                   className="text-zinc-400 hover:text-green-400 transition-colors"
                   aria-label="Reddit"
                 >
                   <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24">
-                    <path d="M24 12c0-6.627-5.373-12-12-12S0 5.373 0 12c0 4.99 3.051 9.238 7.365 11.012-.1-.888-.188-2.255.038-3.228.205-.878 1.32-5.593 1.32-5.593s-.338-.676-.338-1.674c0-1.567.91-2.738 2.04-2.738.963 0 1.427.723 1.427 1.59 0 .97-.618 2.418-.937 3.763-.27 1.14.574 2.07 1.698 2.07 2.037 0 3.604-2.145 3.604-5.238 0-2.74-1.973-4.66-4.792-4.66-3.26 0-5.175 2.445-5.175 4.973 0 .982.377 2.04.848 2.615.093.113.106.211.08.326-.087.358-.29 1.14-.329 1.299-.05.21-.164.255-.38.154-1.41-.654-2.29-2.71-2.29-4.363 0-3.548 2.576-6.807 7.422-6.807 3.894 0 6.916 2.778 6.916 6.49 0 3.867-2.438 6.984-5.828 6.984-1.138 0-2.208-.592-2.574-1.295l-.703 2.679c-.254.998-.942 2.25-1.403 3.015C10.78 23.924 11.383 24 12 24c6.627 0 12-5.373 12-12z" />
+                    <path d="M12 0A12 12 0 0 0 0 12c0 5.3 3.4 9.8 8.2 11.4.6-.4 1.1-1.2 1.4-2.2.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.1-.6-.5-1.3-1.1-1.8-1.8-.5-.7-.8-1.5-.8-2.4 0-1.4.9-2.6 2.2-2.9 1.3-.3 2.7.2 3.5 1.3.8 1.1.8 2.5.1 3.7-.7 1.2-2 1.9-3.4 1.9-.8 0-1.5-.3-2-.9-.5-.5-.8-1.2-.8-1.9 0-.5.2-1 .5-1.4.3-.4.7-.6 1.1-.6.3 0 .6.1.8.3.2.2.3.5.3.8 0 .2-.1.4-.2.6-.1.2-.3.3-.5.3-.1 0-.2 0-.3-.1-.1-.1-.1-.2-.1-.3 0-.1.1-.2.2-.2.1-.1.2-.1.3-.1.1 0 .2.1.2.2 0 .1-.1.2-.2.2-.1.1-.2.1-.3.1-.2 0-.4-.1-.5-.3-.1-.2-.2-.4-.2-.6 0-.4.2-.8.5-1.1.3-.3.7-.4 1.1-.4.6 0 1.2.3 1.6.8.4.5.6 1.1.6 1.8 0 .9-.4 1.8-1.1 2.4-.7.6-1.6.9-2.6.9-1.6 0-3.1-.9-3.9-2.3-.8-1.4-.8-3.1.1-4.4 1-1.5 2.8-2.3 4.6-2 1.8.3 3.4 1.5 4.1 3.2C19.7 14.2 20 16.1 19.1 17.7c-.9 1.6-2.6 2.6-4.4 2.6-.4 0-.8-.1-1.2-.2-.4-.1-.7-.3-1-.5-.6-.4-1.1-.9-1.4-1.6-.3-.7-.4-1.4-.3-2.1.1-.7.4-1.3.8-1.8.4-.5 1-.9 1.6-1 .6-.1 1.2 0 1.7.3.5.3.9.8 1.1 1.3.2.5.2 1.1 0 1.6-.2.5-.6.9-1.1 1.1-.5.2-1.1.2-1.6 0-.5-.2-.9-.6-1.1-1.1-.2-.5-.2-1.1 0-1.6.2-.5.6-.9 1.1-1.1.5-.2 1.1-.2 1.6 0 .5.2.9.6 1.1 1.1.2.5.2 1.1 0 1.6-.2.5-.6.9-1.1 1.1-.5.2-1.1.2-1.6 0-.5-.2-.9-.6-1.1-1.1-.2-.5-.2-1.1 0-1.6.2-.5.6-.9 1.1-1.1.5-.2 1.1-.2 1.6 0z" />
                   </svg>
                 </a>
               </div>

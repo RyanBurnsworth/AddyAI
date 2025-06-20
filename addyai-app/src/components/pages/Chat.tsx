@@ -15,11 +15,14 @@ import MessageContainer from '../reusable/MessageContainer';
 import UserImportForm from '../reusable/UserInputForm';
 
 export default function Chat() {
+  const ESTIMATED_COST_PER_MSG = 0.05;
+
   const location = useLocation();
   const navigate = useNavigate();
 
   const initialMessage = (location.state as { initialMessage?: string })?.initialMessage;
 
+  const [userBalance, setUserBalance] = useState(-1);
   const [showSnackBar, setShowSnackBar] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [messages, setMessages] = useState<MessageProps[]>([]);
@@ -46,6 +49,7 @@ export default function Chat() {
       });
       const res = await fetch(`${baseURL}/conversation/grouped?${params}`);
       if (!res.ok) throw new Error('Failed to fetch');
+
       const data = await res.json();
       setConversationHistory(data);
     } catch (err) {
@@ -54,6 +58,14 @@ export default function Chat() {
       setIsHistoryLoading(false);
     }
   }, [userId, customerId, baseURL]);
+
+  const handleGetUserBalance = useCallback(async () => {
+    const res = await fetch(`${baseURL}/user/balance?id=${userId}`);
+
+    if (res.status !== 200) throw new Error('Bad status');
+    const balance = await res.text();
+    setUserBalance(Number(balance));
+  }, []);
 
   const handleSendMessage = useCallback(
     async (message: string) => {
@@ -66,6 +78,16 @@ export default function Chat() {
         navigate('/');
         return; // Prevent further execution if navigating away
       }
+
+      // if user balance is too low display a message
+      if (userBalance !== -1 && userBalance < ESTIMATED_COST_PER_MSG) {
+        setErrorMessage('Balance is too low. Add more credits');
+        setShowSnackBar(true);
+        return;
+      }
+
+      // update the optimistic balance
+      setUserBalance(userBalance - 25); // 0.025 * 1000
 
       messagesRef.current = newMessages;
       setMessages(newMessages);
@@ -123,7 +145,15 @@ export default function Chat() {
         setIsLoading(false);
       }
     },
-    [customerId, messagingUrl, userId, initialMessage, navigate, handleLoadingConversationHistory]
+    [
+      customerId,
+      messagingUrl,
+      userId,
+      initialMessage,
+      navigate,
+      handleLoadingConversationHistory,
+      userBalance,
+    ]
   );
 
   const loadConversationById = useCallback(
@@ -158,22 +188,30 @@ export default function Chat() {
   );
 
   useEffect(() => {
-    // Load history on initial render
+    // fetch the user current balance and store it
+    handleGetUserBalance();
+
+    // Always load history for the sidebar on component mount
     handleLoadingConversationHistory();
 
+    const currentConversationId = localStorage.getItem(CONVERSATION_ID);
+
     if (initialMessage) {
+      // If there's an initial message (from Start page), handle it as a new chat
       handleSendMessage(initialMessage);
-    } else if (!initialMessage && messages.length === 0) {
-      // Only navigate to home if there's no initial message and no messages loaded
-      // This prevents redirecting after a conversation has started or been loaded
-      if (!localStorage.getItem(CONVERSATION_ID)) {
-        navigate('/');
-      }
+    } else if (currentConversationId) {
+      // This is the new crucial part: if no initial message but a CONVERSATION_ID exists in local storage,
+      // it means we're trying to load an existing conversation (e.g., from ConversationHistory page).
+      loadConversationById(Number(currentConversationId));
+    } else if (messages.length === 0) {
+      // If no initial message, no conversation ID in localStorage, and no messages are currently loaded,
+      // then navigate to the home page (e.g., if user directly types /chat without context)
+      navigate('/');
     }
+
     // Clean up location state to prevent re-triggering initial message on subsequent renders
     navigate(location.pathname, { replace: true });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Empty dependency array ensures this runs only once on mount
+  }, []);
 
   return (
     <div className="h-screen w-screen flex flex-col bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 text-white overflow-hidden relative">

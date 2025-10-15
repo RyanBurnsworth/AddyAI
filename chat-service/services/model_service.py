@@ -122,7 +122,6 @@ class ModelService:
                 previous_response_id=self._previous_response_id,
                 input=messages
             )
-            self._previous_response_id = response.id
 
             # update the data service with the tokens usage
             self._data_service.post_usage(user_id, response.usage.input_tokens, response.usage.output_tokens, O4_MINI)

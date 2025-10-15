@@ -1,0 +1,85 @@
+services:
+  # NGINX reverse proxy
+  nginx:
+    build: ./nginx
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/certbot/www:/var/www/certbot
+      - ./nginx/certbot/conf:/etc/letsencrypt
+    depends_on:
+      - frontend
+      - backend
+      - python
+
+  # Let's Encrypt SSL certificate generator
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - ./nginx/certbot/www:/var/www/certbot
+      - ./nginx/certbot/conf:/etc/letsencrypt
+    entrypoint:
+      - certbot
+      - certonly
+      - --webroot
+      - --webroot-path=/var/www/certbot
+      - --email
+      - info@addyai.com
+      - --agree-tos
+      - --no-eff-email
+      - --expand
+      - -d
+      - addyai.com
+      - -d
+      - www.addyai.com
+
+  # React frontend
+  frontend:
+    build: ./addyai-app
+    container_name: frontend
+    expose:
+      - "5173"
+    env_file:
+      - ./addyai-app/.env
+    depends_on:
+      - backend
+
+  # NestJS backend
+  backend:
+    build: ./data-service
+    container_name: backend
+    expose:
+      - "3000"
+    env_file:
+      - ./data-service/.env
+    depends_on:
+      - postgres
+      - python
+
+  # Flask service
+  python:
+    build: ./chat-service
+    container_name: python
+    expose:
+      - "5000"
+    environment:
+      - OPENAI_API_KEY=<Your OpenAI API Key>
+
+  # Postgres DB
+  postgres:
+    image: postgres:15
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: addyai
+      POSTGRES_PASSWORD: Lala2010
+      POSTGRES_DB: addyai_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  pgdata:

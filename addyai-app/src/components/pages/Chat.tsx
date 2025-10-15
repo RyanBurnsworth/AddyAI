@@ -9,10 +9,19 @@ import {
   CUSTOMER_ID,
   POST,
   USERID,
+  REFRESH_TOKEN,
+  LAST_SYNCED,
+  CODE,
+  CONSENT,
+  OFFLINE,
 } from '../../utils/constants';
 import ChatHistorySidebar from '../reusable/ChatHistorySidebar';
 import MessageContainer from '../reusable/MessageContainer';
 import UserImportForm from '../reusable/UserInputForm';
+import SignInDialog from '../reusable/SignInDialog';
+import AccountSelectorDialog from '../reusable/AccountSelectorDialog';
+import SyncDialog from '../reusable/SyncDialog';
+
 
 export default function Chat() {
   const ESTIMATED_COST_PER_MSG = 0.05;
@@ -33,12 +42,23 @@ export default function Chat() {
   > | null>(null);
   const [isHistoryLoading, setIsHistoryLoading] = useState(true);
 
+  // Dialog related states
+  const [showSignInDialog, setShowSignInDialog] = useState<boolean>(false);
+  const [showAccountSelectorDialog, setShowAccountSelectorDialog] = useState<boolean>(false);
+  const [showSyncDialog, setShowSyncDialog] = useState<boolean>(false);
+
+
   const userId = useMemo(() => Number(localStorage.getItem(USERID)), []);
   const customerId = useMemo(() => localStorage.getItem(CUSTOMER_ID), []);
 
   const messagesRef = useRef<MessageProps[]>([]);
   const messagingUrl = import.meta.env.VITE_MESSAGING_URL;
   const baseURL = import.meta.env.VITE_BASE_URL;
+
+  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+  const redirectUri = import.meta.env.VITE_GOOGLE_REDIRECT_URL;
+  const scope = import.meta.env.VITE_GOOGLE_SCOPE;
+
 
   const handleLoadingConversationHistory = useCallback(async () => {
     setIsHistoryLoading(true);
@@ -65,7 +85,7 @@ export default function Chat() {
     if (res.status !== 200) throw new Error('Bad status');
     const balance = await res.text();
     setUserBalance(Number(balance));
-  }, []);
+  }, [baseURL, userId]);
 
   const handleSendMessage = useCallback(
     async (message: string) => {
@@ -73,21 +93,13 @@ export default function Chat() {
       const newMessages = [...messagesRef.current, userMessage];
       let currentConversationId = localStorage.getItem(CONVERSATION_ID);
 
-      // If no conversation ID and no initial message, navigate to home (should not happen if flow is correct)
-      if (!currentConversationId && !initialMessage) {
-        navigate('/');
-        return; // Prevent further execution if navigating away
-      }
-
-      // if user balance is too low display a message
       if (userBalance !== -1 && userBalance < ESTIMATED_COST_PER_MSG) {
         setErrorMessage('Balance is too low. Add more credits');
         setShowSnackBar(true);
         return;
       }
 
-      // update the optimistic balance
-      setUserBalance(userBalance - 25); // 0.025 * 1000
+      setUserBalance(userBalance - 25);
 
       messagesRef.current = newMessages;
       setMessages(newMessages);
@@ -123,11 +135,8 @@ export default function Chat() {
           ? await res.json()
           : await res.text();
 
-        // Update conversation ID in local storage
-        if (data.conversation_id) localStorage.setItem(CONVERSATION_ID, data.conversationId);
+        if (data.conversation_id) localStorage.setItem(CONVERSATION_ID, data.conversation_id);
 
-        // After successfully sending the message and getting a response, reload history
-        // This ensures the new conversation or updated headline appears immediately
         await handleLoadingConversationHistory();
 
         const botMessage = {
@@ -150,10 +159,8 @@ export default function Chat() {
       customerId,
       messagingUrl,
       userId,
-      initialMessage,
-      navigate,
-      handleLoadingConversationHistory,
       userBalance,
+      handleLoadingConversationHistory,
     ]
   );
 
@@ -188,84 +195,158 @@ export default function Chat() {
     [userId, customerId, baseURL]
   );
 
-  useEffect(() => {
-    // fetch the user current balance and store it
-    handleGetUserBalance();
+  // Dialog related functions
+  const getRefreshToken = useCallback(() => {
+    const params = new URLSearchParams({
+      client_id: clientId,
+      redirect_uri: redirectUri,
+      response_type: CODE,
+      scope: scope,
+      access_type: OFFLINE,
+      prompt: CONSENT,
+    });
 
-    // Always load history for the sidebar on component mount
-    handleLoadingConversationHistory();
+    window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+  }, [clientId, redirectUri, scope]);
 
-    const currentConversationId = localStorage.getItem(CONVERSATION_ID);
-
-    if (initialMessage) {
-      // If there's an initial message (from Start page), handle it as a new chat
-      handleSendMessage(initialMessage);
-    } else if (currentConversationId) {
-      // This is the new crucial part: if no initial message but a CONVERSATION_ID exists in local storage,
-      // it means we're trying to load an existing conversation (e.g., from ConversationHistory page).
-      loadConversationById(Number(currentConversationId));
-    } else if (messages.length === 0) {
-      // If no initial message, no conversation ID in localStorage, and no messages are currently loaded,
-      // then navigate to the home page (e.g., if user directly types /chat without context)
-      navigate('/');
+  const handleSignInDialogClick = useCallback((isCancelled: boolean) => {
+    if (!isCancelled) {
+      getRefreshToken();
     }
+    setShowSignInDialog(false);
+  }, [getRefreshToken]);
 
-    // Clean up location state to prevent re-triggering initial message on subsequent renders
-    navigate(location.pathname, { replace: true });
+  const handleAccountSelectorError = useCallback((msg: string) => {
+    setShowAccountSelectorDialog(false);
+    setErrorMessage(msg);
+    setShowSnackBar(true);
   }, []);
 
+  const handleAccountSelectorSuccess = useCallback(() => {
+    setShowAccountSelectorDialog(false);
+    if (!localStorage.getItem(LAST_SYNCED) || localStorage.getItem(LAST_SYNCED) === '') {
+      setShowSyncDialog(true);
+    }
+    setErrorMessage('');
+    setShowSnackBar(false);
+  }, []);
+
+  const handleSyncDialogError = useCallback((msg: string) => {
+    setErrorMessage(msg);
+    setShowSnackBar(true);
+    localStorage.removeItem(LAST_SYNCED);
+  }, []);
+
+  const handleSyncDialogSuccess = useCallback(() => {
+    setShowSyncDialog(false);
+    setErrorMessage('');
+    setShowSnackBar(false);
+  }, []);
+
+
+  useEffect(() => {
+    localStorage.removeItem(CONVERSATION_ID);
+
+    if (!localStorage.getItem(REFRESH_TOKEN) || !localStorage.getItem(USERID)) {
+      setShowSignInDialog(true);
+    } else if (!localStorage.getItem(CUSTOMER_ID)) {
+      setShowAccountSelectorDialog(true);
+    } else if (!localStorage.getItem(LAST_SYNCED) || localStorage.getItem(LAST_SYNCED) === '') {
+      setShowSyncDialog(true);
+    } else {
+      handleGetUserBalance();
+      handleLoadingConversationHistory();
+
+      const currentConversationId = localStorage.getItem(CONVERSATION_ID);
+
+      if (initialMessage) {
+        handleSendMessage(initialMessage);
+      } else if (currentConversationId) {
+        loadConversationById(Number(currentConversationId));
+      } else if (messages.length === 0) {
+        navigate('/');
+      }
+    }
+    navigate(location.pathname, { replace: true, state: {} });
+  }, [
+    initialMessage,
+    navigate,
+    location.pathname,
+    handleGetUserBalance,
+    handleLoadingConversationHistory,
+    loadConversationById,
+    handleSendMessage,
+  ]);
+
+
   return (
-    <div className="h-screen w-screen flex flex-col bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 text-white overflow-hidden relative">
-      {/* Animated Background Grid & Radial Gradient */}
-      <div className="fixed inset-0 opacity-20">
+    <div className="h-screen w-screen flex flex-col bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white overflow-hidden">
+      {/* Background Effects */}
+      <div className="fixed inset-0 opacity-30">
         <div
           className="absolute inset-0"
           style={{
-            backgroundImage: `radial-gradient(circle at 50% 50%, rgba(74, 222, 128, 0.15) 0%, transparent 40%)`,
+            backgroundImage: `radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                             radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+                             radial-gradient(circle at 40% 40%, rgba(16, 185, 129, 0.05) 0%, transparent 50%)`,
           }}
         />
-        <div className="grid-background" />
+        <div className="absolute inset-0 opacity-20">
+          <div className="mesh-gradient" />
+        </div>
       </div>
 
-      {/* Floating Particles */}
+      {/* Floating particles */}
       <div className="fixed inset-0 pointer-events-none">
-        {[...Array(20)].map((_, i) => (
+        {[...Array(5)].map((_, i) => (
           <div
             key={i}
-            className="absolute w-1 h-1 bg-green-400 rounded-full animate-float"
+            className="absolute w-1 h-1 bg-blue-400 rounded-full animate-float opacity-40"
             style={{
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 10}s`,
-              animationDuration: `${8 + Math.random() * 4}s`,
+              animationDelay: `${Math.random() * 20}s`,
+              animationDuration: `${15 + Math.random() * 10}s`,
             }}
           />
         ))}
       </div>
 
-      {/* NavBar - positioned above everything */}
-      <NavBar />
+      {/* NavBar - Fixed height */}
+      <div className="flex-shrink-0 relative z-20">
+        <NavBar />
+      </div>
 
-      <div className="relative z-10 flex flex-1 h-full min-h-0 pt-20">
-        {' '}
-        {/* Added pt-20 for NavBar space */}
-        {/* ChatHistorySidebar */}
-        <ChatHistorySidebar
-          isPanelOpen
-          isLoading={isLoading}
-          isHistoryLoading={isHistoryLoading}
-          conversationHistory={conversationHistory}
-          loadConversationById={loadConversationById}
-        />
-        <div className="flex flex-col flex-1 min-h-0">
-          <main className="flex-1 flex flex-col min-h-0">
-            <MessageContainer messages={messages} isLoading={isLoading} />
-            <div className="flex-shrink-0 p-4">
-              {' '}
-              {/* Wrapper for UserInputForm */}
+      {/* Main Content Area - Takes remaining height after NavBar */}
+      <div className="flex flex-1 min-h-0 relative z-10">
+        {/* ChatHistorySidebar - Fixed width, constrained height */}
+        <div className="flex-shrink-0 h-full">
+          <ChatHistorySidebar
+            isPanelOpen
+            isLoading={isLoading}
+            isHistoryLoading={isHistoryLoading}
+            conversationHistory={conversationHistory}
+            loadConversationById={loadConversationById}
+          />
+        </div>
+
+        {/* Main Chat Area - Takes remaining width, constrained height */}
+        <div className="flex flex-col flex-1 min-h-0 h-full">
+          {/* Messages Container - Grows to fill available space, constrained */}
+          <div className="flex-1 min-h-0 overflow-hidden relative">
+            <div className="absolute inset-0 bg-slate-950/20 backdrop-blur-[0.5px] rounded-t-2xl border-t border-slate-800/50" />
+            <div className="relative z-10 h-full overflow-hidden">
+              <MessageContainer messages={messages} isLoading={isLoading} />
+            </div>
+          </div>
+
+          {/* Input Form - Fixed height at bottom */}
+          <div className="flex-shrink-0 p-4 relative">
+            <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-md border-t border-slate-800/50" />
+            <div className="relative z-10">
               <UserImportForm isLoading={isLoading} onMessageSubmitted={handleSendMessage} />
             </div>
-          </main>
+          </div>
         </div>
       </div>
 
@@ -277,80 +358,57 @@ export default function Chat() {
         show={showSnackBar}
       />
 
+      {/* Dialogs */}
+      <SignInDialog show={showSignInDialog} onClose={handleSignInDialogClick} />
+
+      <AccountSelectorDialog
+        show={showAccountSelectorDialog}
+        onError={handleAccountSelectorError}
+        onSuccess={handleAccountSelectorSuccess}
+      />
+
+      <SyncDialog
+        show={showSyncDialog}
+        onError={handleSyncDialogError}
+        onSuccess={handleSyncDialogSuccess}
+      />
+
       {/* CSS animations */}
       <style>{`
-        .grid-background {
-          background-image: linear-gradient(rgba(74, 222, 128, 0.1) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(74, 222, 128, 0.1) 1px, transparent 1px);
-          background-size: 50px 50px;
-          animation: grid-move 20s linear infinite;
+        .mesh-gradient {
+          background: linear-gradient(45deg, transparent 30%, rgba(59, 130, 246, 0.03) 50%, transparent 70%),
+                     linear-gradient(-45deg, transparent 30%, rgba(139, 92, 246, 0.03) 50%, transparent 70%);
+          background-size: 100px 100px, 120px 120px;
+          animation: mesh-move 25s linear infinite;
         }
 
-        @keyframes grid-move {
-          0% {
-            transform: translate(0, 0);
-          }
-          100% {
-            transform: translate(50px, 50px);
-          }
+        @keyframes mesh-move {
+          0% { transform: translate(0, 0) rotate(0deg); }
+          25% { transform: translate(-20px, -20px) rotate(90deg); }
+          50% { transform: translate(20px, -40px) rotate(180deg); }
+          75% { transform: translate(-40px, 20px) rotate(270deg); }
+          100% { transform: translate(0, 0) rotate(360deg); }
         }
 
         @keyframes float {
-          0%,
-          100% {
-            transform: translateY(0px) rotate(0deg);
+          0%, 100% {
+            transform: translateY(0px) translateX(0px) rotate(0deg);
+          }
+          25% {
+            transform: translateY(-20px) translateX(10px) rotate(90deg);
           }
           50% {
-            transform: translateY(-20px) rotate(180deg);
+            transform: translateY(-10px) translateX(-10px) rotate(180deg);
           }
-        }
-
-        @keyframes spin-slow {
-          from {
-            transform: rotate(0deg);
-          }
-          to {
-            transform: rotate(360deg);
-          }
-        }
-
-        @keyframes spin-reverse {
-          from {
-            transform: rotate(360deg);
-          }
-          to {
-            transform: rotate(0deg);
-          }
-        }
-
-        @keyframes gradient-x {
-          0%,
-          100% {
-            background-size: 200% 200%;
-            background-position: left center;
-          }
-          50% {
-            background-size: 200% 200%;
-            background-position: right center;
-          }
-        }
-
-        @keyframes gradient-x-delayed {
-          0%,
-          100% {
-            background-size: 200% 200%;
-            background-position: right center;
-          }
-          50% {
-            background-size: 200% 200%;
-            background-position: left center;
+          75% {
+            transform: translateY(-30px) translateX(5px) rotate(270deg);
           }
         }
 
         @keyframes slide-up {
           from {
             opacity: 0;
-            transform: translateY(30px);
+            transform: translateY(20px);
           }
           to {
             opacity: 1;
@@ -359,47 +417,48 @@ export default function Chat() {
         }
 
         @keyframes fade-in {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-
-        @keyframes pulse-slow {
-          0%,
-          100% {
-            opacity: 0.5;
-          }
-          50% {
-            opacity: 1;
-          }
+          from { opacity: 0; }
+          to { opacity: 1; }
         }
 
         .animate-float {
-          animation: float 8s ease-in-out infinite;
+          animation: float 20s ease-in-out infinite;
         }
-        .animate-spin-slow {
-          animation: spin-slow 20s linear infinite;
-        }
-        .animate-spin-reverse {
-          animation: spin-reverse 15s linear infinite;
-        }
-        .animate-gradient-x {
-          animation: gradient-x 6s ease infinite;
-        }
-        .animate-gradient-x-delayed {
-          animation: gradient-x-delayed 6s ease infinite;
-        }
+
         .animate-slide-up {
-          animation: slide-up 0.8s ease-out forwards;
+          animation: slide-up 0.6s ease-out forwards;
         }
+
         .animate-fade-in {
-          animation: fade-in 1s ease-out forwards;
+          animation: fade-in 0.3s ease-out forwards;
         }
-        .animate-pulse-slow {
-          animation: pulse-slow 3s ease-in-out infinite;
+
+        .scrollbar-thin::-webkit-scrollbar {
+          width: 6px;
+        }
+
+        .scrollbar-thin::-webkit-scrollbar-track {
+          background: transparent;
+        }
+
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+          background-color: rgb(71 85 105);
+          border-radius: 3px;
+        }
+
+        .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+          background-color: rgb(51 65 85);
+        }
+
+        .prose code {
+          font-size: 0.875em;
+          font-weight: 500;
+        }
+
+        .prose pre {
+          background-color: rgba(30, 41, 59, 0.5) !important;
+          border: 1px solid rgba(71, 85, 105, 0.3);
+          border-radius: 8px;
         }
       `}</style>
     </div>

@@ -3,6 +3,7 @@ import { EmbeddedCheckoutProvider, EmbeddedCheckout } from '@stripe/react-stripe
 import { loadStripe, type Stripe } from '@stripe/stripe-js';
 import { useSearchParams } from 'react-router-dom';
 import NavBar from '../reusable/NavBar';
+import ReactGA from 'react-ga4';
 
 export default function Checkout() {
   const stripePromise: Promise<Stripe | null> = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
@@ -16,8 +17,23 @@ export default function Checkout() {
     });
 
     if (!response.ok) {
+      // send Google Analytics Event
+      ReactGA.event({
+        category: 'Major',
+        action: 'Checkout',
+        label: 'Checkout Failed',
+        value: amount,
+      });
       throw new Error('Failed to create checkout session');
     }
+
+    // send Google Analytics Event
+    ReactGA.event({
+      category: 'Major',
+      action: 'Checkout',
+      label: 'Checkout Successful',
+      value: amount,
+    });
 
     const data: { clientSecret: string } = await response.json();
     return data.clientSecret;

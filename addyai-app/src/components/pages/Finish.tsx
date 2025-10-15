@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GridLoader } from 'react-spinners';
 import { USERID } from '../../utils/constants';
+import ReactGA from 'react-ga4';
 
 export default function Finish() {
   const [loading, setLoading] = useState<boolean>(false);
@@ -33,8 +34,21 @@ export default function Finish() {
         );
 
         if (!response.ok) {
+          // send Google Analytics Event
+          ReactGA.event({
+            category: 'Major',
+            action: 'Payment',
+            label: 'Payment Failed: userId: ' + userId + ' sessionId: ' + sessionId,
+          });
           throw new Error('Failed to retrieve checkout session status');
         }
+
+        // send Google Analytics Event
+        ReactGA.event({
+          category: 'Major',
+          action: 'Payment',
+          label: 'Payment Success: userId: ' + userId + ' sessionId: ' + sessionId,
+        });
 
         const session = await response.text();
         if (session === 'complete') setIsSuccessful(true);
@@ -53,6 +67,12 @@ export default function Finish() {
   }, [baseURL, navigate]); // Added baseURL and navigate to dependencies
 
   const handleButtonClick = () => {
+    // send Google Analytics Event
+    ReactGA.event({
+      category: 'User Interaction',
+      action: 'Clicked Button',
+      label: 'Return to Billing',
+    });
     navigate('/billing');
   };
 

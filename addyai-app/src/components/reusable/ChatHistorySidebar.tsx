@@ -39,7 +39,7 @@ export default function ChatHistorySidebar({
           <RiChatNewLine
             size={28}
             title="Start New Chat"
-            onClick={() => navigate('/start')}
+            onClick={() => navigate('/chat')}
             className="text-green-400 cursor-pointer hover:text-green-300 transition-colors"
           />
         )}

@@ -1,6 +1,5 @@
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import Start from './components/pages/Start';
 import Chat from './components/pages/Chat';
 import Authorize from './components/pages/Authorize';
 import Billing from './components/pages/Billing';
@@ -10,9 +9,20 @@ import Finish from './components/pages/Finish';
 import PrivacyPolicy from './components/pages/PrivacyPolicy';
 import TermsOfService from './components/pages/TermsOfService';
 import ChatHistory from './components/pages/ChatHistory';
+import ReactGA from 'react-ga4';
+import { useEffect } from 'react';
 
 function App() {
   const location = useLocation();
+  const TRACKING_ID = import.meta.env.VITE_GA4_TRACKING_ID;
+
+  // initialize Google Analytics
+  ReactGA.initialize(TRACKING_ID);
+
+  // send pageview update everytime location changes
+  useEffect(() => {
+    ReactGA.send('pageview');
+  }, [location]);
 
   return (
     <AnimatePresence mode="wait">
@@ -66,19 +76,6 @@ function App() {
               transition={{ duration: 0.4 }}
             >
               <Billing />
-            </motion.div>
-          }
-        />
-        <Route
-          path="/start"
-          element={
-            <motion.div
-              initial={{ opacity: 0, x: 100 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -100 }}
-              transition={{ duration: 0.4 }}
-            >
-              <Start />
             </motion.div>
           }
         />

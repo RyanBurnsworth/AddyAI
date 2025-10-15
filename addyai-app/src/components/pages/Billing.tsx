@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import PaymentDialog from '../reusable/PaymentSelectionDialog';
 import { useNavigate } from 'react-router-dom';
 import NavBar from '../reusable/NavBar';
+import ReactGA from 'react-ga4';
 
 export default function Billing() {
   const navigate = useNavigate();
@@ -38,6 +39,13 @@ export default function Billing() {
 
   const handleAddCreditButtonClick = () => {
     if (!showPaymentDialog) {
+      // track new conversation started
+      ReactGA.event({
+        category: 'User Interaction',
+        action: 'Clicked Button',
+        label: 'Add Credit Button',
+      });
+
       setShowPaymentDialog(true);
     }
   };

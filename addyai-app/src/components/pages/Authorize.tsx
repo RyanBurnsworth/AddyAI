@@ -12,6 +12,7 @@ import {
 } from '../../utils/constants';
 import { GridLoader } from 'react-spinners';
 import { useNavigate } from 'react-router-dom';
+import ReactGA from 'react-ga4';
 
 export default function Authorize() {
   const navigate = useNavigate();
@@ -120,8 +121,15 @@ export default function Authorize() {
         setTextHeader('Saving Account Info');
         setTextSubHeader('Storing Account Access Information...');
 
+        // track new conversation started
+        ReactGA.event({
+          category: 'Major',
+          action: 'Authorized',
+          label: 'Successful Sign-In',
+        });
+
         // navigate back to the homescreen
-        navigate('/start');
+        navigate('/chat');
       } catch (error) {
         console.log('Error authorizing user: ', error);
         setTextHeader('Error Authorizing');

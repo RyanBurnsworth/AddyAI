@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo } from 'react';
 import NavBar from '../reusable/NavBar';
 import { CUSTOMER_ID, USERID, CONVERSATION_ID } from '../../utils/constants';
 import { useNavigate } from 'react-router-dom';
+import ReactGA from 'react-ga4';
 
 // Define a type for chat history items
 interface ChatHistoryItem {
@@ -46,6 +47,13 @@ export default function ChatHistory() {
 
   // Function to navigate to the chat page with the selected conversation ID
   const handleViewConversation = (conversationId: number) => {
+    // send Google Analytics Event
+    ReactGA.event({
+      category: 'User Interaction',
+      action: 'Clicked Conversation',
+      label: 'Changed Conversation from History',
+    });
+
     // Store the conversation ID in local storage so Chat.tsx can pick it up
     localStorage.setItem(CONVERSATION_ID, conversationId.toString());
     // Navigate to the chat page

@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
-import { ChevronRight, Zap, Users, BarChart3, Play, ArrowRight } from 'lucide-react';
-import AddyAILogo from '../reusable/logo/AddyAILogo'; // Assuming this is your logo component
-import NavBar from '../reusable/NavBar'; // Assuming NavBar is updated and available
+import { useState, useEffect, useRef } from 'react';
+import { ChevronRight, Zap, Users, BarChart3, Play, ArrowRight, Maximize2, X, Volume2, VolumeX } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import AddyAI  from '../../assets/AddyAI.mp4';
+import ReactGA from 'react-ga4';
 
 interface VisibilityState {
   [key: string]: boolean;
@@ -12,7 +12,13 @@ export default function EnhancedHome() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [currentMetric, setCurrentMetric] = useState(0);
   const [isVisible, setIsVisible] = useState<VisibilityState>({});
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isMuted, setIsMuted] = useState(true); // Start muted by default
   const navigate = useNavigate();
+  
+  // Video refs for controlling both videos
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const fullscreenVideoRef = useRef<HTMLVideoElement>(null);
 
   // Mock live metrics
   const liveMetrics = [
@@ -21,6 +27,29 @@ export default function EnhancedHome() {
     { label: 'Cost Saved', value: '$43,291', change: '+23%' },
     { label: 'CTR Improved', value: '156%', change: '+5%' },
   ];
+
+  const toggleFullscreen = () => {
+    setIsFullscreen(!isFullscreen);
+  };
+
+  const toggleMute = () => {
+    const newMutedState = !isMuted;
+    setIsMuted(newMutedState);
+    
+    // Update both videos
+    if (videoRef.current) {
+      videoRef.current.muted = newMutedState;
+    }
+    if (fullscreenVideoRef.current) {
+      fullscreenVideoRef.current.muted = newMutedState;
+    }
+  };
+
+  const handleBackdropClick = (e: { target: any; currentTarget: any; }) => {
+    if (e.target === e.currentTarget) {
+      setIsFullscreen(false);
+    }
+  };
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -61,6 +90,12 @@ export default function EnhancedHome() {
   }, []);
 
   const handleWatchVideoClick = (url: string) => {
+    // send Google Analytics Event
+    ReactGA.event({
+      category: 'User Interaction',
+      action: 'Clicked Button',
+      label: 'Watch Video',
+    });
     window.open(url, '_blank', 'noopener,noreferrer');
   };
 
@@ -95,7 +130,6 @@ export default function EnhancedHome() {
       </div>
 
       <div className="relative z-10">
-        <NavBar /> {/* Ensure NavBar is above other content */}
         {/* Enhanced Hero Section - Better Centered */}
         <section className="relative w-[100vw] min-h-screen flex flex-col items-center justify-center px-4 py-8 pt-20">
           {' '}
@@ -112,16 +146,153 @@ export default function EnhancedHome() {
           </div>
           {/* Content Container - Better centering */}
           <div className="flex flex-col items-center justify-center text-center max-w-6xl mx-auto">
-            {/* Logo with enhanced effects */}
-            <div className="relative mb-8 group">
-              <div className="absolute inset-0 bg-gradient-to-r from-green-400/20 to-amber-400/20 rounded-full blur-3xl animate-pulse-slow" />
-              <div className="relative logo-container">
-                {/* Enhanced logo design */}
-                <div className="w-48 h-48 sm:w-64 sm:h-64 mb-8 relative flex items-center justify-center">
-                  <AddyAILogo size="large" />
-                </div>
+            {/* Video with enhanced effects - Replacing Logo */}
+  {/* Regular video frame */}
+  <div className="relative mb-8 group">
+    {/* Glowing background effect */}
+    <div className="absolute inset-0 bg-gradient-to-r from-green-400/20 to-amber-400/20 rounded-3xl blur-2xl animate-pulse-slow" />
+    
+    {/* Video container with frame */}
+    <div className="relative video-container">
+      <div className="w-80 h-48 sm:w-96 sm:h-56 lg:w-[640px] lg:h-80 xl:w-[800px] xl:h-96 2xl:w-[960px] 2xl:h-[540px] mb-8 relative">
+        {/* Outer decorative frame */}
+        <div className="absolute -inset-4 bg-gradient-to-r from-green-400 via-amber-400 to-green-400 rounded-3xl opacity-30 animate-gradient-x"></div>
+        
+        {/* Inner frame border */}
+        <div className="absolute -inset-2 bg-gradient-to-r from-green-500/50 to-amber-500/50 rounded-2xl blur-sm"></div>
+        
+        {/* Video frame */}
+        <div className="relative w-full h-full rounded-2xl overflow-hidden border-2 border-green-400/30 group-hover:border-amber-400/50 transition-all duration-500 shadow-2xl shadow-green-400/20">
+          <video
+            ref={videoRef}
+            autoPlay
+            loop
+            muted={isMuted}
+            playsInline
+            className="w-full h-full object-cover"
+            // poster={posterImage} // Uncomment if you have a poster image
+          >
+            <source src={AddyAI} type="video/mp4" />
+            {/* Fallback for browsers that don't support video */}
+            <div className="w-full h-full bg-gradient-to-br from-green-400 to-amber-400 flex items-center justify-center">
+              <span className="text-4xl font-bold text-white">AI</span>
+            </div>
+          </video>
+          
+          {/* Video control buttons */}
+          <div className="absolute top-4 right-4 flex space-x-2">
+            {/* Mute/Unmute button */}
+            <button
+              onClick={toggleMute}
+              className="bg-black/60 hover:bg-black/80 text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110 z-10"
+              aria-label={isMuted ? "Unmute video" : "Mute video"}
+            >
+              {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+            </button>
+            
+            {/* Maximize button */}
+            <button
+              onClick={toggleFullscreen}
+              className="bg-black/60 hover:bg-black/80 text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110 z-10"
+              aria-label="Maximize video"
+            >
+              <Maximize2 className="w-5 h-5" />
+            </button>
+          </div>
+          
+          {/* Audio indicator */}
+          {!isMuted && (
+            <div className="absolute bottom-4 left-4 bg-black/60 backdrop-blur-sm text-white px-2 py-1 rounded-lg text-xs opacity-0 group-hover:opacity-100 transition-all duration-300">
+              <div className="flex items-center space-x-1">
+                <Volume2 className="w-3 h-3" />
+                <span>Audio On</span>
               </div>
             </div>
+          )}
+          
+          {/* Overlay gradient for style */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        </div>
+        
+        {/* Corner decorations */}
+        <div className="absolute -top-2 -left-2 w-6 h-6 border-l-2 border-t-2 border-green-400 rounded-tl-lg"></div>
+        <div className="absolute -top-2 -right-2 w-6 h-6 border-r-2 border-t-2 border-green-400 rounded-tr-lg"></div>
+        <div className="absolute -bottom-2 -left-2 w-6 h-6 border-l-2 border-b-2 border-amber-400 rounded-bl-lg"></div>
+        <div className="absolute -bottom-2 -right-2 w-6 h-6 border-r-2 border-b-2 border-amber-400 rounded-br-lg"></div>
+        
+        {/* Animated corner highlights */}
+        <div className="absolute -top-1 -left-1 w-4 h-4 bg-green-400/20 rounded-full animate-ping"></div>
+        <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-400/20 rounded-full animate-ping" style={{ animationDelay: '0.5s' }}></div>
+        <div className="absolute -bottom-1 -left-1 w-4 h-4 bg-amber-400/20 rounded-full animate-ping" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-amber-400/20 rounded-full animate-ping" style={{ animationDelay: '1.5s' }}></div>
+      </div>
+    </div>
+  </div>
+
+  {/* Fullscreen modal */}
+  {isFullscreen && (
+    <div 
+      className="fixed inset-0 bg-black/95 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      onClick={handleBackdropClick}
+    >
+      {/* Control buttons */}
+      <div className="absolute top-6 right-6 flex space-x-2 z-60">
+        {/* Mute/Unmute button */}
+        <button
+          onClick={toggleMute}
+          className="bg-white/20 hover:bg-white/30 text-white p-3 rounded-full transition-all duration-300 hover:scale-110"
+          aria-label={isMuted ? "Unmute video" : "Mute video"}
+        >
+          {isMuted ? <VolumeX className="w-6 h-6" /> : <Volume2 className="w-6 h-6" />}
+        </button>
+        
+        {/* Close button */}
+        <button
+          onClick={toggleFullscreen}
+          className="bg-white/20 hover:bg-white/30 text-white p-3 rounded-full transition-all duration-300 hover:scale-110"
+          aria-label="Close fullscreen"
+        >
+          <X className="w-6 h-6" />
+        </button>
+      </div>
+      
+      {/* Fullscreen video container */}
+      <div className="relative w-full h-full max-w-7xl max-h-[90vh] rounded-2xl overflow-hidden border-2 border-green-400/50 shadow-2xl">
+        <video
+          ref={fullscreenVideoRef}
+          autoPlay
+          loop
+          muted={isMuted}
+          playsInline
+          className="w-full h-full object-contain bg-black"
+          // poster={posterImage} // Uncomment if you have a poster image
+        >
+          <source src={AddyAI} type="video/mp4" />
+          {/* Fallback */}
+          <div className="w-full h-full bg-gradient-to-br from-green-400 to-amber-400 flex items-center justify-center">
+            <span className="text-6xl font-bold text-white">AI</span>
+          </div>
+        </video>
+        
+        {/* Fullscreen video info overlay */}
+        <div className="absolute bottom-6 left-6 bg-black/60 backdrop-blur-sm text-white px-4 py-2 rounded-lg">
+          <p className="text-sm font-medium">AddyAI Demo Video</p>
+          <div className="flex items-center space-x-2 text-xs text-gray-300">
+            <span>Click outside to close</span>
+            {!isMuted && (
+              <>
+                <span>•</span>
+                <div className="flex items-center space-x-1">
+                  <Volume2 className="w-3 h-3" />
+                  <span>Audio On</span>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  )}
 
             {/* Enhanced Title - Better responsive sizing */}
             <h1 className="text-4xl sm:text-6xl lg:text-8xl font-black mb-6 text-center bg-gradient-to-r from-green-400 via-amber-400 to-green-400 bg-clip-text text-transparent animate-gradient-x">
@@ -138,7 +309,7 @@ export default function EnhancedHome() {
             <div className="flex flex-col sm:flex-row gap-4 mb-12 justify-center">
               <button
                 className="group relative px-8 py-4 bg-gradient-to-r from-green-500 to-green-600 rounded-full font-semibold text-lg overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-green-500/25"
-                onClick={() => navigate('/start')}
+                onClick={() => navigate('/chat')}
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-green-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <div className="relative flex items-center justify-center space-x-2">
@@ -151,8 +322,8 @@ export default function EnhancedHome() {
               <button className="group px-8 py-4 border-2 border-amber-400/50 rounded-full font-semibold text-lg hover:bg-amber-400/10 transition-all duration-300 hover:border-amber-400">
                 <div className="flex items-center justify-center space-x-2">
                   <Play className="w-5 h-5" />
-                  <span onClick={() => handleWatchVideoClick('https://youtu.be/n7EIZk8PZXE')}>
-                    Watch Demo
+                  <span onClick={() => handleWatchVideoClick('https://calendly.com/ryanburnsworth/30min')}>
+                    Schedule a Demo
                   </span>
                 </div>
               </button>
@@ -289,7 +460,7 @@ export default function EnhancedHome() {
 
               <button
                 className="bg-gradient-to-r from-green-500 to-amber-500 hover:from-green-400 hover:to-amber-400 text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 hover:scale-105 hover:shadow-xl"
-                onClick={() => navigate('/start')}
+                onClick={() => navigate('/chat')}
               >
                 Get Free Credits
               </button>

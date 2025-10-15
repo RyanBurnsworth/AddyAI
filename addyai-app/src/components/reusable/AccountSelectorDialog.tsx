@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import type DialogProps from '../../props/DialogProps';
 import { CUSTOMER_ID, LAST_SYNCED, MANAGER_ID, USERID } from '../../utils/constants';
+import ReactGA from 'react-ga4';
 
 interface Account {
   id: number;
@@ -129,12 +130,26 @@ export default function AccountSelectorDialog({ show, onSuccess, onError }: Dial
   }, [customerAccountURL, handleError]); // 'show' is now handled by the early exit 'if (!show) return null;'
 
   const handleManagerChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    // send Google Analytics Event
+    ReactGA.event({
+      category: 'User Interaction',
+      action: 'Clicked Button',
+      label: 'Changed Manager',
+    });
+
     const selected = event.target.value;
     setSelectedManager(selected);
     setSelectedCustomer(''); // reset customer selection
   };
 
   const handleCustomerChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    // send Google Analytics Event
+    ReactGA.event({
+      category: 'User Interaction',
+      action: 'Clicked Button',
+      label: 'Changed Customer',
+    });
+
     setSelectedCustomer(event.target.value);
   };
 

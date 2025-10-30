@@ -6,4 +6,6 @@ export interface SyncRequest {
   refreshToken: string;
 
   loginCustomerId?: string;
+
+  targetDateISO?: string;
 }

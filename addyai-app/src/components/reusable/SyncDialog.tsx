@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type DialogProps from '../../props/DialogProps';
 import { CUSTOMER_ID, LAST_SYNCED, MANAGER_ID, REFRESH_TOKEN, USERID } from '../../utils/constants';
+import { isOutOfSync } from '../../utils/helper';
 
 export default function SyncDialog({ show, onError, onSuccess }: DialogProps) {
   if (!show) return null;
@@ -9,7 +10,15 @@ export default function SyncDialog({ show, onError, onSuccess }: DialogProps) {
   const baseUrl = import.meta.env.VITE_BASE_URL;
 
   const handleSync = async () => {
+    console.log('Starting sync process...');
     setLoading(true);
+
+    // if the last synced date is not yesterday, the server will sync from that date onward
+    let targetDateISO: string | null = null;
+    if (!isOutOfSync()) {
+      targetDateISO = localStorage.getItem(LAST_SYNCED);
+    }
+
     try {
       const response = await fetch(`${baseUrl}/sync`, {
         method: 'POST',
@@ -21,11 +30,12 @@ export default function SyncDialog({ show, onError, onSuccess }: DialogProps) {
           customerId: localStorage.getItem(CUSTOMER_ID),
           loginCustomerId: localStorage.getItem(MANAGER_ID) ?? null,
           refreshToken: localStorage.getItem(REFRESH_TOKEN),
+          targetDateISO: targetDateISO,
         }),
       });
 
       if (!response.ok) {
-        let errorMessage = 'Error: Unable to sync with Google Ads account.';
+        let errorMessage = 'Error syncing Google Ads account.';
         try {
           const errorBody = await response.json();
           if (errorBody?.message) {
@@ -35,15 +45,21 @@ export default function SyncDialog({ show, onError, onSuccess }: DialogProps) {
           }
         } catch {
           // Fallback if the response isn't JSON
-          const text = await response.text();
-          if (text) {
-            errorMessage = `Error: Unable to sync with Google Ads account: ${text}`;
+          if (response && response.text) {
+            const text = await response.text();
+            errorMessage = `Error syncing Google Ads account: ${text}`;
           }
         }
 
         onError?.(errorMessage);
         console.error(errorMessage);
         return;
+      }
+
+      if (targetDateISO) {
+        console.log(`Sync completed successfully from ${targetDateISO} onward.`);
+      } else {
+        console.log('Sync completed successfully for the last 6 months.');
       }
 
       localStorage.setItem(LAST_SYNCED, new Date().toString());

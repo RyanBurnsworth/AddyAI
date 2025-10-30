@@ -21,7 +21,7 @@ import UserImportForm from '../reusable/UserInputForm';
 import SignInDialog from '../reusable/SignInDialog';
 import AccountSelectorDialog from '../reusable/AccountSelectorDialog';
 import SyncDialog from '../reusable/SyncDialog';
-
+import { isOutOfSync } from '../../utils/helper';
 
 export default function Chat() {
   const ESTIMATED_COST_PER_MSG = 0.05;
@@ -69,7 +69,9 @@ export default function Chat() {
       // fetch the conversation history from server
       const response = await fetch(`${baseURL}/conversation/grouped?${params}`);
       if (!response.ok) {
-        throw new Error();
+        console.log("No conversation history found.");
+        setConversationHistory({});
+        return;
       }
 
       // parse and set the conversation history
@@ -288,7 +290,14 @@ export default function Chat() {
   }, [getRefreshTokenCallback]);
 
   const completeWorkflow = () => {
-      // TODO: Check last synced time and show sync dialog if too old
+      if (isOutOfSync()) {
+        console.log('Data is already synced up to yesterday. No sync needed.');
+      } else {
+        console.log('Data out of sync. Syncing from ' + localStorage.getItem(LAST_SYNCED) + ' onward.');
+        setShowSyncDialog(true);
+        return;
+      }
+
       getUserBalanceCallback();
       loadConversationHistoryCallback();
   }

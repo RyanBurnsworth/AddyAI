@@ -117,8 +117,13 @@ export class SyncService {
    */
   async performMetricSync(syncRequest: SyncRequest) {
     try {
-      const dates = HelperUtil.getMonthlyDateRanges();
-
+      let dates;
+      if (syncRequest.targetDateISO) {
+        dates = HelperUtil.getMonthlyDateRangesUntil(syncRequest.targetDateISO);
+      } else {
+        dates = HelperUtil.getMonthlyDateRanges();
+      }
+      
       // Prepare all queries for all dates and metric types
       const queriesWithMetadata = dates.flatMap(date =>
         this.metricsSyncMap.map(config => ({

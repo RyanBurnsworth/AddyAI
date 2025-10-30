@@ -24,17 +24,34 @@ export default function SyncDialog({ show, onError, onSuccess }: DialogProps) {
         }),
       });
 
-      if (response.status !== 201) {
-        onError!!('Failed to sync with Google Ads');
-        console.error('Failed to sync with Google Ads account');
+      if (!response.ok) {
+        let errorMessage = 'Error: Unable to sync with Google Ads account.';
+        try {
+          const errorBody = await response.json();
+          if (errorBody?.message) {
+            errorMessage = `Error: ${errorBody.message}`;
+          } else if (typeof errorBody === 'string') {
+            errorMessage = `Error: ${errorBody}`;
+          }
+        } catch {
+          // Fallback if the response isn't JSON
+          const text = await response.text();
+          if (text) {
+            errorMessage = `Error: Unable to sync with Google Ads account: ${text}`;
+          }
+        }
+
+        onError?.(errorMessage);
+        console.error(errorMessage);
         return;
       }
 
       localStorage.setItem(LAST_SYNCED, new Date().toString());
-      onSuccess!!();
+      onSuccess?.();
     } catch (error) {
-      onError!!('Failed to sync with Google Ads');
-      console.error('Failed to sync with Google Ads account');
+      const message = (error as Error).message || 'Unexpected error occurred during sync.';
+      onError?.(`Unable to sync with Google Ads account: ${message}`);
+      console.error('Unable to sync with Google Ads account:', error);
     } finally {
       setLoading(false);
     }

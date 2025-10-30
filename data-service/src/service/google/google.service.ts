@@ -35,9 +35,19 @@ export class GoogleService {
       const rows = [...response];
       console.log(`Fetched ${rows.length} rows`);
       return rows;
-    } catch (error) {
+    } catch (error: any) {
+      let errorMessage = 'Failed to execute query on Google Ads account';
+
+      if (error.errors && Array.isArray(error.errors) && error.errors.length > 0) {
+        errorMessage = error.errors[0].message || errorMessage;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
       console.error('Error executing query on Google Ads:', error);
-      throw new InternalServerErrorException('Failed to execute query on Google Ads account');
+      console.error('Google Ads error message:', errorMessage);
+
+      throw new InternalServerErrorException(errorMessage);
     }
   }
 

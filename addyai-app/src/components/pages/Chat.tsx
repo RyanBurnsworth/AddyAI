@@ -238,6 +238,10 @@ export default function Chat() {
     setErrorMessage(msg);
     setShowSnackBar(true);
     localStorage.removeItem(LAST_SYNCED);
+    localStorage.removeItem(CUSTOMER_ID);
+    
+    setShowSyncDialog(false);
+    setShowAccountSelectorDialog(true);
   }, []);
 
   const handleSyncDialogSuccess = useCallback(() => {

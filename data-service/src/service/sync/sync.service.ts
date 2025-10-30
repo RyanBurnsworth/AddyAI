@@ -105,7 +105,7 @@ export class SyncService {
         await this.dataService.genericSave(entities, targetTable);
       } catch (error) {
         console.log('Error performing synchronization: ', error);
-        throw new InternalServerErrorException('Error performing synchronization');
+        throw error;
       }
     }
   }

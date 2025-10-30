@@ -204,8 +204,11 @@ export default function Chat() {
       scope: scope,
       access_type: OFFLINE,
       prompt: CONSENT,
+      include_granted_scopes: 'true',
     });
 
+    console.log("OAuth Redirect URL: ", `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`);
+    
     window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
   }, [clientId, redirectUri, scope]);
 

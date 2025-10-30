@@ -63,6 +63,8 @@ export class AuthService {
     payload.append('redirect_uri', process.env.GOOGLE_REDIRECT_URL);
     payload.append('grant_type', 'authorization_code');
     payload.append('scope', scopes);
+
+    console.log("OAuth Payload: ", payload.toString());
     return payload;
   }
 }

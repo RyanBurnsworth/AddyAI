@@ -312,10 +312,6 @@ export default function Chat() {
         ))}
       </div>
 
-      {/* NavBar - Fixed height */}
-      <div className="flex-shrink-0 relative z-20">
-        <NavBar />
-      </div>
 
       {/* Main Content Area - Takes remaining height after NavBar */}
       <div className="flex flex-1 min-h-0 relative z-10">
@@ -332,6 +328,12 @@ export default function Chat() {
 
         {/* Main Chat Area - Takes remaining width, constrained height */}
         <div className="flex flex-col flex-1 min-h-0 h-full">
+          
+          {/* NavBar - Fixed height */}
+          <div className="flex-shrink-0 relative z-20">
+            <NavBar />
+          </div>
+
           {/* Messages Container - Grows to fill available space, constrained */}
           <div className="flex-1 min-h-0 overflow-hidden relative">
             <div className="absolute inset-0 bg-slate-950/20 backdrop-blur-[0.5px] rounded-t-2xl border-t border-slate-800/50" />
@@ -347,6 +349,7 @@ export default function Chat() {
               <UserImportForm isLoading={isLoading} onMessageSubmitted={handleSendMessage} />
             </div>
           </div>
+          
         </div>
       </div>
 

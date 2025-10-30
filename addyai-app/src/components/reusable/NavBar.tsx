@@ -46,7 +46,7 @@ export default function NavBar() {
   };
 
   return (
-    <div className="fixed top-0 left-0 right-0 flex flex-row justify-between items-center p-4 bg-zinc-900/80 backdrop-blur-md border-b border-zinc-700/50 shadow-lg w-full z-50">
+    <div className="top-0 left-0 right-0 flex flex-row justify-between items-center p-4 bg-zinc-900/80 backdrop-blur-md border-b border-zinc-700/50 shadow-lg w-full z-50">
       {/* Logo + Title */}
       <div
         className="flex items-center cursor-pointer ml-4 relative z-10"

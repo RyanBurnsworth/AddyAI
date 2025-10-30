@@ -24,6 +24,14 @@ dist-ssr
 *.sw?
 
 .env
-.prod.env
+.env.prod
 .prettierrc
 .Dockerfile
+data-service/package-lock.json
+data-service/.env
+data-service/.env.prod
+data-service/.dockerignore
+addyai-app/src/
+
+docker-compose.yml
+docker-compose.prod.yml

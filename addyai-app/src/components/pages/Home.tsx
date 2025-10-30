@@ -513,8 +513,8 @@ export default function EnhancedHome() {
               </h3>
               <p className="text-zinc-400 mb-2">
                 Email:{' '}
-                <a href="mailto:info@addyai.com" className="hover:text-green-400 transition-colors">
-                  info@addyai.com
+                <a href="mailto:info@addyai.net" className="hover:text-green-400 transition-colors">
+                  info@addyai.net
                 </a>
               </p>
             </div>

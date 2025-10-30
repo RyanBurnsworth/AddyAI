@@ -165,17 +165,17 @@ export default function TermsOfService() {
               If you have any questions about these Terms, reach out to us at:
               <br />
               <a
-                href="mailto:info@addyai.com"
+                href="mailto:info@addyai.net"
                 className="text-green-400 underline hover:text-green-300 transition-colors"
               >
-                info@addyai.com
+                info@addyai.net
               </a>
               <br />
               <a
-                href="https://www.addyai.com"
+                href="https://www.addyai.net"
                 className="text-green-400 underline hover:text-green-300 transition-colors"
               >
-                www.addyai.com
+                www.addyai.net
               </a>
             </p>
           </section>

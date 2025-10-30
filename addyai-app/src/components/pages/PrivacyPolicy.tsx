@@ -132,10 +132,10 @@ export default function PrivacyPolicy() {
               We retain your data only as long as necessary to provide services or comply with legal
               obligations. You may request deletion of your data at any time by contacting us at{' '}
               <a
-                href="mailto:info@addyai.com"
+                href="mailto:info@addyai.net"
                 className="text-green-400 underline hover:text-green-300 transition-colors"
               >
-                info@addyai.com
+                info@addyai.net
               </a>
               .
             </p>
@@ -186,17 +186,17 @@ export default function PrivacyPolicy() {
               If you have any questions, contact us at:
               <br />
               <a
-                href="mailto:info@addyai.com"
+                href="mailto:info@addyai.net"
                 className="text-green-400 underline hover:text-green-300 transition-colors"
               >
-                info@addyai.com
+                info@addyai.net
               </a>
               <br />
               <a
-                href="https://www.addyai.com"
+                href="https://www.addyai.net"
                 className="text-green-400 underline hover:text-green-300 transition-colors"
               >
-                www.addyai.com
+                www.addyai.net
               </a>
             </p>
           </section>

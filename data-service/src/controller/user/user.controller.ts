@@ -23,8 +23,12 @@ export class UserController {
   }
 
   @Get('balance')
-  async getUserBalance(@Query('id') id: number) {
-    const user = await this.userService.getUserById(id);
-    return user.balance;
+  async getUserBalance(@Res() res: Response, @Query('id') id: number) {
+    try {
+      const user = await this.userService.getUserById(id);
+      return res.status(200).json(user.balance);
+    } catch (error) {
+      return res.status(500).json('Failed to get user balance: ' + error);
+    }
   }
 }

@@ -8,6 +8,8 @@ export class UserService {
   constructor(private readonly dataService: DataService) {}
 
   async upsertUser(userDto: UserDTO): Promise<User> {
+    console.log('Upserting user: ', userDto.email);
+
     const user: User = {
       id: null,
       name: userDto.name,
@@ -36,6 +38,7 @@ export class UserService {
     }
 
     if (existingUser) {
+      console.log('User exists, updating user: ', user.email);
       try {
         await this.dataService.updateUser(user);
       } catch (error) {
@@ -52,6 +55,7 @@ export class UserService {
     }
 
     try {
+      console.log('Creating new user: ', user.email);
       const createdUser = await this.dataService.createUser(user);
       return createdUser;
     } catch (error) {
@@ -62,9 +66,12 @@ export class UserService {
 
   async getUserById(userId: number) {
     try {
+      console.log('Fetching user by id: ', userId);
+
       return await this.dataService.findUserByUserId(userId);
     } catch (error) {
       console.log('Error fetching user by id: ', error);
+      throw error;
     }
   }
 }

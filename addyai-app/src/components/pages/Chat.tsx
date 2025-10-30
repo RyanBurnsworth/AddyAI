@@ -29,66 +29,90 @@ export default function Chat() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const initialMessage = (location.state as { initialMessage?: string })?.initialMessage;
-
   const [userBalance, setUserBalance] = useState(-1);
   const [showSnackBar, setShowSnackBar] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [messages, setMessages] = useState<MessageProps[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [conversationHistory, setConversationHistory] = useState<Record<
-    string,
-    { id: number; headline: string; createdAt: string }[]
-  > | null>(null);
   const [isHistoryLoading, setIsHistoryLoading] = useState(true);
-
-  // Dialog related states
   const [showSignInDialog, setShowSignInDialog] = useState<boolean>(false);
   const [showAccountSelectorDialog, setShowAccountSelectorDialog] = useState<boolean>(false);
   const [showSyncDialog, setShowSyncDialog] = useState<boolean>(false);
 
-
   const userId = useMemo(() => Number(localStorage.getItem(USERID)), []);
-  const customerId = useMemo(() => localStorage.getItem(CUSTOMER_ID), []);
 
-  const messagesRef = useRef<MessageProps[]>([]);
   const messagingUrl = import.meta.env.VITE_MESSAGING_URL;
   const baseURL = import.meta.env.VITE_BASE_URL;
-
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
   const redirectUri = import.meta.env.VITE_GOOGLE_REDIRECT_URL;
   const scope = import.meta.env.VITE_GOOGLE_SCOPE;
 
+  const messagesRef = useRef<MessageProps[]>([]);
+  const [conversationHistory, setConversationHistory] = useState<Record<
+    string,
+    { id: number; headline: string; createdAt: string }[]
+  > | null>(null);
 
-  const handleLoadingConversationHistory = useCallback(async () => {
+  const loadConversationHistoryCallback = useCallback(async () => {
+    if (conversationHistory !== null) return;
+    
+    console.log('Loading conversation history...');
     setIsHistoryLoading(true);
+
     try {
+      const customerId = localStorage.getItem(CUSTOMER_ID);
       const params = new URLSearchParams({
         user_id: String(userId),
         customer_id: customerId ?? '',
       });
-      const res = await fetch(`${baseURL}/conversation/grouped?${params}`);
-      if (!res.ok) throw new Error('Failed to fetch');
 
-      const data = await res.json();
-      setConversationHistory(data);
+      // fetch the conversation history from server
+      const response = await fetch(`${baseURL}/conversation/grouped?${params}`);
+      if (!response.ok) {
+        throw new Error();
+      }
+
+      // parse and set the conversation history
+      const conversationHistory = await response.json();
+      setConversationHistory(conversationHistory);
     } catch (err) {
-      console.error('Error loading chat history');
+      console.error('Error loading conversation history:', err);
+      setErrorMessage('Error loading conversation history');
+      setShowSnackBar(true);
     } finally {
       setIsHistoryLoading(false);
     }
-  }, [userId, customerId, baseURL]);
+  }, [userId, baseURL]);
 
-  const handleGetUserBalance = useCallback(async () => {
-    const res = await fetch(`${baseURL}/user/balance?id=${userId}`);
+  const getUserBalanceCallback = useCallback(async () => {
+    console.log('Fetching user balance...');
+    try {
+      // fetch the user balance from server
+      const res = await fetch(`${baseURL}/user/balance?id=${userId}`);
 
-    if (res.status !== 200) throw new Error('Bad status');
-    const balance = await res.text();
-    setUserBalance(Number(balance));
+      if (res.status !== 200) {
+        const errorBody = await res.json().catch(() => ({}));
+        console.error(
+          `Error fetching user balance: ${res.status} ${res.statusText}`,
+          errorBody.message || errorBody || 'Unknown error'
+        );
+        setUserBalance(-1);
+        return;
+      }
+
+      const balance = await res.text();
+      setUserBalance(Number(balance));
+    } catch (error) {
+      console.error('Error fetching user balance:', error);
+      setUserBalance(-1); 
+    }
   }, [baseURL, userId]);
 
-  const handleSendMessage = useCallback(
+  const sendMessageCallback = useCallback(
     async (message: string) => {
+      console.log("Sending message: ", message);
+
+      const customerId = localStorage.getItem(CUSTOMER_ID);
       const userMessage = { message, isUserInput: true };
       const newMessages = [...messagesRef.current, userMessage];
       let currentConversationId = localStorage.getItem(CONVERSATION_ID);
@@ -106,7 +130,7 @@ export default function Chat() {
       setIsLoading(true);
 
       try {
-        const payload: {
+        const messagePayload: {
           userId: number;
           userPrompt: string;
           customerId: string | null;
@@ -118,29 +142,34 @@ export default function Chat() {
           conversationId: Number(currentConversationId),
         };
 
+        // if conversationId is null it will be updated on the server side
         if (currentConversationId) {
-          payload.conversationId = Number(currentConversationId);
+          messagePayload.conversationId = Number(currentConversationId);
         }
 
         const res = await fetch(messagingUrl, {
           method: POST,
           headers: { 'Content-Type': APPLICATION_JSON },
-          body: JSON.stringify(payload),
+          body: JSON.stringify(messagePayload),
         });
 
-        if (res.status !== 201) throw new Error('Bad status');
+        if (res.status !== 201) throw new Error();
 
         const contentType = res.headers.get('content-type');
         const data = contentType?.includes('application/json')
           ? await res.json()
           : await res.text();
 
-        if (data.conversation_id) localStorage.setItem(CONVERSATION_ID, data.conversation_id);
+        if (data && data.conversationId && currentConversationId === null) {
+          // update the current conversation id
+          localStorage.setItem(CONVERSATION_ID, data.conversationId);
 
-        await handleLoadingConversationHistory();
+          // update the conversation history
+          await loadConversationHistoryCallback();
+        }
 
         const botMessage = {
-          message: data?.result ?? "Sorry, I wasn't able to find that answer.",
+          message: data?.result ?? "I'm sorry, I am unable to find that answer.",
           isUserInput: false,
         };
 
@@ -148,24 +177,26 @@ export default function Chat() {
         messagesRef.current = updatedMessages;
         setMessages(updatedMessages);
       } catch (err) {
-        console.error('Error:', err);
-        setErrorMessage('Error receiving response from service. Please try again.');
+        console.error('Error sending message: ', err);
+        setErrorMessage('Error sending message. Please try again.');
         setShowSnackBar(true);
       } finally {
         setIsLoading(false);
       }
     },
     [
-      customerId,
       messagingUrl,
       userId,
       userBalance,
-      handleLoadingConversationHistory,
+      loadConversationHistoryCallback,
     ]
   );
 
-  const loadConversationById = useCallback(
+  const loadConversationByIdCallback = useCallback(
     async (conversationId: number) => {
+      console.log('Loading conversation by ID:', conversationId);
+
+      const customerId = localStorage.getItem(CUSTOMER_ID);
       try {
         const params = new URLSearchParams({
           user_id: String(userId),
@@ -173,11 +204,12 @@ export default function Chat() {
           conversation_id: conversationId.toString(),
         });
 
+        // fetch the conversation history from server
         const res = await fetch(`${baseURL}/conversation?${params}`);
-        if (!res.ok) throw new Error('Fetch failed');
+        if (!res.ok) throw new Error();
+
         const data = await res.json();
         const exchanges = data.exchange ?? [];
-
         const loadedMessages: MessageProps[] = exchanges.flatMap((item: any) => [
           ...(item.input ? [{ message: item.input, isUserInput: true }] : []),
           ...(item.output ? [{ message: item.output, isUserInput: false }] : []),
@@ -192,11 +224,13 @@ export default function Chat() {
         setShowSnackBar(true);
       }
     },
-    [userId, customerId, baseURL]
+    [userId, baseURL]
   );
 
   // Dialog related functions
-  const getRefreshToken = useCallback(() => {
+  const getRefreshTokenCallback = useCallback(() => {
+    console.log('Fetching refresh token...');    
+
     const params = new URLSearchParams({
       client_id: clientId,
       redirect_uri: redirectUri,
@@ -207,34 +241,28 @@ export default function Chat() {
       include_granted_scopes: 'true',
     });
 
-    console.log("OAuth Redirect URL: ", `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`);
-    
     window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
   }, [clientId, redirectUri, scope]);
 
-  const handleSignInDialogClick = useCallback((isCancelled: boolean) => {
-    if (!isCancelled) {
-      getRefreshToken();
-    }
-    setShowSignInDialog(false);
-  }, [getRefreshToken]);
-
-  const handleAccountSelectorError = useCallback((msg: string) => {
+  const accountSelectionErrorCallback = useCallback((msg: string) => {
     setShowAccountSelectorDialog(false);
     setErrorMessage(msg);
     setShowSnackBar(true);
   }, []);
 
-  const handleAccountSelectorSuccess = useCallback(() => {
+  const accountSelectionSuccessCallback = useCallback(() => {
     setShowAccountSelectorDialog(false);
     if (!localStorage.getItem(LAST_SYNCED) || localStorage.getItem(LAST_SYNCED) === '') {
       setShowSyncDialog(true);
+    } else {
+      completeWorkflow();
     }
+
     setErrorMessage('');
     setShowSnackBar(false);
   }, []);
 
-  const handleSyncDialogError = useCallback((msg: string) => {
+  const syncAccountErrorCallback = useCallback((msg: string) => {
     setErrorMessage(msg);
     setShowSnackBar(true);
     localStorage.removeItem(LAST_SYNCED);
@@ -244,46 +272,44 @@ export default function Chat() {
     setShowAccountSelectorDialog(true);
   }, []);
 
-  const handleSyncDialogSuccess = useCallback(() => {
+  const syncAccountSuccessCallback = useCallback(() => {
     setShowSyncDialog(false);
     setErrorMessage('');
     setShowSnackBar(false);
+    completeWorkflow();
   }, []);
 
+  const signInCallback = useCallback((isCancelled: boolean) => {
+    if (!isCancelled) {
+      getRefreshTokenCallback();
+    }
+
+    setShowSignInDialog(false);
+  }, [getRefreshTokenCallback]);
+
+  const completeWorkflow = () => {
+      // TODO: Check last synced time and show sync dialog if too old
+      getUserBalanceCallback();
+      loadConversationHistoryCallback();
+  }
 
   useEffect(() => {
     localStorage.removeItem(CONVERSATION_ID);
 
     if (!localStorage.getItem(REFRESH_TOKEN) || !localStorage.getItem(USERID)) {
       setShowSignInDialog(true);
+      console.log('Showing sign-in dialog');
     } else if (!localStorage.getItem(CUSTOMER_ID)) {
       setShowAccountSelectorDialog(true);
+      console.log('Showing account selector dialog');
     } else if (!localStorage.getItem(LAST_SYNCED) || localStorage.getItem(LAST_SYNCED) === '') {
       setShowSyncDialog(true);
+      console.log('Showing sync dialog');
     } else {
-      handleGetUserBalance();
-      handleLoadingConversationHistory();
-
-      const currentConversationId = localStorage.getItem(CONVERSATION_ID);
-
-      if (initialMessage) {
-        handleSendMessage(initialMessage);
-      } else if (currentConversationId) {
-        loadConversationById(Number(currentConversationId));
-      } else if (messages.length === 0) {
-        navigate('/');
-      }
+      completeWorkflow();
     }
     navigate(location.pathname, { replace: true, state: {} });
-  }, [
-    initialMessage,
-    navigate,
-    location.pathname,
-    handleGetUserBalance,
-    handleLoadingConversationHistory,
-    loadConversationById,
-    handleSendMessage,
-  ]);
+  }, []);
 
 
   return (
@@ -329,7 +355,7 @@ export default function Chat() {
             isLoading={isLoading}
             isHistoryLoading={isHistoryLoading}
             conversationHistory={conversationHistory}
-            loadConversationById={loadConversationById}
+            loadConversationById={loadConversationByIdCallback}
           />
         </div>
 
@@ -353,7 +379,7 @@ export default function Chat() {
           <div className="flex-shrink-0 p-4 relative">
             <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-md border-t border-slate-800/50" />
             <div className="relative z-10">
-              <UserImportForm isLoading={isLoading} onMessageSubmitted={handleSendMessage} />
+              <UserImportForm isLoading={isLoading} onMessageSubmitted={sendMessageCallback} />
             </div>
           </div>
           
@@ -369,18 +395,18 @@ export default function Chat() {
       />
 
       {/* Dialogs */}
-      <SignInDialog show={showSignInDialog} onClose={handleSignInDialogClick} />
+      <SignInDialog show={showSignInDialog} onClose={signInCallback} />
 
       <AccountSelectorDialog
         show={showAccountSelectorDialog}
-        onError={handleAccountSelectorError}
-        onSuccess={handleAccountSelectorSuccess}
+        onError={accountSelectionErrorCallback}
+        onSuccess={accountSelectionSuccessCallback}
       />
 
       <SyncDialog
         show={showSyncDialog}
-        onError={handleSyncDialogError}
-        onSuccess={handleSyncDialogSuccess}
+        onError={syncAccountErrorCallback}
+        onSuccess={syncAccountSuccessCallback}
       />
 
       {/* CSS animations */}

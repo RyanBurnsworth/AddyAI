@@ -2,7 +2,9 @@ import { Body, Controller, Get, Put, Query, Res } from '@nestjs/common';
 import { UserService } from '../../service/user/user.service';
 import { UserDTO } from '../../dto/user.dto';
 import { Response } from 'express';
+import { SkipThrottle } from '@nestjs/throttler';
 
+@SkipThrottle()
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) {}

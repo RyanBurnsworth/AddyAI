@@ -9,7 +9,9 @@ import {
 } from '@nestjs/common';
 import { AccountService } from '../../service/account/account.service';
 import { Response } from 'express';
+import { Throttle } from '@nestjs/throttler';
 
+@Throttle({ default: { limit: 5, ttl: 60000 } })
 @Controller('account')
 export class AccountController {
   constructor(private accountService: AccountService) {}

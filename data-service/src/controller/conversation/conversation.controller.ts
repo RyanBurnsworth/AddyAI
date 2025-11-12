@@ -1,10 +1,12 @@
 import { BadRequestException, Controller, Get, Query } from '@nestjs/common';
 import { ConversationService } from '../../service/conversation/conversation.service';
+import { SkipThrottle } from '@nestjs/throttler';
 
 @Controller('conversation')
 export class ConversationController {
   constructor(private readonly conversationService: ConversationService) {}
 
+  @SkipThrottle()
   @Get('')
   async getConversation(
     @Query('user_id') userId: number,

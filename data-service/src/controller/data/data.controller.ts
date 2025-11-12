@@ -1,7 +1,9 @@
 import { Body, Controller, Post, BadRequestException } from '@nestjs/common';
 import { QueryDTO } from '../../dto/query.dto';
 import { DataService } from '../../service/data/data.service';
+import { Throttle } from '@nestjs/throttler';
 
+@Throttle({ default: { limit: 5, ttl: 60000 } })
 @Controller('data')
 export class DataController {
   constructor(private readonly dataService: DataService) {}

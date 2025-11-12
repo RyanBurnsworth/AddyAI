@@ -1,6 +1,8 @@
 import { Controller, Get, NotFoundException, Query } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { PaymentService } from 'src/service/payment/payment.service';
 
+@Throttle({ default: { limit: 5, ttl: 60000 } })
 @Controller('payment')
 export class PaymentController {
   constructor(private readonly paymentService: PaymentService) {}

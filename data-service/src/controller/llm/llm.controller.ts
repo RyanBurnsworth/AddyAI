@@ -3,7 +3,9 @@ import { LLMRequestDTO } from '../../dto/llm.request.dto';
 import { DataService } from '../../service/data/data.service';
 import { LLMService } from '../../service/llm/llm.service';
 import { Conversation, Exchange } from 'src/entity/conversation.entity';
+import { Throttle } from '@nestjs/throttler';
 
+@Throttle({ default: { limit: 5, ttl: 60000 } })
 @Controller('llm')
 export class LLMController {
   constructor(

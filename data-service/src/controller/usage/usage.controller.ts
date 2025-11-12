@@ -10,7 +10,9 @@ import {
 import { UsageDTO } from '../../dto/usage.dto';
 import { UsageService } from '../../service/usage/usage.service';
 import { Response } from 'express';
+import { SkipThrottle } from '@nestjs/throttler';
 
+@SkipThrottle()
 @Controller('usage')
 export class UsageController {
   constructor(private readonly usageService: UsageService) {}

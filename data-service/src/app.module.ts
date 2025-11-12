@@ -19,12 +19,18 @@ import { LLMController } from './controller/llm/llm.controller';
 import { LLMService } from './service/llm/llm.service';
 import { PaymentController } from './controller/payment/payment.controller';
 import { PaymentService } from './service/payment/payment.service';
+import { ThrottlerGuard, ThrottlerModule, seconds } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    ThrottlerModule.forRoot([{
+      ttl: seconds(60),
+      limit: 10,
+    }]),
     PostgresModule,
     HttpModule,
     DataModule,
@@ -48,6 +54,10 @@ import { PaymentService } from './service/payment/payment.service';
     ConversationService,
     LLMService,
     PaymentService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard
+    }
   ],
 })
 export class AppModule {}

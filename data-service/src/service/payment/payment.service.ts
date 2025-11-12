@@ -8,9 +8,7 @@ export class PaymentService {
   private stripe: Stripe;
 
   constructor(private readonly dataService: DataService) {
-    this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: '2025-05-28.basil',
-    });
+    this.stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
   }
 
   async requestClientSecret(amount: number): Promise<{ clientSecret: string }> {

@@ -10,7 +10,6 @@ interface ChatHistorySidebarProps {
   isLoading: boolean;
   isHistoryLoading: boolean;
   conversationHistory: Record<string, { id: number; headline: string; createdAt: string }[]> | null;
-  loadConversationById: (id: number) => void;
 }
 
 export default function ChatHistorySidebar({
@@ -18,7 +17,6 @@ export default function ChatHistorySidebar({
   isLoading,
   isHistoryLoading,
   conversationHistory,
-  loadConversationById,
 }: ChatHistorySidebarProps) {
   const [isPanelOpen, setIsPanelOpen] = useState(defaultOpen);
   const navigate = useNavigate();
@@ -103,7 +101,7 @@ export default function ChatHistorySidebar({
                         key={conv.id}
                         className="text-sm text-zinc-300 hover:bg-zinc-800/70 p-3 rounded-md cursor-pointer transition-colors duration-200"
                         onClick={() => {
-                          if (!isLoading) loadConversationById(conv.id);
+                          if (!isLoading) navigate(`/chat?conversationId=${conv.id}`);
                         }}
                       >
                         {conv.headline}

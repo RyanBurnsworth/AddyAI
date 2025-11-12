@@ -37,12 +37,12 @@ export default function NavBar() {
 
   const handleSwitchAccount = () => {
     localStorage.removeItem(CUSTOMER_ID);
-    navigate('/chat');
+    window.location.href = '/chat';
   };
 
   const logout = () => {
     localStorage.clear();
-    navigate('/');
+    window.location.href = '/chat';
   };
 
   return (
@@ -85,7 +85,7 @@ export default function NavBar() {
               <div className="flex flex-col gap-2">
                 <button
                   className="text-base text-left text-zinc-200 hover:bg-zinc-700/70 p-2 rounded-md transition-colors duration-150"
-                  onClick={() => navigate('/chat')}
+                  onClick={() => window.location.href = '/chat'}
                 >
                   <div className="flex flex-row items-center">
                     <MdAdd size={20} className="mr-3 text-amber-400" /> Start New

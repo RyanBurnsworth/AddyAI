@@ -36,3 +36,4 @@ addyai-app/src/
 docker-compose.yml
 docker-compose.prod.yml
 addyai-app/.prod.env
+clean_postgres.py

@@ -303,23 +303,52 @@ export default function Chat() {
   }
 
   useEffect(() => {
-    localStorage.removeItem(CONVERSATION_ID);
+    const searchParams = new URLSearchParams(location.search);
+    const conversationIdParam = searchParams.get('conversationId');
 
-    if (!localStorage.getItem(REFRESH_TOKEN) || !localStorage.getItem(USERID)) {
-      setShowSignInDialog(true);
-      console.log('Showing sign-in dialog');
-    } else if (!localStorage.getItem(CUSTOMER_ID)) {
-      setShowAccountSelectorDialog(true);
-      console.log('Showing account selector dialog');
-    } else if (!localStorage.getItem(LAST_SYNCED) || localStorage.getItem(LAST_SYNCED) === '') {
-      setShowSyncDialog(true);
-      console.log('Showing sync dialog');
-    } else {
-      completeWorkflow();
+    // Only clear conversation ID if not navigating to an existing one
+    if (!conversationIdParam) {
+      localStorage.removeItem(CONVERSATION_ID);
     }
-    navigate(location.pathname, { replace: true, state: {} });
-  }, []);
 
+    const initialize = async () => {
+      if (!localStorage.getItem(REFRESH_TOKEN) || !localStorage.getItem(USERID)) {
+        setShowSignInDialog(true);
+        console.log('Showing sign-in dialog');
+        return;
+      }
+
+      if (!localStorage.getItem(CUSTOMER_ID)) {
+        setShowAccountSelectorDialog(true);
+        console.log('Showing account selector dialog');
+        return;
+      }
+
+      if (!localStorage.getItem(LAST_SYNCED) || localStorage.getItem(LAST_SYNCED) === '') {
+        setShowSyncDialog(true);
+        console.log('Showing sync dialog');
+        return;
+      }
+
+      // Perform the normal startup workflow
+      completeWorkflow();
+
+      // If a conversationId is provided in the URL, load it
+      if (conversationIdParam) {
+        const conversationId = Number(conversationIdParam);
+        if (!isNaN(conversationId)) {
+          await loadConversationByIdCallback(conversationId);
+        } else {
+          console.warn('Invalid conversationId in URL:', conversationIdParam);
+        }
+      }
+    };
+
+    initialize();
+
+    // Clean the URL after handling the param (so it doesn’t stick around)
+    navigate(location.pathname, { replace: true });
+  }, [location.search, navigate, loadConversationByIdCallback]);
 
   return (
     <div className="h-screen w-screen flex flex-col bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white overflow-hidden">
@@ -364,7 +393,6 @@ export default function Chat() {
             isLoading={isLoading}
             isHistoryLoading={isHistoryLoading}
             conversationHistory={conversationHistory}
-            loadConversationById={loadConversationByIdCallback}
           />
         </div>
 

@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
 import NavBar from '../reusable/NavBar';
-import { CUSTOMER_ID, USERID, CONVERSATION_ID } from '../../utils/constants';
+import { CUSTOMER_ID, USERID } from '../../utils/constants';
 import { useNavigate } from 'react-router-dom';
 import ReactGA from 'react-ga4';
 
@@ -119,26 +119,17 @@ export default function ChatHistory() {
           )}
 
           {!isHistoryLoading && !error && flattenedHistory.length > 0 && (
-            <div className="w-full max-w-4xl bg-zinc-800 bg-opacity-70 rounded-lg shadow-xl overflow-hidden animate-slide-up">
-              <table className="min-w-full divide-y divide-zinc-700">
+            <div className="w-full max-w-4xl overflow-x-auto rounded-lg shadow-xl bg-zinc-800/70">
+              <table className="min-w-full divide-y divide-zinc-700 hidden sm:table">
                 <thead className="bg-zinc-700">
                   <tr>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider rounded-tl-lg"
-                    >
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                       Date
                     </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
-                    >
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                       Conversation ID
                     </th>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider rounded-tr-lg"
-                    >
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                       Headline
                     </th>
                   </tr>
@@ -147,8 +138,8 @@ export default function ChatHistory() {
                   {flattenedHistory.map(conv => (
                     <tr
                       key={conv.id}
-                      className="hover:bg-zinc-700 transition-colors duration-200 cursor-pointer" // Added cursor-pointer
-                      onClick={() => handleViewConversation(conv.id)} // Added onClick handler
+                      className="hover:bg-zinc-700 transition-colors duration-200 cursor-pointer"
+                      onClick={() => handleViewConversation(conv.id)}
                     >
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-200">
@@ -158,16 +149,31 @@ export default function ChatHistory() {
                           {new Date(conv.createdAt).toLocaleTimeString()}
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-green-400">{conv.id}</div>
+                      <td className="px-6 py-4 whitespace-nowrap text-green-400 font-medium">
+                        {conv.id}
                       </td>
-                      <td className="px-6 py-4">
-                        <div className="text-sm text-gray-200 line-clamp-2">{conv.headline}</div>
-                      </td>
+                      <td className="px-6 py-4 text-gray-200 line-clamp-2">{conv.headline}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
+
+              {/* Mobile card layout */}
+              <div className="sm:hidden flex flex-col space-y-4 p-2">
+                {flattenedHistory.map(conv => (
+                  <div
+                    key={conv.id}
+                    className="bg-zinc-900/80 p-4 rounded-lg border border-zinc-700 hover:bg-zinc-800 cursor-pointer transition-colors"
+                    onClick={() => handleViewConversation(conv.id)}
+                  >
+                    <div className="flex justify-between text-sm text-gray-400 mb-2">
+                      <span>{new Date(conv.createdAt).toLocaleDateString()}</span>
+                      <span className="text-green-400 font-medium">#{conv.id}</span>
+                    </div>
+                    <div className="text-gray-200 text-base font-medium">{conv.headline}</div>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </main>

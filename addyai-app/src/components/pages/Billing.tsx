@@ -52,10 +52,12 @@ export default function Billing() {
 
   return (
     <>
-      <NavBar /> {/* NavBar now fits within the flex layout */}
+      <div className="relative z-50">
+        <NavBar /> 
+      </div>
       <div className="min-h-screen w-screen flex flex-col bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 text-white overflow-hidden relative">
         {/* Animated Background Grid & Radial Gradient - Matched from Home/Start */}
-        <div className="fixed inset-0 opacity-20">
+        <div className="fixed inset-0 opacity-20 pointer-events-none">
           <div
             className="absolute inset-0"
             style={{

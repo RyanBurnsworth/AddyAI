@@ -13,6 +13,12 @@ export default function Settings() {
 
   const navigate = useNavigate();
 
+  const accountDeletionSuccessCallback = () => {
+    // Clear local storage and redirect to homepage or login page
+    localStorage.clear();
+    navigate('/');
+  }
+
   useEffect(() => {
     const storedName = localStorage.getItem('name') || '';
     setName(storedName);
@@ -240,6 +246,7 @@ export default function Settings() {
         cancelText='Cancel'
         show={showWarningDialog}
         onClose={() => setShowWarningDialog(false)}
+        onSuccess={accountDeletionSuccessCallback}
       />
 
       {/* Animations */}

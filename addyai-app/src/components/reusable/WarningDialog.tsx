@@ -9,7 +9,7 @@ export default function WarningDialog({ headling, message, confirmText, cancelTe
 
   if (!show) return null;
 
-  const handleDelete = async () => {
+  const handleAccountDeletion = async () => {
     const userEmail = localStorage.getItem('email') || null;
     if (!userEmail) {
       alert('User email not found. Please log in again.');
@@ -69,7 +69,7 @@ export default function WarningDialog({ headling, message, confirmText, cancelTe
           </button>
 
           <button
-            onClick={handleDelete}
+            onClick={handleAccountDeletion}
             disabled={loading}
             className="flex items-center justify-center gap-3 text-white font-medium py-3 px-6 ml-8 rounded-lg border !bg-red-700 hover:opacity-90 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
           >

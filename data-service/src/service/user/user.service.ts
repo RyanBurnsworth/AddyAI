@@ -4,7 +4,7 @@ import { User } from 'src/entity/user.entity';
 import { DataService } from '../data/data.service';
 import { v4 as uuidv4 } from 'uuid';
 import { MailgunService } from '../mailgun/mailgun.service';
-import { INTRO_EMAIL } from 'src/util/emails';
+import { DEACTIVATION_EMAIL, INTRO_EMAIL } from 'src/util/emails';
 
 @Injectable()
 export class UserService {
@@ -114,6 +114,7 @@ export class UserService {
       createdAt: existingUser.createdAt,
     };
 
+    // update user to set active to false
     try {
       await this.dataService.updateUser(user);
     } catch (error) {
@@ -121,11 +122,25 @@ export class UserService {
       throw new InternalServerErrorException('Error deactivating user');
     }
 
+    // delete user Google Ads data on Addy AI
     try {
       await this.dataService.deleteGoogleAdsDataByUserId(existingUser.id);
     } catch (error) {
       console.log('Error deleting user Google Ads data: ', error);
       throw new InternalServerErrorException('Error deleting user Google Ads data');
+    }
+
+    // send a deactivation email
+    try {
+      await this.mailgunService.sendEmail(
+        existingUser.name, 
+        existingUser.email, 
+        'Account Deactivated', 
+        'Your AddyAI account has been deactivated.', 
+        DEACTIVATION_EMAIL({ name: existingUser.name }));
+    } catch(error) {
+      console.log('Error sending deactivation email: ', error);
+      throw new InternalServerErrorException('Error sending deactivation email');
     }
   }
   

@@ -25,7 +25,7 @@ export class MailgunService {
             to: [name + " <" + email + ">"],
             subject: subject,
             text: text,
-            html: INTRO_EMAIL({ name: name }),
+            html: html,
             });
 
             console.log("Email sent:", data);

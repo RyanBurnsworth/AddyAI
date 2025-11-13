@@ -19,6 +19,7 @@ import { AdGroupMetrics } from './entity/adgroup_metrics.entity';
 import { AdMetrics } from './entity/ad.metrics.entity';
 import { KeywordMetrics } from './entity/keyword.metrics.entity';
 import { Transaction } from './entity/transaction.entity';
+import { MailgunService } from './service/mailgun/mailgun.service';
 
 @Module({
   imports: [
@@ -40,7 +41,7 @@ import { Transaction } from './entity/transaction.entity';
     ]),
   ],
   controllers: [UserController, UsageController],
-  providers: [DataService, UserService, UsageService],
+  providers: [DataService, UserService, UsageService, MailgunService],
   exports: [DataService, UserService, UsageService],
 })
 export class DataModule {}

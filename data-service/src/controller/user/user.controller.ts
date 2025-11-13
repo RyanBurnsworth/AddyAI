@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Put, Query, Res } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Put, Query, Res } from '@nestjs/common';
 import { UserService } from '../../service/user/user.service';
 import { UserDTO } from '../../dto/user.dto';
 import { Response } from 'express';
@@ -32,5 +32,15 @@ export class UserController {
     } catch (error) {
       return res.status(500).json('Failed to get user balance: ' + error);
     }
+  }
+
+  @Delete()
+  async deactivateUser(@Res() res: Response, @Query('email') email: string) {
+    try {
+      await this.userService.deactivateUser(email);
+      return res.status(200).json('User deactivated successfully');
+    } catch (error) {
+      return res.status(500).json('Failed to deactivate user: ' + error);
+    } 
   }
 }

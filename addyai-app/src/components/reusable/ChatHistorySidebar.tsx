@@ -24,7 +24,7 @@ export default function ChatHistorySidebar({
   return (
     <aside
       className={classNames(
-        'bg-zinc-900 text-white p-4 flex flex-col transition-all duration-300 hidden sm:flex border-r border-zinc-700/50 h-screen', // Added h-screen for full height
+        'bg-zinc-900 text-white p-4 flex flex-col transition-all duration-300 sm:flex border-r border-zinc-700/50 h-screen', // Added h-screen for full height
         {
           'w-64': isPanelOpen,
           'w-16 items-center': !isPanelOpen,

@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsEmail, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class UserDTO {
   @IsString()
@@ -39,4 +39,8 @@ export class UserDTO {
   @IsString()
   @IsOptional()
   idToken?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  active: boolean =  true;
 }

@@ -128,7 +128,7 @@ export class DataService {
           tokenType: user.tokenType,
           scope: user.scope,
           idToken: user.idToken,
-          balance: user.balance ?? 0,
+          balance: user.balance ?? 0, 
         }
       );
     } catch (error) {
@@ -442,6 +442,40 @@ export class DataService {
     } catch (error) {
       console.error('Error finding latest 3 exchanges from specified conversation:', error);
       throw new InternalServerErrorException('Error retrieving latest exchanges');
+    }
+  }
+
+  async deleteGoogleAdsDataByUserId(userId: string) {
+    // List of tables to delete from
+    const tables = [
+      'account',
+      'account_attr',
+      'campaign_attr',
+      'campaign_metrics',
+      'adgroup_attr',
+      'adgroup_metrics',
+      'ad_attr',
+      'ad_metrics',
+      'conversation',
+      'keyword_attr',
+      'keyword_metrics',
+    ];
+
+    try {
+      // Wrap in a transaction to ensure atomicity
+      await this.dataSource.query('BEGIN');
+
+      for (const table of tables) {
+        const query = `DELETE FROM ${table} WHERE "user_id" = $1`;
+        await this.executeQuery(query, [userId]);
+      }
+
+      await this.dataSource.query('COMMIT');
+      console.log(`All Google Ads data for userId=${userId} deleted successfully.`);
+    } catch (error) {
+      await this.dataSource.query('ROLLBACK');
+      console.error('Failed to delete user\'s Google Ads data:', error);
+      throw new InternalServerErrorException('Failed to delete Google Ads data');
     }
   }
 }

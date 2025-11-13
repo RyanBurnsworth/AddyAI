@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import NavBar from '../reusable/NavBar';
 import { useNavigate } from 'react-router-dom';
+import WarningDialog from '../reusable/WarningDialog';
 
 export default function Settings() {
   const [name, setName] = useState('');
@@ -8,6 +9,7 @@ export default function Settings() {
   const [lastSynced, setLastSynced] = useState('');
   const [customerId, setCustomerId] = useState('');
   const [selectedModel, setSelectedModel] = useState('OpenAI');
+  const [showWarningDialog, setShowWarningDialog] = useState(false);
 
   const navigate = useNavigate();
 
@@ -88,9 +90,6 @@ export default function Settings() {
                       disabled
                       className="flex-1 px-3 py-2 rounded-lg bg-zinc-800 border border-zinc-700 text-white focus:outline-none disabled:opacity-70"
                     />
-                    <button className="group relative px-6 py-3 bg-gradient-to-r from-green-500 to-amber-500 text-white rounded-full font-semibold text-base overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-green-500/25">
-                      Edit
-                    </button>
                   </div>
                 </div>
                 
@@ -146,6 +145,7 @@ export default function Settings() {
                     <button 
                         className="group w-full relative px-6 py-3 mt-2 !bg-red-700 text-white rounded-full font-semibold text-base overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-red-500/25"
                         style={{ backgroundColor: '#b91c1c' }} // Tailwind red-700 hex fallback
+                        onClick={() => setShowWarningDialog(true)}
                     >
                         Cancel Addy AI Account
                     </button>
@@ -232,6 +232,15 @@ export default function Settings() {
           </div>
         </div>
       </div>
+
+      <WarningDialog
+        headling='Are you sure you want to delete your Addy AI account?'
+        message='This action will deactivate your account and remove all associated data. This action is irreversible.'  
+        confirmText='Delete Addy AI Account'
+        cancelText='Cancel'
+        show={showWarningDialog}
+        onClose={() => setShowWarningDialog(false)}
+      />
 
       {/* Animations */}
       <style>{`

@@ -38,6 +38,9 @@ export class User {
   @Column({ type: 'decimal', precision: 10, scale: 2, name: 'balance' })
   balance: number;
 
+  @Column({ name: 'active', default: false})
+  active: boolean;
+
   @Column({ name: 'last_updated' })
   lastUpdated: Date;
 

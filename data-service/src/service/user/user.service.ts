@@ -26,19 +26,12 @@ export class UserService {
       scope: userDto?.scope,
       idToken: userDto?.idToken,
       balance: 1000,
+      active: userDto.active || true,
       lastUpdated: new Date(),
       createdAt: new Date(),
     };
 
-    let existingUser: User;
-
-    try {
-      existingUser = await this.dataService.findUserByEmail(user.email);
-    } catch (error) {
-      console.log('User does not exist', {
-        userId: user.id,
-      });
-    }
+    let existingUser: User = await this.getExistingUser(user.email);
 
     if (existingUser) {
       console.log('User exists, updating user: ', existingUser.id);
@@ -91,5 +84,60 @@ export class UserService {
       console.log('Error fetching user by id: ', error);
       throw error;
     }
+  }
+
+  async deactivateUser(email: string) {
+    const existingUser =  await this.getExistingUser(email);
+
+    if (!existingUser) {
+      console.log('User not found for email: ', email);
+      throw new InternalServerErrorException('User not found');
+    }
+
+    console.log('Deactivating user: ', existingUser.id);
+
+    const user: User = {
+      id: existingUser.id,
+      name: existingUser.name,
+      email: existingUser.email,
+      picture: '',
+      refreshToken: '',
+      accessToken: '',
+      expiresIn: null,
+      refreshTokenExpiresIn: null,
+      tokenType: null,
+      scope: null,
+      idToken: null,
+      balance: existingUser.balance,
+      active: false,
+      lastUpdated: new Date(),
+      createdAt: existingUser.createdAt,
+    };
+
+    try {
+      await this.dataService.updateUser(user);
+    } catch (error) {
+      console.log('Error deactivating user: ', error);
+      throw new InternalServerErrorException('Error deactivating user');
+    }
+
+    try {
+      await this.dataService.deleteGoogleAdsDataByUserId(existingUser.id);
+    } catch (error) {
+      console.log('Error deleting user Google Ads data: ', error);
+      throw new InternalServerErrorException('Error deleting user Google Ads data');
+    }
+  }
+  
+  private async getExistingUser(email: string): Promise<User | null> { 
+    let existingUser: User;
+
+    try {
+      existingUser = await this.dataService.findUserByEmail(email);
+    } catch (error) {
+      console.log('User does not exist for email: ', email);
+    }
+
+    return existingUser;
   }
 }

@@ -49,7 +49,7 @@ export class KeywordMetricsDTO extends BaseMetricsDTO {
   @IsNumber()
   searchTopImpressionShare?: number;
 
-  static toEntity(userId: number, customerId: string, row: any): KeywordMetrics {
+  static toEntity(userId: string, customerId: string, row: any): KeywordMetrics {
     const metrics = row.metrics || {};
     const campaign = row.campaign || {};
     const adGroup = row.ad_group || {};

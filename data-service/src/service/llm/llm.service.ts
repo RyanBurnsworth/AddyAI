@@ -20,7 +20,7 @@ export class LLMService {
    * @param conversationId the id of the conversation
    */
   async fetchQueriesFromLLM(
-    userId: number,
+    userId: string,
     customerId: string,
     userPrompt: string,
     conversationId?: number
@@ -70,7 +70,7 @@ export class LLMService {
    * @returns the LLM analysis
    */
   async getAnalysis(
-    userId: number,
+    userId: string,
     userPrompt: string,
     customerId: string,
     queries: string[],

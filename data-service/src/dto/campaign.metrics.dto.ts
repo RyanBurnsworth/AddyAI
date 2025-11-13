@@ -67,7 +67,7 @@ export class CampaignMetricsDTO extends BaseMetricsDTO {
   @IsNumber()
   search_top_impression_share?: number;
 
-  static toEntity(userId: number, customerId: string, row: any): CampaignMetrics {
+  static toEntity(userId: string, customerId: string, row: any): CampaignMetrics {
     const metrics = row.metrics || {};
     const campaign = row.campaign || {};
     const segments = row.segments || {};

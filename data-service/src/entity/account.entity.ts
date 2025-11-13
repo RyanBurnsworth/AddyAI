@@ -6,7 +6,7 @@ export class Account {
   id: number;
 
   @Column({ name: 'user_id' })
-  userId: number;
+  userId: string;
 
   @Column({ name: 'name' })
   name: string;

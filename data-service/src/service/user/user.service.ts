@@ -2,6 +2,7 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { UserDTO } from 'src/dto/user.dto';
 import { User } from 'src/entity/user.entity';
 import { DataService } from '../data/data.service';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class UserService {
@@ -11,7 +12,7 @@ export class UserService {
     console.log('Upserting user: ', userDto.email);
 
     const user: User = {
-      id: null,
+      id: uuidv4(),
       name: userDto.name,
       email: userDto.email,
       picture: userDto.picture,
@@ -38,9 +39,14 @@ export class UserService {
     }
 
     if (existingUser) {
-      console.log('User exists, updating user: ', user.email);
+      console.log('User exists, updating user: ', existingUser.id);
       try {
-        await this.dataService.updateUser(user);
+        await this.dataService.updateUser({
+          ...user,
+          id: existingUser.id,
+          createdAt: existingUser.createdAt,
+          balance: existingUser.balance,
+      });
       } catch (error) {
         console.log('Error updating existing user: ', error);
         throw new InternalServerErrorException('Error updating existing user');
@@ -64,7 +70,7 @@ export class UserService {
     }
   }
 
-  async getUserById(userId: number) {
+  async getUserById(userId: string) {
     try {
       console.log('Fetching user by id: ', userId);
 

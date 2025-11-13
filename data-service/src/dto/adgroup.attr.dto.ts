@@ -37,7 +37,7 @@ export class AdGroupAttrDTO {
   @IsNumber()
   target_cpv_micros: number;
 
-  static toEntity(userId: number, customerId: string, row: any): AdGroupAttr {
+  static toEntity(userId: string, customerId: string, row: any): AdGroupAttr {
     const adGroupDTO: AdGroupAttrDTO = row.ad_group;
     const campaign = row.campaign || {};
 

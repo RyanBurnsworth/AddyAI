@@ -6,9 +6,9 @@ export class ConversationDTO {
   @IsOptional()
   id: number;
 
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
-  userId: number;
+  userId: string;
 
   @IsString()
   @IsNotEmpty()

@@ -56,7 +56,7 @@ export class AccountAttrDTO {
   @IsNumber()
   optimization_score?: number;
 
-  static toEntity(userId: number, customerId: string, row: any): AccountAttr {
+  static toEntity(userId: string, customerId: string, row: any): AccountAttr {
     const accountAttrDto: AccountAttrDTO = row.customer;
 
     const accountEntity = new AccountAttr();

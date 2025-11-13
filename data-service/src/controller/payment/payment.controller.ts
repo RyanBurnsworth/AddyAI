@@ -14,7 +14,7 @@ export class PaymentController {
 
   // TODO: Should be handled wtihin a webhook
   @Get('status')
-  async getPaymentStatus(@Query('user_id') userId: number, @Query('session_id') sessionId: string) {
+  async getPaymentStatus(@Query('user_id') userId: string, @Query('session_id') sessionId: string) {
     const session = await this.paymentService.getCheckoutSession(sessionId);
     if (!session) {
       return new NotFoundException('Transaction already has been processed');

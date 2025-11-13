@@ -58,7 +58,7 @@ export class DataService {
    * @param userId the id of the user
    * @returns the user object associated with the user
    */
-  async findUserByUserId(userId: number): Promise<User | null> {
+  async findUserByUserId(userId: string): Promise<User | null> {
     try {
       const result = await this.dataSource
         .getRepository(User)
@@ -100,14 +100,6 @@ export class DataService {
    */
   async createUser(user: User): Promise<User> {
     try {
-      const existingUser = await this.findUserByEmail(user.email);
-      if (existingUser) {
-        user.id = existingUser.id;
-        await this.updateUser(user);
-        const updatedUser = await this.findUserByEmail(user.email);
-        return updatedUser;
-      }
-
       const newUser = this.dataSource.getRepository(User).create(user);
       return await this.dataSource.getRepository(User).save(newUser);
     } catch (error) {
@@ -207,7 +199,7 @@ export class DataService {
    * @param userId the userId associated with an account
    * @returns a list of accounts owned by the user
    */
-  async findAccountsByUserId(userId: number): Promise<Account[]> {
+  async findAccountsByUserId(userId: string): Promise<Account[]> {
     try {
       const result = await this.dataSource
         .getRepository(Account)
@@ -288,7 +280,7 @@ export class DataService {
    * @returns a list of conversations associated to this user and customer
    */
   async findConversationsByUserIdAndCustomerId(
-    userId: number,
+    userId: string,
     customerId: string
   ): Promise<Conversation[]> {
     try {
@@ -315,7 +307,7 @@ export class DataService {
    */
   async findConversationById(
     conversationId: number,
-    userId: number,
+    userId: string,
     customerId: string
   ): Promise<Conversation> {
     try {
@@ -415,6 +407,7 @@ export class DataService {
       throw new InternalServerErrorException('Error bulk inserting accounts');
     }
   }
+
   /**
    * Find a specific conversation by ID and extract the latest 3 exchanges from it
    *
@@ -425,7 +418,7 @@ export class DataService {
    */
   async findLatestThreeExchanges(
     conversationId: number,
-    userId: number,
+    userId: string,
     customerId: string
   ): Promise<Exchange[]> {
     try {

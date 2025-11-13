@@ -19,7 +19,7 @@ export class AccountController {
   @Get('')
   async getAccounts(
     @Res() res: Response,
-    @Query('user_id') userId: number,
+    @Query('user_id') userId: string,
     @Query('refresh_token') refreshToken: string
   ) {
     if (!userId || !refreshToken) {

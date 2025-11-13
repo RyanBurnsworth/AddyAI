@@ -13,7 +13,7 @@ export class AccountService {
     private readonly dataService: DataService
   ) {}
 
-  async fetchAccounts(userId: number, refreshToken: string): Promise<Account[]> {
+  async fetchAccounts(userId: string, refreshToken: string): Promise<Account[]> {
     const accountModel = new AccountModel();
     accountModel.customerAccounts = [];
     accountModel.managerAccounts = [];
@@ -97,7 +97,7 @@ export class AccountService {
     }
   }
 
-  async storeAccountsBulk(userId: number, accountModel: AccountModel): Promise<Account[]> {
+  async storeAccountsBulk(userId: string, accountModel: AccountModel): Promise<Account[]> {
     // Step 1: Collect all customer IDs that need to be checked
     const allCustomerIds = new Set<string>();
 

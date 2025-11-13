@@ -2,7 +2,7 @@ import { AdMetrics } from 'src/entity/ad.metrics.entity';
 import { BaseMetricsDTO } from './base.metrics.dto';
 
 export class AdMetricsDTO extends BaseMetricsDTO {
-  static toEntity(userId: number, customerId: string, input: any): AdMetrics {
+  static toEntity(userId: string, customerId: string, input: any): AdMetrics {
     const metrics = input.metrics || {};
     const campaign = input.campaign || {};
     const adGroup = input.ad_group || {};

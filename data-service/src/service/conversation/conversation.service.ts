@@ -17,7 +17,7 @@ export class ConversationService {
 
   async getConversation(
     conversationId: number,
-    userId: number,
+    userId: string,
     customerId: string
   ): Promise<ConversationDTO> {
     try {
@@ -47,7 +47,7 @@ export class ConversationService {
   }
 
   async getGroupedConversationsInfo(
-    userId: number,
+    userId: string,
     customerId: string
   ): Promise<GroupedConversationInfo> {
     try {

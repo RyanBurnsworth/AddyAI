@@ -7,7 +7,7 @@ export class Usage {
 
   @Index({ unique: false })
   @Column({ name: 'user_id' })
-  userId: number;
+  userId: string;
 
   @Column({ name: 'input_tokens' })
   inputTokens: number;

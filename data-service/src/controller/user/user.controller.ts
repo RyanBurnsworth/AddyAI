@@ -20,12 +20,12 @@ export class UserController {
   }
 
   @Get()
-  async getUser(@Query('id') id: number) {
+  async getUser(@Query('id') id: string) {
     return await this.userService.getUserById(id);
   }
 
   @Get('balance')
-  async getUserBalance(@Res() res: Response, @Query('id') id: number) {
+  async getUserBalance(@Res() res: Response, @Query('id') id: string) {
     try {
       const user = await this.userService.getUserById(id);
       return res.status(200).json(user.balance);

@@ -39,7 +39,7 @@ export default function Chat() {
   const [showAccountSelectorDialog, setShowAccountSelectorDialog] = useState<boolean>(false);
   const [showSyncDialog, setShowSyncDialog] = useState<boolean>(false);
 
-  const userId = useMemo(() => Number(localStorage.getItem(USERID)), []);
+  const userId = useMemo(() => String(localStorage.getItem(USERID)), []);
 
   const messagingUrl = import.meta.env.VITE_MESSAGING_URL;
   const baseURL = import.meta.env.VITE_BASE_URL;
@@ -62,7 +62,7 @@ export default function Chat() {
     try {
       const customerId = localStorage.getItem(CUSTOMER_ID);
       const params = new URLSearchParams({
-        user_id: String(userId),
+        user_id: userId,
         customer_id: customerId ?? '',
       });
 
@@ -133,7 +133,7 @@ export default function Chat() {
 
       try {
         const messagePayload: {
-          userId: number;
+          userId: string;
           userPrompt: string;
           customerId: string | null;
           conversationId?: number | null;
@@ -143,11 +143,6 @@ export default function Chat() {
           customerId,
           conversationId: Number(currentConversationId),
         };
-
-        // if conversationId is null it will be updated on the server side
-        if (currentConversationId) {
-          messagePayload.conversationId = Number(currentConversationId);
-        }
 
         const res = await fetch(messagingUrl, {
           method: POST,
@@ -161,6 +156,8 @@ export default function Chat() {
         const data = contentType?.includes('application/json')
           ? await res.json()
           : await res.text();
+
+        console.log('Received response: ', data);
 
         if (data && data.conversationId && currentConversationId === null) {
           // update the current conversation id
@@ -201,7 +198,7 @@ export default function Chat() {
       const customerId = localStorage.getItem(CUSTOMER_ID);
       try {
         const params = new URLSearchParams({
-          user_id: String(userId),
+          user_id: userId,
           customer_id: customerId ?? '',
           conversation_id: conversationId.toString(),
         });

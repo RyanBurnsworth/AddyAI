@@ -92,7 +92,7 @@ export class CampaignAttrDTO {
   @IsString()
   end_date: string;
 
-  static toEntity(userId: number, customerId: string, row: any): CampaignAttr {
+  static toEntity(userId: string, customerId: string, row: any): CampaignAttr {
     const campaignAttrDTO: CampaignAttrDTO = row.campaign;
 
     const campaignEntity = new CampaignAttr();

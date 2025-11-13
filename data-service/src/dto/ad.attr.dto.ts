@@ -234,7 +234,7 @@ export class AdGroupAdDTO {
   @IsNumber() status: number;
   ad: Ad;
 
-  static toEntity(userId: number, customerId: string, row: any): AdAttr {
+  static toEntity(userId: string, customerId: string, row: any): AdAttr {
     const adAttrDto: AdGroupAdDTO = row.ad_group_ad;
     const campaign = row.campaign || {};
     const adgroup = row.ad_group || {};

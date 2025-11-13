@@ -5,9 +5,9 @@ export class LLMRequestDTO {
   @IsOptional()
   conversationId: number;
 
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
-  userId: number;
+  userId: string;
 
   @IsString()
   @IsNotEmpty()

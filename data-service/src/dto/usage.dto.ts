@@ -3,7 +3,7 @@ import { IsDate, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 export class UsageDTO {
   @IsString()
   @IsNotEmpty()
-  userId: number;
+  userId: string;
 
   @IsString()
   @IsNotEmpty()

@@ -36,7 +36,7 @@ export class KeywordAttrDTO {
   @ValidateNested()
   keyword: Keyword;
 
-  static toEntity(userId: number, customerId: string, row: any) {
+  static toEntity(userId: string, customerId: string, row: any) {
     const keywordAttrDto = row.ad_group_criterion;
     const campaign = row.campaign;
     const adgroup = row.ad_group;

@@ -5,9 +5,9 @@ export class ExchangeDTO {
   @IsNotEmpty()
   conversationId: number;
 
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
-  userId: number;
+  userId: string;
 
   @IsString()
   @IsNotEmpty()

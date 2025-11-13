@@ -53,7 +53,7 @@ export class PaymentService {
     }
   }
 
-  async createTransactionRecord(userId: number, sessionId: string, amount: number, status: string) {
+  async createTransactionRecord(userId: string, sessionId: string, amount: number, status: string) {
     const transaction = new Transaction();
     transaction.userId = userId;
     transaction.sessionId = sessionId;
@@ -68,7 +68,7 @@ export class PaymentService {
     }
   }
 
-  async updateUserBalance(userId: number, amount: number) {
+  async updateUserBalance(userId: string, amount: number) {
     try {
       const user = await this.dataService.findUserByUserId(userId);
       user.balance = Number(user.balance) + amount * 10; // multiply by 10 so it stays consistent with Google Ads values being in micros

@@ -6,7 +6,7 @@ export class Transaction {
   id: number;
 
   @Column({ name: 'user_id', type: 'int' })
-  userId: number;
+  userId: string;
 
   @Column({ name: 'session_id', type: 'varchar' })
   sessionId: string;

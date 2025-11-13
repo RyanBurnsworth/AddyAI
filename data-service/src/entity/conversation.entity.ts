@@ -16,7 +16,7 @@ export class Conversation {
   id: number;
 
   @Column({ name: 'user_id' })
-  userId: number;
+  userId: string;
 
   @Column({ name: 'customer_id' })
   customerId: string;

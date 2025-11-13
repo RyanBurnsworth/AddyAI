@@ -4,8 +4,8 @@ export class BaseAttr {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ name: 'user_id', type: 'int' })
-  userId: number;
+  @Column({ name: 'user_id', type: 'varchar' })
+  userId: string;
 
   @Column({ name: 'customer_id', type: 'varchar' })
   customerId: string;

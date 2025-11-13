@@ -7,8 +7,8 @@ export abstract class BaseMetricsEntity {
   @Column({ name: 'date', type: 'date' })
   date: Date;
 
-  @Column({ name: 'user_id', type: 'int' })
-  userId: number;
+  @Column({ name: 'user_id', type: 'varchar' })
+  userId: string;
 
   @Column({ name: 'customer_id', type: 'varchar' })
   customerId: string;

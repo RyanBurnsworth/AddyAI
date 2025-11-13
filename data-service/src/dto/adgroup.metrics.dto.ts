@@ -51,7 +51,7 @@ export class AdGroupMetricsDTO extends BaseMetricsDTO {
   @IsNumber()
   searchTopImpressionShare?: number;
 
-  static toEntity(userId: number, customerId: string, row: any): AdGroupMetrics {
+  static toEntity(userId: string, customerId: string, row: any): AdGroupMetrics {
     const metrics = row.metrics || {};
     const campaign = row.campaign || {};
     const adGroup = row.ad_group || {};

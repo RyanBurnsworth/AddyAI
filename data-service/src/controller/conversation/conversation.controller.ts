@@ -9,7 +9,7 @@ export class ConversationController {
   @SkipThrottle()
   @Get('')
   async getConversation(
-    @Query('user_id') userId: number,
+    @Query('user_id') userId: string,
     @Query('customer_id') customerId: string,
     @Query('conversation_id') conversationId: number
   ) {
@@ -33,7 +33,7 @@ export class ConversationController {
 
   @Get('grouped')
   async getGroupedConversationsInfo(
-    @Query('user_id') userId: number,
+    @Query('user_id') userId: string,
     @Query('customer_id') customerId: string
   ) {
     if (!userId || !customerId || customerId === '') {

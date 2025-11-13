@@ -11,6 +11,7 @@ import TermsOfService from './components/pages/TermsOfService';
 import ChatHistory from './components/pages/ChatHistory';
 import ReactGA from 'react-ga4';
 import { useEffect } from 'react';
+import Settings from './components/pages/Settings';
 
 function App() {
   const location = useLocation();
@@ -141,6 +142,19 @@ function App() {
               transition={{ duration: 0.4 }}
             >
               <ChatHistory />
+            </motion.div>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <motion.div
+              initial={{ opacity: 0, x: 100 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -100 }}
+              transition={{ duration: 0.4 }}
+            >
+              <Settings />
             </motion.div>
           }
         />

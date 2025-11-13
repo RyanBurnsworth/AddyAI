@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { CUSTOMER_ID, PICTURE, REFRESH_TOKEN } from '../../utils/constants';
-import { MdAdd, MdGroup, MdHistory, MdReceipt } from 'react-icons/md';
+import { MdAdd, MdGroup, MdSettings } from 'react-icons/md';
 import { CiLogout } from 'react-icons/ci';
 import { useNavigate } from 'react-router-dom';
 import logo from '../../assets/logo.png';
@@ -101,19 +101,10 @@ export default function NavBar() {
                 </button>
                 <button
                   className="text-base text-left text-zinc-200 hover:bg-zinc-700/70 p-2 rounded-md transition-colors duration-150"
-                  onClick={() => navigate('/billing')}
+                  onClick={() => navigate('/settings')}
                 >
                   <div className="flex flex-row items-center">
-                    <MdReceipt size={20} className="mr-3 text-amber-400" /> Billing
-                  </div>
-                </button>
-                <button
-                  className="text-base text-left text-zinc-200 hover:bg-zinc-700/70 p-2 rounded-md transition-colors duration-150"
-                  onClick={() => navigate('/conversation-history')}
-                >
-                  <div className="flex flex-row items-center">
-                    <MdHistory size={20} className="mr-3 text-amber-400" />
-                    Conversation History
+                    <MdSettings size={20} className="mr-3 text-amber-400" /> Settings
                   </div>
                 </button>
                 <button

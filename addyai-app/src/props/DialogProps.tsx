@@ -1,8 +1,8 @@
 export default interface DialogProps {
   show: boolean;
 
-  headling?: string;
-  
+  heading?: string;
+
   message?: string;
 
   confirmText?: string;

@@ -2,44 +2,145 @@ import { useEffect, useState } from 'react';
 import NavBar from '../reusable/NavBar';
 import { useNavigate } from 'react-router-dom';
 import WarningDialog from '../reusable/WarningDialog';
+import { CUSTOMER_ID, EMAIL, LAST_SYNCED, NAME } from '../../utils/constants';
+import { SnackBar } from '../reusable/SnackBar';
 
 export default function Settings() {
+  const baseURL = import.meta.env.VITE_BASE_URL;
+
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [lastSynced, setLastSynced] = useState('');
   const [customerId, setCustomerId] = useState('');
   const [selectedModel, setSelectedModel] = useState('OpenAI');
-  const [showWarningDialog, setShowWarningDialog] = useState(false);
+  const [showAccountDeletionDialog, setShowAccountDeletionDialog] = useState(false);
+  const [showDataDeletionDialog, setShowDataDeletionDialog] = useState(false);
+  const [showSnackBar, setShowSnackBar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarColor, setSnackbarColor] = useState('bg-red-600');
 
   const navigate = useNavigate();
 
-  const accountDeletionSuccessCallback = () => {
-    // Clear local storage and redirect to homepage or login page
+  const accountDeletionSuccessCallback = () => {    
     localStorage.clear();
-    navigate('/');
+
+    setSnackbarMessage('Account successfully deleted.');
+    setSnackbarColor('bg-green-600');
+    setShowSnackBar(true);
+
+    navigate('/', { replace: true });
   }
 
-  useEffect(() => {
-    const storedName = localStorage.getItem('name') || '';
-    setName(storedName);
+  const dataDeletionSuccessCallback = () => {
+    localStorage.removeItem(CUSTOMER_ID);
+    setCustomerId('');
 
-    const storedEmail = localStorage.getItem('email') || '';
-    setEmail(storedEmail);
+    setSnackbarMessage('Google Ads data successfully deleted.');
+    setSnackbarColor('bg-green-600');
+    setShowSnackBar(true);
 
-    const storedCustomerId = localStorage.getItem('customerId') || '';
-    setCustomerId(storedCustomerId);
+    navigate('/settings', { replace: true });
+  }
 
-    const storedLastSynced = localStorage.getItem('last_synced') || '';
-    setLastSynced(storedLastSynced);
+  const handleAccountDeletion = async () => {
+    const userEmail = localStorage.getItem(EMAIL) || null;
+    if (!userEmail) {
+      setSnackbarMessage('Email not found. Please log in again.');
+      setSnackbarColor('bg-red-600');
+      setShowSnackBar(true);
+      return;
+    }
 
-    const storedModel = localStorage.getItem('preferredModel') || 'OpenAI';
-    setSelectedModel(storedModel);
-  }, []);
-  
+    try {
+      const params = new URLSearchParams({
+        email: userEmail
+      });
+
+      const response = await fetch(`${baseURL}/user/deactivate?${params}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete account');
+      }
+
+      setSnackbarMessage('Account successfully deleted.');
+      setSnackbarColor('bg-green-600');
+      setShowSnackBar(true);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleGoogleAdsDataDeletion = async () => {
+    const email = localStorage.getItem(EMAIL) || null;
+    if (!email) {
+      setSnackbarMessage('User ID not found. Please log in again.');
+      setSnackbarColor('bg-red-600');
+      setShowSnackBar(true);
+      return;
+    }
+
+    try {
+      const params = new URLSearchParams({
+        email: email
+      });
+
+      const response = await fetch(`${baseURL}/user/clean?${params}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete account');
+      }
+    } catch (error) {
+      console.error(error);
+
+      setSnackbarMessage('Failed to delete Google Ads data. Please try again.');
+      setSnackbarColor('bg-red-600');
+      setShowSnackBar(true);
+    }
+  };
+
   const handleModelUpdate = () => {
     localStorage.setItem('preferredModel', selectedModel);
       alert(`AI Model updated to ${selectedModel}`);
   };
+
+  const handleError = (message: string) => {
+    setSnackbarMessage(message);
+    setShowSnackBar(true);
+
+    setShowAccountDeletionDialog(false);
+    setShowDataDeletionDialog(false);
+  }
+
+  useEffect(() => {
+    const storedEmail = localStorage.getItem(EMAIL) || '';
+    setEmail(storedEmail);
+
+    const storedCustomerId = localStorage.getItem(CUSTOMER_ID) || '';
+    setCustomerId(storedCustomerId);
+
+    const storedName = localStorage.getItem(NAME) || '';
+    setName(storedName);
+  
+    const storedLastSynced = localStorage.getItem(LAST_SYNCED) || '';
+    setLastSynced(storedLastSynced);
+
+    const storedModel = localStorage.getItem('preferredModel') || 'OpenAI';
+    setSelectedModel(storedModel);
+
+    if (storedCustomerId === '' || storedEmail === '' || storedName === '' || storedLastSynced === '') {
+      navigate('/login', { replace: true });
+    }
+  }, []);
 
   return (
     <>
@@ -151,7 +252,7 @@ export default function Settings() {
                     <button 
                         className="group w-full relative px-6 py-3 mt-2 !bg-red-700 text-white rounded-full font-semibold text-base overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-red-500/25"
                         style={{ backgroundColor: '#b91c1c' }} // Tailwind red-700 hex fallback
-                        onClick={() => setShowWarningDialog(true)}
+                        onClick={() => setShowAccountDeletionDialog(true)}
                     >
                         Cancel Addy AI Account
                     </button>
@@ -227,7 +328,7 @@ export default function Settings() {
                     <button 
                         className="group w-full relative px-6 py-3 mt-2 !bg-red-700 text-white rounded-full font-semibold text-base overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-red-500/25"
                         style={{ backgroundColor: '#b91c1c' }} // Tailwind red-700 hex fallback
-
+                        onClick={() => setShowDataDeletionDialog(true)}
                     >
                         Clear Google Ads Data
                     </button>
@@ -240,13 +341,35 @@ export default function Settings() {
       </div>
 
       <WarningDialog
-        headling='Are you sure you want to delete your Addy AI account?'
+        heading='Are you sure you want to delete your Addy AI account?'
         message='This action will deactivate your account and remove all associated data. This action is irreversible.'  
         confirmText='Delete Addy AI Account'
         cancelText='Cancel'
-        show={showWarningDialog}
-        onClose={() => setShowWarningDialog(false)}
+        show={showAccountDeletionDialog}
+        onClose={() => setShowAccountDeletionDialog(false)}
         onSuccess={accountDeletionSuccessCallback}
+        onConfirm={handleAccountDeletion}
+        onError={handleError}
+      />
+
+      <WarningDialog
+        heading='Are you sure you want to clear your Google Ads data from Addy AI?'
+        message='This action will remove all associated data with the current Google Ads customer.'
+        confirmText='Clear Google Ads Data'
+        cancelText='Cancel'
+        show={showDataDeletionDialog}
+        onClose={() => setShowDataDeletionDialog(false)}
+        onSuccess={dataDeletionSuccessCallback}
+        onConfirm={handleGoogleAdsDataDeletion}
+        onError={handleError}
+      />
+      
+      <SnackBar
+        message={snackbarMessage}
+        color={snackbarColor}
+        duration={2000}
+        onClose={() => setShowSnackBar(false)}
+        show={showSnackBar}
       />
 
       {/* Animations */}

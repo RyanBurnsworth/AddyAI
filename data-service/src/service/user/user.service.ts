@@ -4,7 +4,7 @@ import { User } from 'src/entity/user.entity';
 import { DataService } from '../data/data.service';
 import { v4 as uuidv4 } from 'uuid';
 import { MailgunService } from '../mailgun/mailgun.service';
-import { DEACTIVATION_EMAIL, INTRO_EMAIL } from 'src/util/emails';
+import { DEACTIVATION_EMAIL, GOOGLE_ADS_DELETED_EMAIL, INTRO_EMAIL } from 'src/util/emails';
 
 @Injectable()
 export class UserService {
@@ -115,19 +115,14 @@ export class UserService {
     };
 
     // update user to set active to false
-    try {
-      await this.dataService.updateUser(user);
-    } catch (error) {
-      console.log('Error deactivating user: ', error);
-      throw new InternalServerErrorException('Error deactivating user');
-    }
+ 
 
     // delete user Google Ads data on Addy AI
     try {
-      await this.dataService.deleteGoogleAdsDataByUserId(existingUser.id);
+      await this.deleteGoogleAdsData(existingUser.id);
     } catch (error) {
-      console.log('Error deleting user Google Ads data: ', error);
-      throw new InternalServerErrorException('Error deleting user Google Ads data');
+      console.log('Error deleting Google Ads data: ', error);
+      throw new InternalServerErrorException('Error deleting Google Ads data');
     }
 
     // send a deactivation email
@@ -141,6 +136,39 @@ export class UserService {
     } catch(error) {
       console.log('Error sending deactivation email: ', error);
       throw new InternalServerErrorException('Error sending deactivation email');
+    }
+  }
+
+  async clearGoogleAdsDataByUserId(email: string) {
+    try {
+      const existingUser =  await this.getExistingUser(email);
+
+      if (!existingUser) {
+        console.log('User not found for email: ', email);
+        throw new InternalServerErrorException('User not found');
+      }
+
+      await this.deleteGoogleAdsData(email);
+      
+      // send a Google Ads cleared email
+      await this.mailgunService.sendEmail(
+        existingUser.name, 
+        existingUser.email, 
+        'Google Ads Data Deleted in AddyAI', 
+        'Your Google Ads data has been successfully deleted from AddyAI.', 
+        GOOGLE_ADS_DELETED_EMAIL({ name: existingUser.name }));
+    } catch (error) {
+      console.log('Error clearing Google Ads data: ', error);
+      throw error;
+    }
+  }
+
+  private async deleteGoogleAdsData(email: string) {
+    try {
+      await this.dataService.deleteGoogleAdsDataByUserId(email);
+    } catch (error) {
+      console.log('Error deleting user Google Ads data: ', error);
+      throw new InternalServerErrorException('Error deleting user Google Ads data');
     }
   }
   

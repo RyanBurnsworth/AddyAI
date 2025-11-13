@@ -1,50 +1,42 @@
 import { useState } from 'react';
 import type DialogProps from '../../props/DialogProps';
-import { EMAIL } from '../../utils/constants';
 
-export default function WarningDialog({ headling, message, confirmText, cancelText, show, onClose }: DialogProps) {
-  const baseURL = import.meta.env.VITE_BASE_URL;
+interface WarningDialogProps extends DialogProps {
+  heading: string;
+  message: string;
+  confirmText?: string;
+  cancelText?: string;
+  onConfirm?: () => Promise<void>; // 👈 new generic handler
+  onSuccess?: () => void;
+  onError?: (message: string) => void;
+}
 
+export default function WarningDialog({
+  heading,
+  message,
+  confirmText = 'Confirm',
+  cancelText = 'Cancel',
+  show,
+  onClose,
+  onConfirm,
+  onError,
+  onSuccess,
+}: WarningDialogProps) {
   const [loading, setLoading] = useState(false);
 
   if (!show) return null;
 
-  const handleAccountDeletion = async () => {
-    const userEmail = localStorage.getItem('email') || null;
-    if (!userEmail) {
-      alert('User email not found. Please log in again.');
-      onClose?.(true);
-      return;
-    }
-
+  const handleConfirm = async () => {
+    if (!onConfirm) return;
     setLoading(true);
     try {
-      const userEmail = localStorage.getItem(EMAIL);
-      if (!userEmail) {
-        console.error('User email not found in localStorage');
-        throw new Error('User email not found');
-      }
-
-      const params = new URLSearchParams({
-        email: userEmail
-      });
-
-      const response = await fetch(`${baseURL}/user?${params}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to delete account');
-      }
-
-      // Close the dialog and optionally notify parent
+      await onConfirm(); 
+      onSuccess?.();
       onClose?.(true);
     } catch (error) {
-      console.error(error);
-      alert('Failed to delete account. Please try again.');
+      console.error('Error during deletion:', error);
+      onError?.(' Error during deletion. Please try again later.');
+    } finally {
       setLoading(false);
     }
   };
@@ -53,11 +45,9 @@ export default function WarningDialog({ headling, message, confirmText, cancelTe
     <div className="fixed inset-0 bg-zinc-950/70 backdrop-blur-sm flex justify-center items-center z-50">
       <div className="relative rounded-2xl bg-zinc-900/90 p-8 shadow-xl w-full max-w-lg text-center border border-zinc-700">
         <h2 className="text-3xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-amber-400">
-          { headling }
+          {heading}
         </h2>
-        <p className="text-zinc-300 font-normal mb-6 leading-relaxed">
-          { message }
-        </p>
+        <p className="text-zinc-300 font-normal mb-6 leading-relaxed">{message}</p>
 
         <div className="flex justify-center">
           <button
@@ -65,11 +55,11 @@ export default function WarningDialog({ headling, message, confirmText, cancelTe
             disabled={loading}
             className="flex items-center justify-center gap-3 bg-white text-black font-medium py-3 px-6 rounded-lg border border-amber-400 hover:bg-gray-50 hover:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2"
           >
-            { cancelText || 'Cancel' }
+            {cancelText}
           </button>
 
           <button
-            onClick={handleAccountDeletion}
+            onClick={handleConfirm}
             disabled={loading}
             className="flex items-center justify-center gap-3 text-white font-medium py-3 px-6 ml-8 rounded-lg border !bg-red-700 hover:opacity-90 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
           >
@@ -95,7 +85,7 @@ export default function WarningDialog({ headling, message, confirmText, cancelTe
                 ></path>
               </svg>
             ) : (
-                confirmText || 'Confirm'
+              confirmText
             )}
           </button>
         </div>

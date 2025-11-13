@@ -34,13 +34,23 @@ export class UserController {
     }
   }
 
-  @Delete()
+  @Delete('deactivate')
   async deactivateUser(@Res() res: Response, @Query('email') email: string) {
     try {
       await this.userService.deactivateUser(email);
       return res.status(200).json('User deactivated successfully');
     } catch (error) {
       return res.status(500).json('Failed to deactivate user: ' + error);
+    } 
+  }
+
+  @Delete('clean')
+  async cleanGoogleAdsData(@Res() res: Response, @Query('email') email: string) {
+    try {
+      await this.userService.clearGoogleAdsDataByUserId(email);
+      return res.status(200).json('Google Ads data successfully deleted');
+    } catch (error) {
+      return res.status(500).json('Failed to delete Google Ads data: ' + error);
     } 
   }
 }

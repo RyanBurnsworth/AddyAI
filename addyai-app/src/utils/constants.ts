@@ -18,3 +18,4 @@ export const GOOGLE_SIGN_IN = 'Sign in with Google';
 export const CANCEL = 'Cancel';
 export const USERID = 'userId';
 export const LAST_SYNCED = 'last_synced';
+export const PREFERRED_MODEL = "preferredModel";

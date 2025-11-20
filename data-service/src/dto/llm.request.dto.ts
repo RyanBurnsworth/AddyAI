@@ -16,4 +16,8 @@ export class LLMRequestDTO {
   @IsString()
   @IsNotEmpty()
   userPrompt: string;
+
+  @IsString()
+  @IsOptional()
+  preferredModel: string;
 }

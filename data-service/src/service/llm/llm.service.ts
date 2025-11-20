@@ -23,7 +23,8 @@ export class LLMService {
     userId: string,
     customerId: string,
     userPrompt: string,
-    conversationId?: number
+    conversationId?: number,
+    preferredModel?: string,
   ): Promise<string[]> {
     try {
       let chatHistory = null;
@@ -43,6 +44,7 @@ export class LLMService {
             user_id: userId,
             customer_id: customerId,
             user_prompt: userPrompt,
+            preferred_model: preferredModel,
             conversation_history: chatHistory,
           },
         })
@@ -74,7 +76,8 @@ export class LLMService {
     userPrompt: string,
     customerId: string,
     queries: string[],
-    conversationId?: number
+    conversationId?: number,
+    preferredModel?: string,
   ): Promise<string> {
     try {
       const results = await Promise.all(queries.map(query => this.dataService.executeQuery(query)));
@@ -99,6 +102,7 @@ export class LLMService {
           user_prompt: userPrompt,
           records: results,
           conversation_history: chatHistory,
+          preferred_model: preferredModel
         })
       );
 

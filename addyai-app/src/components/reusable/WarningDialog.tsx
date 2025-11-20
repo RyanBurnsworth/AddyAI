@@ -6,7 +6,7 @@ interface WarningDialogProps extends DialogProps {
   message: string;
   confirmText?: string;
   cancelText?: string;
-  onConfirm?: () => Promise<void>; // 👈 new generic handler
+  onConfirm?: () => Promise<void>;
   onSuccess?: () => void;
   onError?: (message: string) => void;
 }
@@ -28,7 +28,9 @@ export default function WarningDialog({
 
   const handleConfirm = async () => {
     if (!onConfirm) return;
+    
     setLoading(true);
+
     try {
       await onConfirm(); 
       onSuccess?.();

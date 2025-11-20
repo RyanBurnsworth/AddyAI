@@ -20,7 +20,8 @@ export class LLMController {
         llmRequest.userId,
         llmRequest.customerId,
         llmRequest.userPrompt,
-        llmRequest.conversationId
+        llmRequest.conversationId,
+        llmRequest.preferredModel
       );
 
       const result = await this.llmService.getAnalysis(
@@ -28,7 +29,8 @@ export class LLMController {
         llmRequest.userPrompt,
         llmRequest.customerId,
         queries,
-        llmRequest.conversationId
+        llmRequest.conversationId,
+        llmRequest.preferredModel
       );
 
       // store the interaction in the conversation history

@@ -5,7 +5,7 @@ from utils.constants import GPT_MODEL, SYSTEM, USER, ASSISTANT, O4_MINI, ROLE, C
 from datetime import date
 from typing import List, Dict, Optional
 
-class ModelService:
+class OpenAIModelService:
     client = OpenAI()
     
     _data_service: DataService

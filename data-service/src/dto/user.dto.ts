@@ -42,5 +42,9 @@ export class UserDTO {
 
   @IsBoolean()
   @IsOptional()
-  active: boolean =  true;
+  active?: boolean =  true;
+
+  @IsString()
+  @IsOptional()
+  modelPreference?: string;
 }

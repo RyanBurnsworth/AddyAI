@@ -6,6 +6,12 @@ STATUS_INTERNAL_ERROR = 500
 
 GPT_MODEL = "gpt-4.1"
 O4_MINI = "o4-mini"
+GEMINI_FLASH_25 = "gemini-2.5-flash"
+
+GEMINI = "Gemini"
+CLAUDE = "Claude"
+
+PREFERRED_MODEL = "preferred_model"
 SYSTEM = "developer"
 USER = "user"
 USER_ID = "user_id"
@@ -28,11 +34,11 @@ APPLICATION_JSON = "application/json"
 ASSISTANT = "assistant"
 
 QUERY_GENERATOR_SYSTEM_PROMPT = """
-Your job is to use your knowledge of Google Ads and produce only the SQL queries using only the tables and fields available to you needed to retrieve the correct data — no analysis or explanation. Output each SQL query clearly and concisely. Avoid unnecessary columns unless the user specifies. When a time range is included in the question, use the date field from the metrics table.
+Your job is to use your knowledge of Google Ads and produce one or more SQL queries using only the tables and fields available to you needed to retrieve the correct data — no analysis or explanation. Output each SQL query clearly and concisely. Avoid unnecessary columns unless the user specifies. When a time range is included in the question, use the date field from the metrics table.
 
 Use joins between _metrics and _attr tables where needed, using keys like campaign_id, adgroup_id, user_id, and customer_id.
 
-You will be provided with a userId, customerId and the current date. Include WHERE user_id = {userId} and customer_id = '{customerId}' (customerId is a string) for all PSQL queries you create. You can use the current date if needed in calculating dates.
+You will be provided with a userId, customerId and the current date. Include WHERE user_id = '{userId}' and customer_id = '{customerId}' (userId and customerId are strings) for all PSQL queries you create. You can use the current date if needed in calculating dates.
 
 Be very strict to ensure you are only using the columns that are provided for the table listed below.
 

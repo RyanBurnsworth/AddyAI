@@ -14,6 +14,7 @@ import {
   CODE,
   CONSENT,
   OFFLINE,
+  PREFERRED_MODEL,
 } from '../../utils/constants';
 import ChatHistorySidebar from '../reusable/ChatHistorySidebar';
 import MessageContainer from '../reusable/MessageContainer';
@@ -115,6 +116,8 @@ export default function Chat() {
       console.log("Sending message: ", message);
 
       const customerId = localStorage.getItem(CUSTOMER_ID);
+      const preferredModel = localStorage.getItem(PREFERRED_MODEL);
+      
       const userMessage = { message, isUserInput: true };
       const newMessages = [...messagesRef.current, userMessage];
       let currentConversationId = localStorage.getItem(CONVERSATION_ID);
@@ -137,11 +140,13 @@ export default function Chat() {
           userPrompt: string;
           customerId: string | null;
           conversationId?: number | null;
+          preferredModel?: string | null;
         } = {
           userId,
           userPrompt: message,
           customerId,
           conversationId: Number(currentConversationId),
+          preferredModel: preferredModel,
         };
 
         const res = await fetch(messagingUrl, {

@@ -134,7 +134,7 @@ export default function Settings() {
     const storedLastSynced = localStorage.getItem(LAST_SYNCED) || '';
     setLastSynced(storedLastSynced);
 
-    const storedModel = localStorage.getItem('preferredModel') || 'OpenAI';
+    const storedModel = localStorage.getItem('preferredModel') || 'OPENAI';
     setSelectedModel(storedModel);
 
     if (storedCustomerId === '' || storedEmail === '' || storedName === '' || storedLastSynced === '') {

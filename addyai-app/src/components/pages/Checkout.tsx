@@ -1,15 +1,25 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { EmbeddedCheckoutProvider, EmbeddedCheckout } from '@stripe/react-stripe-js';
 import { loadStripe, type Stripe } from '@stripe/stripe-js';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import NavBar from '../reusable/NavBar';
 import ReactGA from 'react-ga4';
+import { useStoredUser } from '../../hooks/useStoredUser';
 
 export default function Checkout() {
   const stripePromise: Promise<Stripe | null> = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
   const [searchParams] = useSearchParams();
   const amount = parseInt(searchParams.get('amount') || '0');
   const baseURL = import.meta.env.VITE_BASE_URL;
+  const navigate = useNavigate();
+
+  const {
+    storedUserId,
+    storedEmail,
+    storedCustomerId,
+    storedName,
+    storedLastSynced
+  } = useStoredUser();
 
   const fetchClientSecret = useCallback(async (): Promise<string> => {
     const response = await fetch(`${baseURL}/payment/create-session?amount=${amount}`, {
@@ -41,6 +51,20 @@ export default function Checkout() {
 
   const options = { fetchClientSecret };
 
+  useEffect(() => {    
+    // if the user is not logged in or has properly stored data return them to the home page
+    if (storedUserId === '' || storedCustomerId === '' || storedEmail === '' || storedName === '' || storedLastSynced === '') {
+      navigate('/', { replace: true });
+    }
+  }, [
+    storedUserId,
+    storedCustomerId,
+    storedEmail,
+    storedName,
+    storedLastSynced,
+    navigate
+  ]);
+  
   return (
     <>
       <NavBar />

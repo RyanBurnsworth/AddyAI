@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import NavBar from '../reusable/NavBar';
 import { useNavigate } from 'react-router-dom';
 import WarningDialog from '../reusable/WarningDialog';
-import { CUSTOMER_ID, EMAIL, LAST_SYNCED, NAME } from '../../utils/constants';
+import { CUSTOMER_ID, EMAIL } from '../../utils/constants';
 import { SnackBar } from '../reusable/SnackBar';
+import { useStoredUser } from '../../hooks/useStoredUser';
 
 export default function Settings() {
   const baseURL = import.meta.env.VITE_BASE_URL;
@@ -20,6 +21,13 @@ export default function Settings() {
   const [snackbarColor, setSnackbarColor] = useState('bg-red-600');
 
   const navigate = useNavigate();
+  const {
+    storedUserId,
+    storedEmail,
+    storedCustomerId,
+    storedName,
+    storedLastSynced
+  } = useStoredUser();
 
   const accountDeletionSuccessCallback = () => {    
     localStorage.clear();
@@ -122,25 +130,25 @@ export default function Settings() {
   }
 
   useEffect(() => {
-    const storedEmail = localStorage.getItem(EMAIL) || '';
-    setEmail(storedEmail);
-
-    const storedCustomerId = localStorage.getItem(CUSTOMER_ID) || '';
-    setCustomerId(storedCustomerId);
-
-    const storedName = localStorage.getItem(NAME) || '';
-    setName(storedName);
-  
-    const storedLastSynced = localStorage.getItem(LAST_SYNCED) || '';
-    setLastSynced(storedLastSynced);
+    // if the user is not logged in or has properly stored data return them to the home page
+    if (storedUserId === '' || storedCustomerId === '' || storedEmail === '' || storedName === '' || storedLastSynced === '') {
+      navigate('/', { replace: true });
+    } else {
+      setName(storedName);
+      setEmail(storedEmail);
+      setLastSynced(storedLastSynced);
+      setCustomerId(storedCustomerId);
+    }
 
     const storedModel = localStorage.getItem('preferredModel') || 'OPENAI';
     setSelectedModel(storedModel);
-
-    if (storedCustomerId === '' || storedEmail === '' || storedName === '' || storedLastSynced === '') {
-      navigate('/login', { replace: true });
-    }
-  }, []);
+  }, [
+    storedUserId,
+    storedCustomerId,
+    storedEmail,
+    storedName,
+    storedLastSynced,
+    navigate]);
 
   return (
     <>

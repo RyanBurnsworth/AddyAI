@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { GridLoader } from 'react-spinners';
 import { USERID } from '../../utils/constants';
 import ReactGA from 'react-ga4';
+import { useStoredUser } from '../../hooks/useStoredUser';
 
 export default function Finish() {
   const [loading, setLoading] = useState<boolean>(false);
@@ -10,8 +11,20 @@ export default function Finish() {
 
   const navigate = useNavigate();
   const baseURL = import.meta.env.VITE_BASE_URL;
+  const {
+    storedUserId,
+    storedEmail,
+    storedCustomerId,
+    storedName,
+    storedLastSynced
+  } = useStoredUser();
 
   useEffect(() => {
+    // if the user is not logged in or has properly stored data return them to the home page
+    if (storedUserId === '' || storedCustomerId === '' || storedEmail === '' || storedName === '' || storedLastSynced === '') {
+      navigate('/', { replace: true });
+    }
+
     const checkSessionStatus = async () => {
       try {
         setLoading(true);
@@ -64,7 +77,15 @@ export default function Finish() {
     };
 
     checkSessionStatus();
-  }, [baseURL, navigate]); // Added baseURL and navigate to dependencies
+  }, [
+    baseURL,
+    storedUserId,
+    storedCustomerId,
+    storedEmail,
+    storedLastSynced,
+    storedName, 
+    navigate
+  ]); // Added baseURL and navigate to dependencies
 
   const handleButtonClick = () => {
     // send Google Analytics Event

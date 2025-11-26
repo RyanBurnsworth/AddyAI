@@ -3,6 +3,7 @@ import NavBar from '../reusable/NavBar';
 import { CUSTOMER_ID, USERID } from '../../utils/constants';
 import { useNavigate } from 'react-router-dom';
 import ReactGA from 'react-ga4';
+import { useStoredUser } from '../../hooks/useStoredUser';
 
 // Define a type for chat history items
 interface ChatHistoryItem {
@@ -20,6 +21,14 @@ export default function ChatHistory() {
   const customerId = useMemo(() => localStorage.getItem(CUSTOMER_ID), []);
   const baseURL = import.meta.env.VITE_BASE_URL;
   const navigate = useNavigate(); // Initialize useNavigate
+
+  const {
+    storedUserId,
+    storedEmail,
+    storedCustomerId,
+    storedName,
+    storedLastSynced
+  } = useStoredUser();
 
   // This function will be responsible for fetching the conversation history.
   const fetchConversationHistory = async () => {
@@ -56,6 +65,11 @@ export default function ChatHistory() {
   };
 
   useEffect(() => {
+    // if the user is not logged in or has properly stored data return them to the home page
+    if (storedUserId === '' || storedCustomerId === '' || storedEmail === '' || storedName === '' || storedLastSynced === '') {
+      navigate('/', { replace: true });
+    }
+
     fetchConversationHistory();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId, customerId, baseURL]); // Re-fetch if userId, customerId, or baseURL changes
@@ -66,7 +80,15 @@ export default function ChatHistory() {
     return Object.keys(chatHistory)
       .flatMap(date => chatHistory[date].map(item => ({ date, ...item })))
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()); // Sort by most recent
-  }, [chatHistory]);
+  }, [
+    chatHistory, 
+    storedUserId,
+    storedCustomerId,
+    storedEmail,
+    storedLastSynced,
+    storedName, 
+    navigate
+  ]);
 
   return (
     <div className="h-screen w-screen flex flex-col bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 text-white overflow-hidden relative">

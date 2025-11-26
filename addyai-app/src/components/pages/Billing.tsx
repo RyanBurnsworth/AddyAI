@@ -1,10 +1,10 @@
-import { USERID } from '../../utils/constants';
 import BillingChart from '../reusable/BillingChart';
 import { useEffect, useState } from 'react';
 import PaymentDialog from '../reusable/PaymentSelectionDialog';
 import { useNavigate } from 'react-router-dom';
 import NavBar from '../reusable/NavBar';
 import ReactGA from 'react-ga4';
+import { useStoredUser } from '../../hooks/useStoredUser';
 
 export default function Billing() {
   const navigate = useNavigate();
@@ -13,12 +13,23 @@ export default function Billing() {
   const [showPaymentDialog, setShowPaymentDialog] = useState<boolean>(false);
   const [balance, setBalance] = useState<string>('0.00');
 
-  const userId = localStorage.getItem(USERID);
+  const {
+    storedUserId,
+    storedEmail,
+    storedCustomerId,
+    storedName,
+    storedLastSynced
+  } = useStoredUser();
 
   useEffect(() => {
+    // if the user is not logged in or has properly stored data return them to the home page
+    if (storedUserId === '' || storedCustomerId === '' || storedEmail === '' || storedName === '' || storedLastSynced === '') {
+      navigate('/', { replace: true });
+    }
+
     const fetchUserData = async () => {
       try {
-        const response = await fetch(`${baseURL}/user?id=${userId}`);
+        const response = await fetch(`${baseURL}/user?id=${storedUserId}`);
         const userData = await response.json();
 
         // Ensure balance is formatted correctly, accounting for potential division by 1000
@@ -28,14 +39,16 @@ export default function Billing() {
       }
     };
 
-    if (userId) {
-      // Only fetch if userId exists
-      fetchUserData();
-    } else {
-      // Handle case where userId is not found, e.g., redirect to login or show error
-      navigate('/'); // Or a more appropriate route
-    }
-  }, [baseURL, userId, navigate]); // Added navigate to dependencies
+    fetchUserData();
+  }, [
+    baseURL, 
+    storedUserId,
+    storedCustomerId,
+    storedEmail,
+    storedLastSynced,
+    storedName, 
+    navigate
+  ]); 
 
   const handleAddCreditButtonClick = () => {
     if (!showPaymentDialog) {
